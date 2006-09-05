@@ -1,0 +1,29 @@
+body {
+	background: #eee;
+	margin: 0;
+	padding: 1em;
+}
+#busy {
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	top: 50%;
+	width: 10em;
+	height: 2em;
+	margin: -10em 0 0 -2em;
+	line-height: 2em;
+	text-align: center;
+	background: #333;
+	color: #fff;
+	opacity: 0.8;
+}
+#graph_form {
+	position: fixed;
+	z-index: 2;
+	left: 1em;
+	top: 1em;
+}
+#canvas_container {
+	background: #fff;
+	margin: 0 auto;
+}

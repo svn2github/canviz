@@ -1,0 +1,357 @@
+Ajax.Responders.register({
+	onCreate: function() {
+		Element.show('busy');
+	},
+	onComplete: function() {
+		if (0 == Ajax.activeRequestCount) {
+			Element.hide('busy');
+		}
+	}
+});
+
+Tokenizer = Class.create();
+Tokenizer.prototype = {
+	initialize: function(str) {
+		this.str = str;
+	},
+	takeChars: function(num) {
+		if (!num) {
+			num = 1;
+		}
+		var tokens = new Array();
+		while (num--) {
+			var matches = this.str.match(/^(\S+)\s*/);
+			if (matches) {
+				this.str = this.str.substr(matches[0].length);
+				tokens.push(matches[1]);
+			} else {
+				tokens.push(false);
+			}
+		}
+		if (1 == tokens.length) {
+			return tokens[0];
+		} else {
+			return tokens;
+		}
+	},
+	takeNumber: function(num) {
+		if (!num) {
+			num = 1;
+		}
+		if (1 == num) {
+			return Number(this.takeChars())
+		} else {
+			var tokens = this.takeChars(num);
+			while (num--) {
+				tokens[num] = Number(tokens[num]);
+			}
+			return tokens;
+		}
+	},
+	takeString: function() {
+		var chars = Number(this.takeChars());
+		if ('-' != this.str.charAt(0)) {
+			return false;
+		}
+		var str = this.str.substr(1, chars);
+		this.str = this.str.substr(1 + chars).replace(/^\s+/, '');
+		return str;
+	}
+}
+
+Graph = Class.create();
+Graph.prototype = {
+	initialize: function(file) {
+		this.file = file;
+		this.commands = new Array();
+		this.system_scale = 4/3;
+		this.scale = 1;
+		this.padding = 8;
+		this.KAPPA = 0.5522847498;
+	},
+	load: function() {
+		var url = 'graph.php';
+		var params = 'file=' + this.file;
+		new Ajax.Request(url, {
+			method: 'get',
+			parameters: params,
+			onComplete: this.parse.bind(this)
+		});
+	},
+	parse: function(request) {
+		var graph_src = request.responseText;
+		var lines = graph_src.split('\n');
+		var i = 0;
+		var line, lastchar, matches, is_graph, entity, params, param_name, param_value;
+		var container_stack = new Array();
+		while (i < lines.length) {
+			line = lines[i++].replace(/^\s+/, '');
+			if ('' != line) {
+				while (i < lines.length && ';' != (lastchar = line.substr(-1)) && '{' != lastchar && '}' != lastchar) {
+					if ('\\' == lastchar) {
+						line = line.substr(0, line.length - 1);
+					}
+					line += lines[i++];
+				}
+//				debug(line);
+				matches = line.match(/^(.*?)\s*{$/);
+				if (matches) {
+					container_stack.push(matches[1]);
+//					debug('begin container ' + container_stack.last());
+				} else if ('}' == line) {
+//					debug('end container ' + container_stack.last());
+					container_stack.pop();
+				} else {
+//					matches = line.match(/^(".*?[^\\]"|\S+?)\s+\[(.+)\];$/);
+					matches = line.match(/^(.*?)\s+\[(.+)\];$/);
+					if (matches) {
+						is_graph = ('graph' == matches[1]);
+//						entity = this.unescape(matches[1]);
+						entity = matches[1];
+						params = matches[2];
+						do {
+							matches = params.match(/^(\S+?)=(""|".*?[^\\]"|<(<[^>]+>|[^<>]+?)+>|\S+?)(?:,\s*|$)/);
+							if (matches) {
+								params = params.substr(matches[0].length);
+								param_name = matches[1];
+								param_value = this.unescape(matches[2]);
+//								debug(param_name + ' ' + param_value);
+								if (is_graph && 1 == container_stack.length) {
+									switch (param_name) {
+										case 'bb':
+											var bb = param_value.split(/,/);
+											this.width = Number(bb[2]);
+											this.height = Number(bb[3]);
+											break;
+										case 'xdotversion':
+//											debug('xdotversion=' + param_value);
+											break;
+									}
+								}
+								switch (param_name) {
+									case '_draw_':
+									case '_ldraw_':
+									case '_hdraw_':
+									case '_tdraw_':
+									case '_hldraw_':
+									case '_tldraw_':
+//										debug(entity + ': ' + param_value);
+										this.commands.push(param_value);
+										break;
+								}
+							}
+						} while (matches);
+					}
+				}
+			}
+		}
+//		debug('done');
+		this.display();
+	},
+	display: function() {
+		var width  = Math.round(this.scale * this.system_scale * this.width  + 2 * this.padding);
+		var height = Math.round(this.scale * this.system_scale * this.height + 2 * this.padding);
+		canvas.width  = width;
+		canvas.height = height;
+		Element.setStyle(canvas, {
+			width:  width  + 'px',
+			height: height + 'px'
+		});
+		Element.setStyle('canvas_container', {
+			width:  width  + 'px'
+		});
+		ctx.save();
+		ctx.translate(this.padding, this.padding);
+		ctx.scale(this.scale * this.system_scale, this.scale * this.system_scale);
+		var i, command_index, command, tokenizer, token, tokens, filled, closed, num, size, cx, cy, rx, ry;
+		for (command_index = 0; command_index < this.commands.length; command_index++) {
+			command = this.commands[command_index];
+//			debug(command);
+			tokenizer = new Tokenizer(command);
+			token = tokenizer.takeChars();
+			if (token) {
+				ctx.save();
+				while (token) {
+//					debug('processing token ' + token);
+					switch (token) {
+						case 'E': // filled ellipse
+						case 'e': // unfilled ellipse
+							filled = ('E' == token);
+							cx = tokenizer.takeNumber();
+							cy = this.height - tokenizer.takeNumber();
+							rx = tokenizer.takeNumber();
+							ry = tokenizer.takeNumber();
+							ctx.beginPath();
+							ctx.moveTo(cx, cy - ry);
+							ctx.bezierCurveTo(cx + this.KAPPA * rx, cy - ry, cx + rx, cy - this.KAPPA * ry, cx + rx, cy);
+							ctx.bezierCurveTo(cx + rx, cy + this.KAPPA * ry, cx + this.KAPPA * rx, cy + ry, cx, cy + ry);
+							ctx.bezierCurveTo(cx - this.KAPPA * rx, cy + ry, cx - rx, cy + this.KAPPA * ry, cx - rx, cy);
+							ctx.bezierCurveTo(cx - rx, cy - this.KAPPA * ry, cx - this.KAPPA * rx, cy - ry, cx, cy - ry);
+							if (filled) {
+								ctx.fill();
+								if (ctx.fillStyle != ctx.strokeStyle) {
+									ctx.stroke();
+								}
+							} else {
+								ctx.stroke();
+							}
+							break;
+						case 'P': // filled polygon
+						case 'p': // unfilled polygon
+						case 'L': // polyline
+							filled = ('P' == token);
+							closed = ('L' != token);
+							num = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num); // points
+							ctx.beginPath();
+							ctx.moveTo(tokens[0], this.height - tokens[1]);
+							for (i = 2; i < 2 * num; i += 2) {
+								ctx.lineTo(tokens[i], this.height - tokens[i + 1]);
+							}
+							if (closed) {
+								ctx.closePath();
+							}
+							if (filled) {
+								ctx.fill();
+								if (ctx.fillStyle != ctx.strokeStyle) {
+									ctx.stroke();
+								}
+							} else {
+								ctx.stroke();
+							}
+							break;
+						case 'B': // unfilled b-spline
+						case 'b': // filled b-spline
+							filled = ('b' == token);
+							num = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num); // points
+							ctx.beginPath();
+							ctx.moveTo(tokens[0], this.height - tokens[1]);
+							for (i = 2; i < 2 * num; i += 6) {
+								ctx.bezierCurveTo(
+									tokens[i],     this.height - tokens[i + 1],
+									tokens[i + 2], this.height - tokens[i + 3],
+									tokens[i + 4], this.height - tokens[i + 5]
+								);
+							}
+							if (filled) {
+								ctx.fill();
+								if (ctx.fillStyle != ctx.strokeStyle) {
+									ctx.stroke();
+								}
+							} else {
+								ctx.stroke();
+							}
+							break;
+						case 'T': // text
+							tokens = tokenizer.takeNumber(4); // x y align width
+							fudge = tokenizer.takeString();
+//							debug('draw text ' + fudge + ' ' + tokens[0] + ' ' + tokens[1] + ' ' + tokens[2] + ' ' + tokens[3]);
+							break;
+						case 'C': // set fill color
+						case 'c': // set pen color
+							var fill = ('C' == token);
+							var color = tokenizer.takeString();
+							if (gvcolors[color]) { // named color
+								color = 'rgb(' + gvcolors[color][0] + ',' + gvcolors[color][1] + ',' + gvcolors[color][2] + ')';
+							} else {
+								matches = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+								if (matches) { // rgba
+									color = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
+								} else {
+									matches = color.match(/(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/);
+									if (matches) { // hsv
+										color = this.hsv_to_rgb_color(matches[1], matches[2], matches[3]);
+									} else if (!color.match(/^#[0-9a-f]{6}$/i)) {
+										debug('unknown color ' + color);
+									}
+								}
+							}
+							if (fill) {
+								ctx.fillStyle = color;
+							} else {
+								ctx.strokeStyle = color;
+							}
+							break;
+						case 'F': // set font
+							size = tokenizer.takeNumber();
+							fudge = tokenizer.takeString();
+//							debug('set font ' + fudge);
+							break;
+						case 'S': // set style
+							var style = tokenizer.takeString();
+							switch (style) {
+								case 'solid':
+								case 'filled':
+									// nothing
+									break;
+								case 'dashed':
+								case 'dotted':
+									// http://www.mail-archive.com/whatwg@lists.whatwg.org/msg01587.html
+									debug(style + ' style cannot currently be implemented in canviz');
+									break;
+								case 'bold':
+									ctx.lineWidth = 2;
+									break;
+								default:
+									matches = style.match(/^setlinewidth\((.*)\)$/);
+									if (matches) {
+										ctx.lineWidth = Number(matches[1]);
+									} else {
+										debug('unknown style ' + style);
+									}
+							}
+							break;
+						default:
+							debug('unknown token ' + token);
+							return;
+					}
+					token = tokenizer.takeChars();
+				}
+				ctx.restore();
+			}
+		};
+		ctx.restore();
+	},
+	unescape: function(str) {
+		var matches = str.match(/^"(.*)"$/);
+		if (matches) {
+			return matches[1].replace(/\\"/g, '"');
+		} else {
+			return str;
+		}
+	},
+	hsv_to_rgb_color: function(h, s, v) {
+		var i, f, p, q, t, r, g, b;
+		h *= 360;
+		i = Math.floor(h / 60) % 6;
+		f = h / 60 - i;
+		p = v * (1 - s);
+		q = v * (1 - f * s);
+		t = v * (1 - (1 - f) * s)
+		switch (i) {
+			case 0: r = v; g = t; b = p; break;
+			case 1: r = q; g = v; b = p; break;
+			case 2: r = p; g = v; b = t; break;
+			case 3: r = p; g = q; b = v; break;
+			case 4: r = t; g = p; b = v; break;
+			case 5: r = v; g = p; b = q; break;
+		}
+		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
+	}
+}
+
+function debug(str) {
+	$('result').innerHTML += '&raquo;' + str.escapeHTML() + '&laquo;<br />';
+}
+
+var canvas, ctx;
+function load_graph(file) {
+	$('result').innerHTML = '';
+	canvas = $('graph_canvas');
+	if (canvas.getContext) {
+		ctx = canvas.getContext('2d');
+		var graph = new Graph(file);
+		graph.load();
+	}
+}
