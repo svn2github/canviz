@@ -67,6 +67,8 @@ Graph.prototype = {
 		this.system_scale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
+		this.font_name = 'Times New Roman';
+		this.font_size = 14;
 		this.KAPPA = 0.5522847498;
 	},
 	load: function() {
@@ -157,30 +159,34 @@ Graph.prototype = {
 			width:  width  + 'px',
 			height: height + 'px'
 		});
-		Element.setStyle('canvas_container', {
+		Element.setStyle('graph_container', {
 			width:  width  + 'px'
 		});
 		ctx.save();
 		ctx.translate(this.padding, this.padding);
 		ctx.scale(this.scale * this.system_scale, this.scale * this.system_scale);
-		var i, command_index, command, tokenizer, token, tokens, filled, closed, num, size, cx, cy, rx, ry;
-		for (command_index = 0; command_index < this.commands.length; command_index++) {
-			command = this.commands[command_index];
+		var i, tokens;
+		var entity_id = 0;
+		var text_divs = '';
+		for (var command_index = 0; command_index < this.commands.length; command_index++) {
+			var command = this.commands[command_index];
 //			debug(command);
-			tokenizer = new Tokenizer(command);
-			token = tokenizer.takeChars();
+			var tokenizer = new Tokenizer(command);
+			var token = tokenizer.takeChars();
 			if (token) {
+				++entity_id;
+				var entity_text_divs = '';
 				ctx.save();
 				while (token) {
 //					debug('processing token ' + token);
 					switch (token) {
 						case 'E': // filled ellipse
 						case 'e': // unfilled ellipse
-							filled = ('E' == token);
-							cx = tokenizer.takeNumber();
-							cy = this.height - tokenizer.takeNumber();
-							rx = tokenizer.takeNumber();
-							ry = tokenizer.takeNumber();
+							var filled = ('E' == token);
+							var cx = tokenizer.takeNumber();
+							var cy = this.height - tokenizer.takeNumber();
+							var rx = tokenizer.takeNumber();
+							var ry = tokenizer.takeNumber();
 							ctx.beginPath();
 							ctx.moveTo(cx, cy - ry);
 							ctx.bezierCurveTo(cx + this.KAPPA * rx, cy - ry, cx + rx, cy - this.KAPPA * ry, cx + rx, cy);
@@ -199,13 +205,13 @@ Graph.prototype = {
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
 						case 'L': // polyline
-							filled = ('P' == token);
-							closed = ('L' != token);
-							num = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num); // points
+							var filled = ('P' == token);
+							var closed = ('L' != token);
+							var num_points = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num_points); // points
 							ctx.beginPath();
 							ctx.moveTo(tokens[0], this.height - tokens[1]);
-							for (i = 2; i < 2 * num; i += 2) {
+							for (i = 2; i < 2 * num_points; i += 2) {
 								ctx.lineTo(tokens[i], this.height - tokens[i + 1]);
 							}
 							if (closed) {
@@ -222,12 +228,12 @@ Graph.prototype = {
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
-							filled = ('b' == token);
-							num = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num); // points
+							var filled = ('b' == token);
+							var num_points = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num_points); // points
 							ctx.beginPath();
 							ctx.moveTo(tokens[0], this.height - tokens[1]);
-							for (i = 2; i < 2 * num; i += 6) {
+							for (i = 2; i < 2 * num_points; i += 6) {
 								ctx.bezierCurveTo(
 									tokens[i],     this.height - tokens[i + 1],
 									tokens[i + 2], this.height - tokens[i + 3],
@@ -244,9 +250,28 @@ Graph.prototype = {
 							}
 							break;
 						case 'T': // text
-							tokens = tokenizer.takeNumber(4); // x y align width
-							fudge = tokenizer.takeString();
-//							debug('draw text ' + fudge + ' ' + tokens[0] + ' ' + tokens[1] + ' ' + tokens[2] + ' ' + tokens[3]);
+							var x = Math.round(this.scale * this.system_scale * tokenizer.takeNumber() + this.padding);
+							var y = Math.round(height - (this.scale * this.system_scale * (tokenizer.takeNumber() + this.font_size) + this.padding));
+							var text_align = tokenizer.takeNumber();
+							var text_width = Math.round(this.scale * this.system_scale * tokenizer.takeNumber());
+							var str = tokenizer.takeString();
+							if (!str.match(/^\s*$/)) {
+//								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
+								entity_text_divs += '<div style="font:' + this.font_size + 'pt \'' + this.font_name +'\';';
+								switch (text_align) {
+									case -1: //left
+										entity_text_divs += 'left:' + x + 'px;';
+										break;
+									case 1: // right
+										entity_text_divs += 'text-align:right;right:' + x + 'px;';
+										break;
+									case 0: // center
+									default:
+										entity_text_divs += 'text-align:center;left:' + (x - text_width) + 'px;';
+										break;
+								}
+								entity_text_divs += 'top:' + y + 'px;width:' + (2 * text_width) + 'px">' + str.escapeHTML() + '</div>';
+							}
 							break;
 						case 'C': // set fill color
 						case 'c': // set pen color
@@ -274,9 +299,22 @@ Graph.prototype = {
 							}
 							break;
 						case 'F': // set font
-							size = tokenizer.takeNumber();
-							fudge = tokenizer.takeString();
-//							debug('set font ' + fudge);
+							this.font_size = tokenizer.takeNumber();
+							this.font_name = tokenizer.takeString();
+							switch (this.font_name) {
+								case 'Times-Roman':
+									this.font_name = 'Times New Roman';
+									break;
+								case 'Courier':
+									this.font_name = 'Courier New';
+									break;
+								case 'Helvetica':
+									this.font_name = 'Arial';
+									break;
+								default:
+									// nothing
+							}
+//							debug('set font ' + this.font_size + 'pt ' + this.font_name);
 							break;
 						case 'S': // set style
 							var style = tokenizer.takeString();
@@ -309,9 +347,13 @@ Graph.prototype = {
 					token = tokenizer.takeChars();
 				}
 				ctx.restore();
+				if (entity_text_divs) {
+					text_divs += '<div id="entity' + entity_id + '">' + entity_text_divs + '</div>';
+				}
 			}
 		};
 		ctx.restore();
+		$('graph_texts').innerHTML = text_divs;
 	},
 	unescape: function(str) {
 		var matches = str.match(/^"(.*)"$/);

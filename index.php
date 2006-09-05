@@ -44,7 +44,8 @@ foreach ($graphs as $graph) {
 <input type="button" value="&gt;" onclick="another_graph(1)" />
 <input type="button" value="View Dot Source" onclick="window.open('graphs/'+$F('graph_name'))" />
 </form>
-<div id="canvas_container">
+<div id="graph_container">
+<div id="graph_texts"></div>
 <canvas id="graph_canvas" width="40" height="40"></canvas>
 </div>
 <div id="result"></div>
