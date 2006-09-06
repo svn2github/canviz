@@ -62,18 +62,20 @@ Tokenizer.prototype = {
 Graph = Class.create();
 Graph.prototype = {
 	initialize: function(file) {
-		this.file = file;
-		this.commands = new Array();
 		this.system_scale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
 		this.font_name = 'Times New Roman';
 		this.font_size = 14;
 		this.KAPPA = 0.5522847498;
+		if (file) {
+			this.load(file);
+		}
 	},
-	load: function() {
+	load: function(file) {
+		$('debug_output').innerHTML = '';
 		var url = 'graph.php';
-		var params = 'file=' + this.file;
+		var params = 'file=' + file;
 		new Ajax.Request(url, {
 			method: 'get',
 			parameters: params,
@@ -81,6 +83,7 @@ Graph.prototype = {
 		});
 	},
 	parse: function(request) {
+		this.commands = new Array();
 		var graph_src = request.responseText;
 		var lines = graph_src.split('\n');
 		var i = 0;
@@ -257,7 +260,7 @@ Graph.prototype = {
 							var str = tokenizer.takeString();
 							if (!str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
-								entity_text_divs += '<div style="font:' + this.font_size + 'pt \'' + this.font_name +'\';';
+								entity_text_divs += '<div style="font:' + Math.round(this.font_size * this.scale * this.system_scale) + 'px \'' + this.font_name +'\';';
 								switch (text_align) {
 									case -1: //left
 										entity_text_divs += 'left:' + x + 'px;';
@@ -384,16 +387,5 @@ Graph.prototype = {
 }
 
 function debug(str) {
-	$('result').innerHTML += '&raquo;' + str.escapeHTML() + '&laquo;<br />';
-}
-
-var canvas, ctx;
-function load_graph(file) {
-	$('result').innerHTML = '';
-	canvas = $('graph_canvas');
-	if (canvas.getContext) {
-		ctx = canvas.getContext('2d');
-		var graph = new Graph(file);
-		graph.load();
-	}
+	$('debug_output').innerHTML += '&raquo;' + String(str).escapeHTML() + '&laquo;<br />';
 }
