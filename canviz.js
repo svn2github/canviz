@@ -260,6 +260,17 @@ Graph.prototype = {
 							var str = tokenizer.takeString();
 							if (!str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
+								str = str.escapeHTML();
+								do {
+									matches = str.match(/ ( +)/);
+									if (matches) {
+										var spaces = ' ';
+										matches[1].length.times(function() {
+											spaces += '&nbsp;';
+										});
+										str = str.replace(/  +/, spaces);
+									}
+								} while (matches);
 								entity_text_divs += '<div style="font:' + Math.round(this.font_size * this.scale * this.system_scale) + 'px \'' + this.font_name +'\';';
 								switch (text_align) {
 									case -1: //left
@@ -273,7 +284,7 @@ Graph.prototype = {
 										entity_text_divs += 'text-align:center;left:' + (x - text_width) + 'px;';
 										break;
 								}
-								entity_text_divs += 'top:' + y + 'px;width:' + (2 * text_width) + 'px">' + str.escapeHTML() + '</div>';
+								entity_text_divs += 'top:' + y + 'px;width:' + (2 * text_width) + 'px">' + str + '</div>';
 							}
 							break;
 						case 'C': // set fill color
