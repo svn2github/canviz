@@ -57,6 +57,7 @@ function change_scale(inc) {
 <body onload="init()">
 <div id="busy">Loading...</div>
 <form action="javascript:void(0)" id="graph_form">
+<div>
 <input type="button" value="&lt;" onclick="change_graph(-1)" />
 <select name="graph_name" id="graph_name" onchange="load_graph()">
 <?php
@@ -68,7 +69,8 @@ foreach ($graphs as $graph) {
 ?>
 </select>
 <input type="button" value="&gt;" onclick="change_graph(1)" />
-<br />
+</div>
+<div>
 <input type="button" value="&lt;" onclick="change_scale(1)" />
 <select name="graph_scale" id="graph_scale" onchange="set_graph_scale()">
 <?php
@@ -80,8 +82,10 @@ foreach (array(4, 2, 1.5, 1, 0.75, 0.5) as $scale) {
 ?>
 </select>
 <input type="button" value="&gt;" onclick="change_scale(-1)" />
-<br />
+</div>
+<div>
 <input type="button" value="View Dot Source" onclick="window.open('graphs/'+$F('graph_name'))" />
+</div>
 </form>
 <div id="graph_container">
 <div id="graph_texts"></div>
