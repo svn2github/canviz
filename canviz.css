@@ -1,7 +1,7 @@
 body {
 	background: #eee;
 	margin: 0;
-	padding: 1em;
+	padding: 0;
 }
 #busy {
 	position: fixed;
@@ -20,8 +20,13 @@ body {
 #graph_form {
 	position: fixed;
 	z-index: 2;
-	left: 1em;
-	top: 1em;
+	left: 0;
+	top: 0;
+	background: #ccc;
+	opacity: 0.8;
+}
+#graph_form div {
+	margin: 0.5em;
 }
 #graph_container {
 	background: #fff;
@@ -32,4 +37,7 @@ body {
 }
 #graph_texts div div {
 	position: absolute;
+}
+#debug_output {
+	margin: 1em;
 }
