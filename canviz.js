@@ -271,7 +271,7 @@ Graph.prototype = {
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								entity_text_divs += '<div style="font:' + Math.round(this.font_size * this.scale * this.system_scale) + 'px \'' + this.font_name +'\';';
+								entity_text_divs += '<div style="font:' + Math.round(this.font_size * this.scale * this.system_scale) + 'px \'' + this.font_name +'\';color:' + ctx.strokeStyle + ';';
 								switch (text_align) {
 									case -1: //left
 										entity_text_divs += 'left:' + x + 'px;';
