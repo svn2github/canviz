@@ -62,11 +62,9 @@ Tokenizer.prototype = {
 Graph = Class.create();
 Graph.prototype = {
 	initialize: function(file, engine) {
-		this.system_scale = 4/3;
+		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
-		this.font_name = 'Times New Roman';
-		this.font_size = 14;
 		this.KAPPA = 0.5522847498;
 		if (file) {
 			this.load(file, engine);
@@ -87,6 +85,11 @@ Graph.prototype = {
 	},
 	parse: function(request) {
 		this.commands = new Array();
+		this.width = 0;
+		this.height = 0;
+		this.bgcolor = '#ffffff';
+		this.fontName = 'Times New Roman';
+		this.fontSize = 14;
 		var graph_src = request.responseText;
 		var lines = graph_src.split('\n');
 		var i = 0;
@@ -131,6 +134,9 @@ Graph.prototype = {
 											this.width = Number(bb[2]);
 											this.height = Number(bb[3]);
 											break;
+										case 'bgcolor':
+											this.bgcolor = this.parseColor(param_value);
+											break;
 										case 'xdotversion':
 //											debug('xdotversion=' + param_value);
 											break;
@@ -157,8 +163,8 @@ Graph.prototype = {
 		this.display();
 	},
 	display: function() {
-		var width  = Math.round(this.scale * this.system_scale * this.width  + 2 * this.padding);
-		var height = Math.round(this.scale * this.system_scale * this.height + 2 * this.padding);
+		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
+		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
 		canvas.width  = width;
 		canvas.height = height;
 		Element.setStyle(canvas, {
@@ -170,8 +176,10 @@ Graph.prototype = {
 		});
 		$('graph_texts').innerHTML = '';
 		ctx.save();
+		ctx.fillStyle = this.bgcolor;
+		ctx.fillRect(0, 0, width, height);
 		ctx.translate(this.padding, this.padding);
-		ctx.scale(this.scale * this.system_scale, this.scale * this.system_scale);
+		ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
 		var i, tokens;
 		var entity_id = 0;
 		var text_divs = '';
@@ -257,10 +265,10 @@ Graph.prototype = {
 							}
 							break;
 						case 'T': // text
-							var x = Math.round(this.scale * this.system_scale * tokenizer.takeNumber() + this.padding);
-							var y = Math.round(height - (this.scale * this.system_scale * (tokenizer.takeNumber() + this.font_size) + this.padding));
+							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
+							var y = Math.round(height - (this.scale * this.systemScale * (tokenizer.takeNumber() + this.fontSize) + this.padding));
 							var text_align = tokenizer.takeNumber();
-							var text_width = Math.round(this.scale * this.system_scale * tokenizer.takeNumber());
+							var text_width = Math.round(this.scale * this.systemScale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
 							if (!str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
@@ -275,7 +283,7 @@ Graph.prototype = {
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								entity_text_divs += '<div style="font:' + Math.round(this.font_size * this.scale * this.system_scale) + 'px \'' + this.font_name +'\';color:' + ctx.strokeStyle + ';';
+								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale) + 'px \'' + this.fontName +'\';color:' + ctx.strokeStyle + ';';
 								switch (text_align) {
 									case -1: //left
 										entity_text_divs += 'left:' + x + 'px;';
@@ -294,22 +302,7 @@ Graph.prototype = {
 						case 'C': // set fill color
 						case 'c': // set pen color
 							var fill = ('C' == token);
-							var color = tokenizer.takeString();
-							if (gvcolors[color]) { // named color
-								color = 'rgb(' + gvcolors[color][0] + ',' + gvcolors[color][1] + ',' + gvcolors[color][2] + ')';
-							} else {
-								matches = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
-								if (matches) { // rgba
-									color = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
-								} else {
-									matches = color.match(/(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/);
-									if (matches) { // hsv
-										color = this.hsv_to_rgb_color(matches[1], matches[2], matches[3]);
-									} else if (!color.match(/^#[0-9a-f]{6}$/i)) {
-										debug('unknown color ' + color);
-									}
-								}
-							}
+							var color = this.parseColor(tokenizer.takeString());
 							if (fill) {
 								ctx.fillStyle = color;
 							} else {
@@ -317,22 +310,22 @@ Graph.prototype = {
 							}
 							break;
 						case 'F': // set font
-							this.font_size = tokenizer.takeNumber();
-							this.font_name = tokenizer.takeString();
-							switch (this.font_name) {
+							this.fontSize = tokenizer.takeNumber();
+							this.fontName = tokenizer.takeString();
+							switch (this.fontName) {
 								case 'Times-Roman':
-									this.font_name = 'Times New Roman';
+									this.fontName = 'Times New Roman';
 									break;
 								case 'Courier':
-									this.font_name = 'Courier New';
+									this.fontName = 'Courier New';
 									break;
 								case 'Helvetica':
-									this.font_name = 'Arial';
+									this.fontName = 'Arial';
 									break;
 								default:
 									// nothing
 							}
-//							debug('set font ' + this.font_size + 'pt ' + this.font_name);
+//							debug('set font ' + this.fontSize + 'pt ' + this.fontName);
 							break;
 						case 'S': // set style
 							var style = tokenizer.takeString();
@@ -381,7 +374,26 @@ Graph.prototype = {
 			return str;
 		}
 	},
-	hsv_to_rgb_color: function(h, s, v) {
+	parseColor: function(color) {
+		if (gvcolors[color]) { // named color
+			return 'rgb(' + gvcolors[color][0] + ',' + gvcolors[color][1] + ',' + gvcolors[color][2] + ')';
+		} else {
+			matches = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+			if (matches) { // rgba
+				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
+			} else {
+				matches = color.match(/(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/);
+				if (matches) { // hsv
+					return this.hsvToRgbColor(matches[1], matches[2], matches[3]);
+				} else if (color.match(/^#[0-9a-f]{6}$/i)) {
+					return color;
+				}
+			}
+		}
+		debug('unknown color ' + color);
+		return '#000000';
+	},
+	hsvToRgbColor: function(h, s, v) {
 		var i, f, p, q, t, r, g, b;
 		h *= 360;
 		i = Math.floor(h / 60) % 6;
