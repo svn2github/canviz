@@ -1,9 +1,16 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
-$graphs = glob('graphs/*.dot');
+$engines = glob('graphs/*');
+foreach ($engines as $i => $engine) {
+	$engines[$i] = basename($engine);
+}
+natcasesort($engines);
+$default_engine = 'dot';
+$graphs = glob('graphs/dot/*.dot');
 foreach ($graphs as $i => $graph) {
 	$graphs[$i] = basename($graph);
 }
+natcasesort($graphs);
 $default_graph = $graphs[0];
 //$default_graph = 'crazy.dot';
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -31,7 +38,7 @@ function init() {
 }
 function load_graph() {
 	if (canvas.getContext) {
-		graph.load($F('graph_name'));
+		graph.load($F('graph_name'), $F('graph_engine'));
 	}
 }
 function set_graph_scale() {
@@ -42,6 +49,10 @@ function set_graph_scale() {
 }
 function change_graph(inc) {
 	$('graph_name').selectedIndex = (($('graph_name').selectedIndex + inc) + $('graph_name').options.length) % $('graph_name').options.length;
+	load_graph();
+}
+function change_engine(inc) {
+	$('graph_engine').selectedIndex = (($('graph_engine').selectedIndex + inc) + $('graph_engine').options.length) % $('graph_engine').options.length;
 	load_graph();
 }
 function change_scale(inc) {
@@ -69,6 +80,19 @@ foreach ($graphs as $graph) {
 ?>
 </select>
 <input type="button" value="&gt;" onclick="change_graph(1)" />
+</div>
+<div>
+<input type="button" value="&lt;" onclick="change_engine(-1)" />
+<select name="graph_engine" id="graph_engine" onchange="load_graph()">
+<?php
+foreach ($engines as $engine) {
+	echo '<option value="' . htmlspecialchars($engine) . '"';
+	if ($engine == $default_engine) echo ' selected="selected"';
+	echo '>' . htmlspecialchars($engine) . '</option>' . "\n";
+}
+?>
+</select>
+<input type="button" value="&gt;" onclick="change_engine(1)" />
 </div>
 <div>
 <input type="button" value="&lt;" onclick="change_scale(1)" />

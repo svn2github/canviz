@@ -61,7 +61,7 @@ Tokenizer.prototype = {
 
 Graph = Class.create();
 Graph.prototype = {
-	initialize: function(file) {
+	initialize: function(file, engine) {
 		this.system_scale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
@@ -69,13 +69,16 @@ Graph.prototype = {
 		this.font_size = 14;
 		this.KAPPA = 0.5522847498;
 		if (file) {
-			this.load(file);
+			this.load(file, engine);
 		}
 	},
-	load: function(file) {
+	load: function(file, engine) {
 		$('debug_output').innerHTML = '';
 		var url = 'graph.php';
 		var params = 'file=' + file;
+		if (engine) {
+			params += '&engine=' + engine;
+		}
 		new Ajax.Request(url, {
 			method: 'get',
 			parameters: params,

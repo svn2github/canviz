@@ -1,10 +1,12 @@
 <?php
 
 if (!isset($_GET['file'])) exit;
-$file = basename($_GET['file']);
-if (!file_exists('graphs/' . $file)) exit;
+$file_name = basename($_GET['file']);
+$engine = (isset($_GET['engine']) ? basename($_GET['engine']) : 'dot');
+$file_path = 'graphs/' . $engine . '/' . $file_name;
+if (!file_exists($file_path)) exit;
 
-$graph_src = file_get_contents('graphs/' . $file);
+$graph_src = file_get_contents($file_path);
 //$graph_src = shell_exec('/opt/local/bin/dot -Txdot /usr/local/graphviz/share/graphviz/graphs/directed/pmpipe.dot');
 header('Content-Type: text/plain');
 echo $graph_src;
