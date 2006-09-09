@@ -4,13 +4,13 @@ $engines = glob('graphs/*');
 foreach ($engines as $i => $engine) {
 	$engines[$i] = basename($engine);
 }
-natcasesort($engines);
+usort($engines, 'strcasecmp');
 $default_engine = 'dot';
 $graphs = glob('graphs/dot/*.dot');
 foreach ($graphs as $i => $graph) {
 	$graphs[$i] = basename($graph);
 }
-natcasesort($graphs);
+usort($graphs, 'strcasecmp');
 $default_graph = $graphs[0];
 //$default_graph = 'crazy.dot';
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
