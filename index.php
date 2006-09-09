@@ -117,7 +117,7 @@ foreach (array(4, 2, 1.5, 1, 0.75, 0.5) as $scale) {
 </div>
 
 <div>
-<input type="button" value="View Dot Source" onclick="view_source()" />
+<input type="button" class="big_button" value="View Dot Source" onclick="view_source()" />
 </div>
 
 </form>

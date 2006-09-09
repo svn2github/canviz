@@ -27,9 +27,14 @@ body {
 }
 #graph_form div {
 	margin: 0.5em;
+	text-align: center;
 }
-input.little_button {
+#graph_form input.little_button {
 	width: 3em;
+}
+#graph_form select,
+#graph_form input.big_button {
+	width: 15em;
 }
 #graph_container {
 	background: #fff;
