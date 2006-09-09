@@ -143,7 +143,7 @@ Graph.prototype = {
 											this.bgcolor = this.parseColor(param_value);
 											break;
 										case 'size':
-											var size = param_value.match(/^(\d+|\d*(?:\.\d+)),(\d+|\d*(?:\.\d+))(!?)$/);
+											var size = param_value.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
 											if (size) {
 												this.maxWidth  = 72 * Number(size[1]);
 												this.maxHeight = 72 * Number(size[2]);
