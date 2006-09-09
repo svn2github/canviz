@@ -28,6 +28,9 @@ body {
 #graph_form div {
 	margin: 0.5em;
 }
+input.little_button {
+	width: 3em;
+}
 #graph_container {
 	background: #fff;
 	margin: 0 auto;
