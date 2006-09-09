@@ -87,6 +87,11 @@ Graph.prototype = {
 		this.commands = new Array();
 		this.width = 0;
 		this.height = 0;
+		this.maxWidth = false;
+		this.maxHeight = false;
+		this.bbEnlarge = false;
+		this.bbScale = 1;
+		this.orientation = 'portrait';
 		this.bgcolor = '#ffffff';
 		this.fontName = 'Times New Roman';
 		this.fontSize = 14;
@@ -131,11 +136,31 @@ Graph.prototype = {
 									switch (param_name) {
 										case 'bb':
 											var bb = param_value.split(/,/);
-											this.width = Number(bb[2]);
+											this.width  = Number(bb[2]);
 											this.height = Number(bb[3]);
 											break;
 										case 'bgcolor':
 											this.bgcolor = this.parseColor(param_value);
+											break;
+										case 'size':
+											var size = param_value.match(/^(\d+|\d*(?:\.\d+)),(\d+|\d*(?:\.\d+))(!?)$/);
+											if (size) {
+												this.maxWidth  = 72 * Number(size[1]);
+												this.maxHeight = 72 * Number(size[2]);
+												this.bbEnlarge = ('!' == size[3]);
+											} else {
+												debug('can\'t parse size');
+											}
+											break;
+										case 'orientation':
+											if (param_value.match(/^l/i)) {
+												this.orientation = 'landscape';
+											}
+											break;
+										case 'rotate':
+											if (90 == param_value) {
+												this.orientation = 'landscape';
+											}
 											break;
 										case 'xdotversion':
 //											debug('xdotversion=' + param_value);
@@ -157,6 +182,18 @@ Graph.prototype = {
 						} while (matches);
 					}
 				}
+			}
+		}
+		if (this.maxWidth && this.maxHeight) {
+			if (this.width > this.maxWidth || this.height > this.maxHeight || this.bbEnlarge) {
+				this.bbScale = Math.min(this.maxWidth / this.width, this.maxHeight / this.height);
+				this.width  = Math.round(this.width  * this.bbScale);
+				this.height = Math.round(this.height * this.bbScale);
+			}
+			if ('landscape' == this.orientation) {
+				var temp    = this.width;
+				this.width  = this.height;
+				this.height = temp;
 			}
 		}
 //		debug('done');
