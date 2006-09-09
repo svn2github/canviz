@@ -63,6 +63,9 @@ function change_scale(inc) {
 	$('graph_scale').selectedIndex = new_scale;
 	set_graph_scale();
 }
+function view_source() {
+	window.open('graphs/' + $F('graph_engine') + '/' + $F('graph_name'));
+}
 // --></script>
 </head>
 <body onload="init()">
@@ -108,7 +111,7 @@ foreach (array(4, 2, 1.5, 1, 0.75, 0.5) as $scale) {
 <input type="button" value="&gt;" onclick="change_scale(-1)" />
 </div>
 <div>
-<input type="button" value="View Dot Source" onclick="window.open('graphs/'+$F('graph_name'))" />
+<input type="button" value="View Dot Source" onclick="view_source()" />
 </div>
 </form>
 <div id="graph_container">

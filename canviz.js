@@ -168,6 +168,7 @@ Graph.prototype = {
 		Element.setStyle('graph_container', {
 			width:  width  + 'px'
 		});
+		$('graph_texts').innerHTML = '';
 		ctx.save();
 		ctx.translate(this.padding, this.padding);
 		ctx.scale(this.scale * this.system_scale, this.scale * this.system_scale);
