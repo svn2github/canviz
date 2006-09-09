@@ -55,7 +55,7 @@ function change_scale(inc) {
 // --></script>
 </head>
 <body onload="init()">
-<div id="busy">Loading...</div>
+<div id="busy" style="display:none">Loading...</div>
 <form action="javascript:void(0)" id="graph_form">
 <div>
 <input type="button" value="&lt;" onclick="change_graph(-1)" />
