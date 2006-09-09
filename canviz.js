@@ -303,7 +303,7 @@ Graph.prototype = {
 							break;
 						case 'T': // text
 							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
-							var y = Math.round(height - (this.scale * this.systemScale * (tokenizer.takeNumber() + this.fontSize) + this.padding));
+							var y = Math.round(height - (this.scale * this.systemScale * (tokenizer.takeNumber() + this.bbScale * this.fontSize) + this.padding));
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(this.scale * this.systemScale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
@@ -320,7 +320,7 @@ Graph.prototype = {
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale) + 'px \'' + this.fontName +'\';color:' + ctx.strokeStyle + ';';
+								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px \'' + this.fontName +'\';color:' + ctx.strokeStyle + ';';
 								switch (text_align) {
 									case -1: //left
 										entity_text_divs += 'left:' + x + 'px;';
