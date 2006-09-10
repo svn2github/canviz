@@ -74,7 +74,8 @@ function view_source() {
 
 <form action="javascript:void(0)" id="graph_form">
 
-<div>
+<fieldset>
+<legend>Graph file</legend>
 <input type="button" class="little_button" value="&lt;" onclick="change_graph(-1)" />
 <select name="graph_name" id="graph_name" onchange="load_graph()">
 <?php
@@ -86,9 +87,10 @@ foreach ($graphs as $graph) {
 ?>
 </select>
 <input type="button" class="little_button" value="&gt;" onclick="change_graph(1)" />
-</div>
+</fieldset>
 
-<div>
+<fieldset>
+<legend>Layout engine</legend>
 <input type="button" class="little_button" value="&lt;" onclick="change_engine(-1)" />
 <select name="graph_engine" id="graph_engine" onchange="load_graph()">
 <?php
@@ -100,9 +102,10 @@ foreach ($engines as $engine) {
 ?>
 </select>
 <input type="button" class="little_button" value="&gt;" onclick="change_engine(1)" />
-</div>
+</fieldset>
 
-<div>
+<fieldset>
+<legend>Magnification</legend>
 <input type="button" class="little_button" value="-" onclick="change_scale(1)" />
 <select name="graph_scale" id="graph_scale" onchange="set_graph_scale()">
 <?php
@@ -114,11 +117,11 @@ foreach (array(4, 2, 1.5, 1, 0.75, 0.5) as $scale) {
 ?>
 </select>
 <input type="button" class="little_button" value="+" onclick="change_scale(-1)" />
-</div>
+</fieldset>
 
-<div>
+<fieldset>
 <input type="button" class="big_button" value="View Dot Source" onclick="view_source()" />
-</div>
+</fieldset>
 
 </form>
 
