@@ -15,15 +15,17 @@ body {
 	text-align: center;
 	background: #333;
 	color: #fff;
-	opacity: 0.8;
+	opacity: 0.95;
 }
 #graph_form {
 	position: fixed;
 	z-index: 2;
 	left: 0;
 	top: 0;
-	background: #ccc;
-	opacity: 0.8;
+	background: #eee;
+	border: solid #ccc;
+	border-width: 0 1px 1px 0;
+	opacity: 0.95;
 }
 #graph_form div {
 	margin: 0.5em;
