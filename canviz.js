@@ -217,6 +217,7 @@ Graph.prototype = {
 		ctx.fillRect(0, 0, width, height);
 		ctx.translate(this.padding, this.padding);
 		ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
+		ctx.lineWidth = 1 / this.systemScale;
 		var i, tokens;
 		var entity_id = 0;
 		var text_divs = '';
@@ -377,12 +378,12 @@ Graph.prototype = {
 									debug(style + ' style cannot currently be implemented in canviz');
 									break;
 								case 'bold':
-									ctx.lineWidth = 2;
+									ctx.lineWidth = 2 / this.systemScale;
 									break;
 								default:
 									matches = style.match(/^setlinewidth\((.*)\)$/);
 									if (matches) {
-										ctx.lineWidth = Number(matches[1]);
+										ctx.lineWidth = Number(matches[1]) / this.systemScale;
 									} else {
 										debug('unknown style ' + style);
 									}
