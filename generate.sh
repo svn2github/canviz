@@ -15,7 +15,7 @@ for PROGRAM in dot neato fdp circo twopi; do
 		(time $INSTALL_DIR/bin/$PROGRAM -Txdot $FILE_PATH > $TEMP_GRAPH) 2> $TEMP_HEADER
 		if [ -s $TEMP_GRAPH ]; then
 			NOW=`TZ=GMT date`
-			echo "# Generated $NOW by $PROGRAM from $DOT_VERSION" > $OUTPUT_GRAPHS/$PROGRAM/$FILE_NAME
+			echo "# Generated $NOW by $DOT_VERSION" > $OUTPUT_GRAPHS/$PROGRAM/$FILE_NAME
 			echo '#' >> $OUTPUT_GRAPHS/$PROGRAM/$FILE_NAME
 			sed 's/^/# /' < $TEMP_HEADER >> $OUTPUT_GRAPHS/$PROGRAM/$FILE_NAME
 			echo >> $OUTPUT_GRAPHS/$PROGRAM/$FILE_NAME
