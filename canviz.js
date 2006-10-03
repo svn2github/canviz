@@ -104,7 +104,7 @@ Graph.prototype = {
 		var container_stack = new Array();
 		while (i < lines.length) {
 			line = lines[i++].replace(/^\s+/, '');
-			if ('' != line) {
+			if ('' != line && '#' != line.substr(0, 1)) {
 				while (i < lines.length && ';' != (lastchar = line.substr(-1)) && '{' != lastchar && '}' != lastchar) {
 					if ('\\' == lastchar) {
 						line = line.substr(0, line.length - 1);
