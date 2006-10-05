@@ -192,6 +192,7 @@ Graph.prototype = {
 		if (!this.xdotversion) {
 			debug('xdotversion not specified; your graphviz may be too old');
 		}
+/*
 		if (this.maxWidth && this.maxHeight) {
 			if (this.width > this.maxWidth || this.height > this.maxHeight || this.bbEnlarge) {
 				this.bbScale = Math.min(this.maxWidth / this.width, this.maxHeight / this.height);
@@ -204,6 +205,7 @@ Graph.prototype = {
 				this.height = temp;
 			}
 		}
+*/
 //		debug('done');
 		this.display();
 	},
