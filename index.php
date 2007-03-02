@@ -64,7 +64,7 @@ function change_scale(inc) {
 	set_graph_scale();
 }
 function view_source() {
-	window.open('graphs/' + $F('graph_engine') + '/' + $F('graph_name'));
+	window.open('graph.php?file=' + $F('graph_name') + '&engine=' + $F('graph_engine'));
 }
 // --></script>
 </head>
