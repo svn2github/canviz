@@ -426,7 +426,7 @@ Graph.prototype = {
 		if (gvcolors[color]) { // named color
 			return 'rgb(' + gvcolors[color][0] + ',' + gvcolors[color][1] + ',' + gvcolors[color][2] + ')';
 		} else {
-			matches = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+			var matches = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
 			if (matches) { // rgba
 				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
 			} else {
