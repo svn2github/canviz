@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALL_DIR=/usr/local/graphviz
+INSTALL_DIR=/usr/local/graphviz-devel
 TEMP_GRAPH=`mktemp -t canviz`
 TEMP_HEADER=`mktemp -t canviz`
 DOT_VERSION=`$INSTALL_DIR/bin/dot -V 2>&1`
