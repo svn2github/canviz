@@ -95,6 +95,8 @@ Graph.prototype = {
 		this.bbScale = 1;
 		this.orientation = 'portrait';
 		this.bgcolor = '#ffffff';
+		this.dashLength = 6;
+		this.dotSpacing = 8;
 		this.fontName = 'Times New Roman';
 		this.fontSize = 14;
 		var graph_src = request.responseText;
@@ -223,6 +225,7 @@ Graph.prototype = {
 		});
 		$('graph_texts').innerHTML = '';
 		ctx.save();
+		ctx.lineCap = 'round';
 		ctx.fillStyle = this.bgcolor;
 		ctx.fillRect(0, 0, width, height);
 		ctx.translate(this.padding, this.padding);
@@ -239,6 +242,7 @@ Graph.prototype = {
 			if (token) {
 				++entity_id;
 				var entity_text_divs = '';
+				this.dashStyle = 'solid';
 				ctx.save();
 				while (token) {
 //					debug('processing token ' + token);
@@ -388,8 +392,7 @@ Graph.prototype = {
 									break;
 								case 'dashed':
 								case 'dotted':
-									// http://www.mail-archive.com/whatwg@lists.whatwg.org/msg01587.html
-									debug(style + ' style cannot currently be implemented in canviz');
+									this.dashStyle = style;
 									break;
 								case 'bold':
 									ctx.lineWidth = 2 / this.systemScale;
@@ -419,14 +422,28 @@ Graph.prototype = {
 		$('graph_texts').innerHTML = text_divs;
 	},
 	render: function(path, filled) {
-		ctx.beginPath();
-		path.draw(ctx);
 		if (filled) {
+			ctx.beginPath();
+			path.draw(ctx);
 			ctx.fill();
-			if (ctx.fillStyle != ctx.strokeStyle) {
-				ctx.stroke();
+		}
+		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
+			switch (this.dashStyle) {
+				case 'dashed':
+					ctx.beginPath();
+					path.drawDashed(ctx, this.dashLength);
+					break;
+				case 'dotted':
+					ctx.beginPath();
+					path.drawDotted(ctx, this.dotSpacing);
+					break;
+				case 'solid':
+				default:
+					if (!filled) {
+						ctx.beginPath();
+						path.draw(ctx);
+					}
 			}
-		} else {
 			ctx.stroke();
 		}
 	},
