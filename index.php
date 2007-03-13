@@ -23,6 +23,7 @@ $default_graph = $graphs[0];
 	<link rel="stylesheet" type="text/css" href="canviz.css" />
 	<!--[if IE]><script type="text/javascript" src="excanvas/excanvas.js"></script><![endif]-->
 	<script type="text/javascript" src="prototype/prototype.js"></script>
+	<script type="text/javascript" src="path/path.js"></script>
 	<script type="text/javascript" src="canviz.js"></script>
 	<script type="text/javascript" src="gvcolors.js"></script>
 	<script type="text/javascript"><!--

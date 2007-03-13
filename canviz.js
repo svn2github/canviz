@@ -250,12 +250,34 @@ Graph.prototype = {
 							var cy = this.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
+							var path = new Path([
+								new Bezier([
+									new Point(cx, cy - ry),
+									new Point(cx + this.KAPPA * rx, cy - ry),
+									new Point(cx + rx, cy - this.KAPPA * ry),
+									new Point(cx + rx, cy)
+								]),
+								new Bezier([
+									new Point(cx + rx, cy),
+									new Point(cx + rx, cy + this.KAPPA * ry),
+									new Point(cx + this.KAPPA * rx, cy + ry),
+									new Point(cx, cy + ry)
+								]),
+								new Bezier([
+									new Point(cx, cy + ry),
+									new Point(cx - this.KAPPA * rx, cy + ry),
+									new Point(cx - rx, cy + this.KAPPA * ry),
+									new Point(cx - rx, cy)
+								]),
+								new Bezier([
+									new Point(cx - rx, cy),
+									new Point(cx - rx, cy - this.KAPPA * ry),
+									new Point(cx - this.KAPPA * rx, cy - ry),
+									new Point(cx, cy - ry)
+								])
+							]);
 							ctx.beginPath();
-							ctx.moveTo(cx, cy - ry);
-							ctx.bezierCurveTo(cx + this.KAPPA * rx, cy - ry, cx + rx, cy - this.KAPPA * ry, cx + rx, cy);
-							ctx.bezierCurveTo(cx + rx, cy + this.KAPPA * ry, cx + this.KAPPA * rx, cy + ry, cx, cy + ry);
-							ctx.bezierCurveTo(cx - this.KAPPA * rx, cy + ry, cx - rx, cy + this.KAPPA * ry, cx - rx, cy);
-							ctx.bezierCurveTo(cx - rx, cy - this.KAPPA * ry, cx - this.KAPPA * rx, cy - ry, cx, cy - ry);
+							path.draw(ctx);
 							if (filled) {
 								ctx.fill();
 								if (ctx.fillStyle != ctx.strokeStyle) {
@@ -272,14 +294,21 @@ Graph.prototype = {
 							var closed = ('L' != token);
 							var num_points = tokenizer.takeNumber();
 							tokens = tokenizer.takeNumber(2 * num_points); // points
-							ctx.beginPath();
-							ctx.moveTo(tokens[0], this.height - tokens[1]);
+							var path = new Path();
 							for (i = 2; i < 2 * num_points; i += 2) {
-								ctx.lineTo(tokens[i], this.height - tokens[i + 1]);
+								path.addBezier([
+									new Point(tokens[i - 2], this.height - tokens[i - 1]),
+									new Point(tokens[i],     this.height - tokens[i + 1])
+								]);
 							}
 							if (closed) {
-								ctx.closePath();
+								path.addBezier([
+									new Point(tokens[2 * num_points - 2], this.height - tokens[2 * num_points - 1]),
+									new Point(tokens[0],                  this.height - tokens[1])
+								]);
 							}
+							ctx.beginPath();
+							path.draw(ctx);
 							if (filled) {
 								ctx.fill();
 								if (ctx.fillStyle != ctx.strokeStyle) {
@@ -294,15 +323,17 @@ Graph.prototype = {
 							var filled = ('b' == token);
 							var num_points = tokenizer.takeNumber();
 							tokens = tokenizer.takeNumber(2 * num_points); // points
-							ctx.beginPath();
-							ctx.moveTo(tokens[0], this.height - tokens[1]);
+							var path = new Path();
 							for (i = 2; i < 2 * num_points; i += 6) {
-								ctx.bezierCurveTo(
-									tokens[i],     this.height - tokens[i + 1],
-									tokens[i + 2], this.height - tokens[i + 3],
-									tokens[i + 4], this.height - tokens[i + 5]
-								);
+								path.addBezier([
+									new Point(tokens[i - 2], this.height - tokens[i - 1]),
+									new Point(tokens[i],     this.height - tokens[i + 1]),
+									new Point(tokens[i + 2], this.height - tokens[i + 3]),
+									new Point(tokens[i + 4], this.height - tokens[i + 5])
+								]);
 							}
+							ctx.beginPath();
+							path.draw(ctx);
 							if (filled) {
 								ctx.fill();
 								if (ctx.fillStyle != ctx.strokeStyle) {
