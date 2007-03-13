@@ -1,4 +1,7 @@
 <?php
+
+// $Id$
+
 header('Content-Type: text/html; charset=utf-8');
 $engines = glob('graphs/*');
 foreach ($engines as $i => $engine) {

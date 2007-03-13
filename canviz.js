@@ -1,3 +1,5 @@
+// $Id$
+
 Ajax.Responders.register({
 	onCreate: function() {
 		Element.show('busy');
