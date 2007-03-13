@@ -434,6 +434,8 @@ Graph.prototype = {
 					path.drawDashed(ctx, this.dashLength);
 					break;
 				case 'dotted':
+					var oldLineWidth = ctx.lineWidth;
+					ctx.lineWidth *= 2;
 					ctx.beginPath();
 					path.drawDotted(ctx, this.dotSpacing);
 					break;
@@ -445,6 +447,7 @@ Graph.prototype = {
 					}
 			}
 			ctx.stroke();
+			if (oldLineWidth) ctx.lineWidth = oldLineWidth;
 		}
 	},
 	unescape: function(str) {
