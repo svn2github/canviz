@@ -276,16 +276,7 @@ Graph.prototype = {
 									new Point(cx, cy - ry)
 								])
 							]);
-							ctx.beginPath();
-							path.draw(ctx);
-							if (filled) {
-								ctx.fill();
-								if (ctx.fillStyle != ctx.strokeStyle) {
-									ctx.stroke();
-								}
-							} else {
-								ctx.stroke();
-							}
+							this.render(path, filled);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -307,16 +298,7 @@ Graph.prototype = {
 									new Point(tokens[0],                  this.height - tokens[1])
 								]);
 							}
-							ctx.beginPath();
-							path.draw(ctx);
-							if (filled) {
-								ctx.fill();
-								if (ctx.fillStyle != ctx.strokeStyle) {
-									ctx.stroke();
-								}
-							} else {
-								ctx.stroke();
-							}
+							this.render(path, filled);
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
@@ -332,16 +314,7 @@ Graph.prototype = {
 									new Point(tokens[i + 4], this.height - tokens[i + 5])
 								]);
 							}
-							ctx.beginPath();
-							path.draw(ctx);
-							if (filled) {
-								ctx.fill();
-								if (ctx.fillStyle != ctx.strokeStyle) {
-									ctx.stroke();
-								}
-							} else {
-								ctx.stroke();
-							}
+							this.render(path, filled);
 							break;
 						case 'T': // text
 							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
@@ -444,6 +417,18 @@ Graph.prototype = {
 		};
 		ctx.restore();
 		$('graph_texts').innerHTML = text_divs;
+	},
+	render: function(path, filled) {
+		ctx.beginPath();
+		path.draw(ctx);
+		if (filled) {
+			ctx.fill();
+			if (ctx.fillStyle != ctx.strokeStyle) {
+				ctx.stroke();
+			}
+		} else {
+			ctx.stroke();
+		}
 	},
 	unescape: function(str) {
 		var matches = str.match(/^"(.*)"$/);
