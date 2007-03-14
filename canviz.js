@@ -1,6 +1,6 @@
 // $Id$
 
-Tokenizer = Class.create();
+var Tokenizer = Class.create();
 Tokenizer.prototype = {
 	initialize: function(str) {
 		this.str = str;
@@ -50,7 +50,7 @@ Tokenizer.prototype = {
 	}
 }
 
-Graph = Class.create();
+var Graph = Class.create();
 Graph.prototype = {
 	initialize: function(file, engine) {
 		this.supportedXdotVersion = '1.1';
