@@ -57,7 +57,6 @@ Graph.prototype = {
 		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
-		this.KAPPA = 0.5522847498;
 		if (file) {
 			this.load(file, engine);
 		}
@@ -245,33 +244,7 @@ Graph.prototype = {
 							var cy = this.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
-							var path = new Path([
-								new Bezier([
-									new Point(cx, cy - ry),
-									new Point(cx + this.KAPPA * rx, cy - ry),
-									new Point(cx + rx, cy - this.KAPPA * ry),
-									new Point(cx + rx, cy)
-								]),
-								new Bezier([
-									new Point(cx + rx, cy),
-									new Point(cx + rx, cy + this.KAPPA * ry),
-									new Point(cx + this.KAPPA * rx, cy + ry),
-									new Point(cx, cy + ry)
-								]),
-								new Bezier([
-									new Point(cx, cy + ry),
-									new Point(cx - this.KAPPA * rx, cy + ry),
-									new Point(cx - rx, cy + this.KAPPA * ry),
-									new Point(cx - rx, cy)
-								]),
-								new Bezier([
-									new Point(cx - rx, cy),
-									new Point(cx - rx, cy - this.KAPPA * ry),
-									new Point(cx - this.KAPPA * rx, cy - ry),
-									new Point(cx, cy - ry)
-								])
-							]);
-							this.render(path, filled);
+							this.render(new Ellipse(cx, cy, rx, ry), filled);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
