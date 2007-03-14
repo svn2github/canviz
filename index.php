@@ -30,6 +30,17 @@ $default_graph = $graphs[0];
 	<script type="text/javascript" src="canviz.js"></script>
 	<script type="text/javascript" src="gvcolors.js"></script>
 	<script type="text/javascript"><!--
+Ajax.Responders.register({
+	onCreate: function() {
+		Element.show('busy');
+	},
+	onComplete: function() {
+		if (0 == Ajax.activeRequestCount) {
+			Element.hide('busy');
+		}
+	}
+});
+
 var canvas, ctx, graph;
 function init() {
 	canvas = $('graph_canvas');
