@@ -53,7 +53,7 @@ Tokenizer.prototype = {
 var Graph = Class.create();
 Graph.prototype = {
 	initialize: function(file, engine) {
-		this.supportedXdotVersion = '1.1';
+		this.maxXdotVersion = 1.1;
 		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
@@ -157,9 +157,9 @@ Graph.prototype = {
 											}
 											break;
 										case 'xdotversion':
-											this.xdotversion = param_value;
-											if (this.supportedXdotVersion != this.xdotversion) {
-												debug('unknown xdotversion ' + this.xdotversion + '; this script currently supports xdotversion ' + this.supportedXdotVersion);
+											this.xdotversion = parseFloat(param_value);
+											if (this.maxXdotVersion < this.xdotversion) {
+												debug('unsupported xdotversion ' + this.xdotversion + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
 											}
 											break;
 									}
@@ -182,7 +182,7 @@ Graph.prototype = {
 			}
 		}
 		if (!this.xdotversion) {
-			debug('xdotversion not specified; your graphviz may be too old');
+			this.xdotversion = 1.0;
 		}
 /*
 		if (this.maxWidth && this.maxHeight) {
