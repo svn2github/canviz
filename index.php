@@ -3,13 +3,17 @@
 // $Id$
 
 header('Content-Type: text/html; charset=utf-8');
-$engines = glob('graphs/*');
+
+define('GRAPHS_PATH', 'graphs');
+define('GRAPH_IMAGES_PATH', 'graph-images');
+
+$engines = glob(GRAPHS_PATH . '/*');
 foreach ($engines as $i => $engine) {
 	$engines[$i] = basename($engine);
 }
 usort($engines, 'strcasecmp');
 $default_engine = 'dot';
-$graphs = glob('graphs/dot/*.dot');
+$graphs = glob(GRAPHS_PATH . '/dot/*.dot');
 foreach ($graphs as $i => $graph) {
 	$graphs[$i] = basename($graph);
 }
@@ -47,6 +51,7 @@ function init() {
 	if (canvas.getContext) {
 		ctx = canvas.getContext('2d');
 		graph = new Graph();
+		graph.setImagePath('<?php echo GRAPH_IMAGES_PATH; ?>');
 		graph.scale = $F('graph_scale');
 		load_graph();
 	}

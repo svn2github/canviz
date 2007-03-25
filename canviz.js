@@ -61,6 +61,9 @@ Graph.prototype = {
 			this.load(file, engine);
 		}
 	},
+	setImagePath: function(imagePath) {
+		this.imagePath = imagePath;
+	},
 	load: function(file, engine) {
 		$('debug_output').innerHTML = '';
 		var url = 'graph.php';
@@ -289,7 +292,9 @@ Graph.prototype = {
 							var y = this.height - tokenizer.takeNumber();
 							var w = tokenizer.takeNumber();
 							var h = tokenizer.takeNumber();
-							var imgsrc = tokenizer.takeString();
+							y -= h;
+							var src = this.imagePath + '/' + tokenizer.takeString();
+							new GraphImage(this, src, x, y, w, h);
 							break;
 						case 'T': // text
 							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
@@ -465,6 +470,28 @@ Graph.prototype = {
 			case 5: r = v; g = p; b = q; break;
 		}
 		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
+	}
+}
+
+var GraphImage = Class.create();
+GraphImage.prototype = {
+	initialize: function(graph, src, x, y, w, h) {
+		this.graph = graph;
+		this.ctx = ctx;
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.img = new Image();
+		this.img.onload = this.draw.bind(this);
+		this.img.src = src;
+	},
+	draw: function() {
+		this.ctx.save();
+		this.ctx.translate(this.graph.padding, this.graph.padding);
+		this.ctx.scale(this.graph.scale * this.graph.systemScale, this.graph.scale * this.graph.systemScale);
+		this.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+		this.ctx.restore();
 	}
 }
 
