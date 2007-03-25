@@ -53,7 +53,7 @@ Tokenizer.prototype = {
 var Graph = Class.create();
 Graph.prototype = {
 	initialize: function(file, engine) {
-		this.maxXdotVersion = 1.1;
+		this.maxXdotVersion = 1.2;
 		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
@@ -283,6 +283,13 @@ Graph.prototype = {
 								]);
 							}
 							this.render(path, filled);
+							break;
+						case 'I': // image
+							var x = tokenizer.takeNumber();
+							var y = this.height - tokenizer.takeNumber();
+							var w = tokenizer.takeNumber();
+							var h = tokenizer.takeNumber();
+							var imgsrc = tokenizer.takeString();
 							break;
 						case 'T': // text
 							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
