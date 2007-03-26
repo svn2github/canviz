@@ -63,7 +63,7 @@ function load_graph() {
 function set_graph_scale() {
 	if (canvas.getContext) {
 		graph.scale = $F('graph_scale');
-		graph.display();
+		graph.draw();
 	}
 }
 function change_graph(inc) {

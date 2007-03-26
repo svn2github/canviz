@@ -202,9 +202,9 @@ Graph.prototype = {
 		}
 */
 //		debug('done');
-		this.display();
+		this.draw();
 	},
-	display: function() {
+	draw: function() {
 		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
 		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
 		canvas.width  = width;
