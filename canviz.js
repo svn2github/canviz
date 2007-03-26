@@ -52,11 +52,12 @@ Tokenizer.prototype = {
 
 var Graph = Class.create();
 Graph.prototype = {
-	initialize: function(file, engine) {
+	initialize: function(ctx, file, engine) {
 		this.maxXdotVersion = 1.2;
 		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
+		this.ctx = ctx;
 		if (file) {
 			this.load(file, engine);
 		}
@@ -217,13 +218,13 @@ Graph.prototype = {
 			width:  width  + 'px'
 		});
 		$('graph_texts').innerHTML = '';
-		ctx.save();
-		ctx.lineCap = 'round';
-		ctx.fillStyle = this.bgcolor;
-		ctx.fillRect(0, 0, width, height);
-		ctx.translate(this.padding, this.padding);
-		ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
-		ctx.lineWidth = 1 / this.systemScale;
+		this.ctx.save();
+		this.ctx.lineCap = 'round';
+		this.ctx.fillStyle = this.bgcolor;
+		this.ctx.fillRect(0, 0, width, height);
+		this.ctx.translate(this.padding, this.padding);
+		this.ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
+		this.ctx.lineWidth = 1 / this.systemScale;
 		var i, tokens;
 		var entity_id = 0;
 		var text_divs = '';
@@ -236,7 +237,7 @@ Graph.prototype = {
 				++entity_id;
 				var entity_text_divs = '';
 				this.dashStyle = 'solid';
-				ctx.save();
+				this.ctx.save();
 				while (token) {
 //					debug('processing token ' + token);
 					switch (token) {
@@ -315,7 +316,7 @@ Graph.prototype = {
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px \'' + this.fontName +'\';color:' + ctx.strokeStyle + ';';
+								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px \'' + this.fontName +'\';color:' + this.ctx.strokeStyle + ';';
 								switch (text_align) {
 									case -1: //left
 										entity_text_divs += 'left:' + x + 'px;';
@@ -336,9 +337,9 @@ Graph.prototype = {
 							var fill = ('C' == token);
 							var color = this.parseColor(tokenizer.takeString());
 							if (fill) {
-								ctx.fillStyle = color;
+								this.ctx.fillStyle = color;
 							} else {
-								ctx.strokeStyle = color;
+								this.ctx.strokeStyle = color;
 							}
 							break;
 						case 'F': // set font
@@ -371,12 +372,12 @@ Graph.prototype = {
 									this.dashStyle = style;
 									break;
 								case 'bold':
-									ctx.lineWidth = 2 / this.systemScale;
+									this.ctx.lineWidth = 2 / this.systemScale;
 									break;
 								default:
 									matches = style.match(/^setlinewidth\((.*)\)$/);
 									if (matches) {
-										ctx.lineWidth = Number(matches[1]) / this.systemScale;
+										this.ctx.lineWidth = Number(matches[1]) / this.systemScale;
 									} else {
 										debug('unknown style ' + style);
 									}
@@ -388,42 +389,42 @@ Graph.prototype = {
 					}
 					token = tokenizer.takeChars();
 				}
-				ctx.restore();
+				this.ctx.restore();
 				if (entity_text_divs) {
 					text_divs += '<div id="entity' + entity_id + '">' + entity_text_divs + '</div>';
 				}
 			}
 		};
-		ctx.restore();
+		this.ctx.restore();
 		$('graph_texts').innerHTML = text_divs;
 	},
 	render: function(path, filled) {
 		if (filled) {
-			ctx.beginPath();
-			path.draw(ctx);
-			ctx.fill();
+			this.ctx.beginPath();
+			path.draw(this.ctx);
+			this.ctx.fill();
 		}
-		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
+		if (this.ctx.fillStyle != this.ctx.strokeStyle || !filled) {
 			switch (this.dashStyle) {
 				case 'dashed':
-					ctx.beginPath();
-					path.drawDashed(ctx, this.dashLength);
+					this.ctx.beginPath();
+					path.drawDashed(this.ctx, this.dashLength);
 					break;
 				case 'dotted':
-					var oldLineWidth = ctx.lineWidth;
-					ctx.lineWidth *= 2;
-					ctx.beginPath();
-					path.drawDotted(ctx, this.dotSpacing);
+					var oldLineWidth = this.ctx.lineWidth;
+					this.ctx.lineWidth *= 2;
+					this.ctx.beginPath();
+					path.drawDotted(this.ctx, this.dotSpacing);
 					break;
 				case 'solid':
 				default:
 					if (!filled) {
-						ctx.beginPath();
-						path.draw(ctx);
+						this.ctx.beginPath();
+						path.draw(this.ctx);
 					}
 			}
-			ctx.stroke();
-			if (oldLineWidth) ctx.lineWidth = oldLineWidth;
+			this.ctx.stroke();
+			if (oldLineWidth) this.ctx.lineWidth = oldLineWidth;
 		}
 	},
 	unescape: function(str) {
@@ -477,7 +478,6 @@ var GraphImage = Class.create();
 GraphImage.prototype = {
 	initialize: function(graph, src, x, y, w, h) {
 		this.graph = graph;
-		this.ctx = ctx;
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -487,11 +487,11 @@ GraphImage.prototype = {
 		this.img.src = src;
 	},
 	draw: function() {
-		this.ctx.save();
-		this.ctx.translate(this.graph.padding, this.graph.padding);
-		this.ctx.scale(this.graph.scale * this.graph.systemScale, this.graph.scale * this.graph.systemScale);
-		this.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
-		this.ctx.restore();
+		this.graph.ctx.save();
+		this.graph.ctx.translate(this.graph.padding, this.graph.padding);
+		this.graph.ctx.scale(this.graph.scale * this.graph.systemScale, this.graph.scale * this.graph.systemScale);
+		this.graph.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+		this.graph.ctx.restore();
 	}
 }
 

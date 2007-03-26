@@ -44,12 +44,12 @@ Ajax.Responders.register({
 	}
 });
 
-var canvas, ctx, graph;
+var canvas, graph;
 function init() {
 	canvas = $('graph_canvas');
 	if (canvas.getContext) {
-		ctx = canvas.getContext('2d');
-		graph = new Graph();
+		var ctx = canvas.getContext('2d');
+		graph = new Graph(ctx);
 		graph.setImagePath('image.php');
 		graph.scale = $F('graph_scale');
 		load_graph();
