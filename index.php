@@ -5,7 +5,6 @@
 header('Content-Type: text/html; charset=utf-8');
 
 define('GRAPHS_PATH', 'graphs');
-define('GRAPH_IMAGES_PATH', 'graph-images');
 
 $engines = glob(GRAPHS_PATH . '/*');
 foreach ($engines as $i => $engine) {
@@ -51,7 +50,7 @@ function init() {
 	if (canvas.getContext) {
 		ctx = canvas.getContext('2d');
 		graph = new Graph();
-		graph.setImagePath('<?php echo GRAPH_IMAGES_PATH; ?>');
+		graph.setImagePath('image.php');
 		graph.scale = $F('graph_scale');
 		load_graph();
 	}
