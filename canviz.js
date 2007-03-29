@@ -58,6 +58,9 @@ Graph.prototype = {
 		this.scale = 1;
 		this.padding = 8;
 		this.ctx = ctx;
+		this.images = new Hash();
+		this.numImages = 0;
+		this.numImagesFinished = 0;
 		if (file) {
 			this.load(file, engine);
 		}
@@ -205,19 +208,22 @@ Graph.prototype = {
 //		debug('done');
 		this.draw();
 	},
-	draw: function() {
+	draw: function(redraw_canvas) {
+		if (!redraw_canvas) redraw_canvas = false;
 		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
 		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
-		canvas.width  = width;
-		canvas.height = height;
-		Element.setStyle(canvas, {
-			width:  width  + 'px',
-			height: height + 'px'
-		});
-		Element.setStyle('graph_container', {
-			width:  width  + 'px'
-		});
-		$('graph_texts').innerHTML = '';
+		if (!redraw_canvas) {
+			canvas.width  = width;
+			canvas.height = height;
+			Element.setStyle(canvas, {
+				width:  width  + 'px',
+				height: height + 'px'
+			});
+			Element.setStyle('graph_container', {
+				width:  width  + 'px'
+			});
+			$('graph_texts').innerHTML = '';
+		}
 		this.ctx.save();
 		this.ctx.lineCap = 'round';
 		this.ctx.fillStyle = this.bgcolor;
@@ -293,9 +299,12 @@ Graph.prototype = {
 							var y = this.height - tokenizer.takeNumber();
 							var w = tokenizer.takeNumber();
 							var h = tokenizer.takeNumber();
-							y -= h;
-							var src = this.imagePath + '/' + tokenizer.takeString();
-							new GraphImage(this, src, x, y, w, h);
+							var src = tokenizer.takeString();
+							if (!this.images[src]) {
+								y -= h;
+								this.images[src] = new GraphImage(this, src, x, y, w, h);
+							}
+							this.images[src].draw();
 							break;
 						case 'T': // text
 							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
@@ -303,7 +312,7 @@ Graph.prototype = {
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(this.scale * this.systemScale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
-							if (!str.match(/^\s*$/)) {
+							if (!redraw_canvas && !str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
 								str = str.escapeHTML();
 								do {
@@ -396,7 +405,7 @@ Graph.prototype = {
 			}
 		};
 		this.ctx.restore();
-		$('graph_texts').innerHTML = text_divs;
+		if (!redraw_canvas) $('graph_texts').innerHTML = text_divs;
 	},
 	render: function(path, filled) {
 		if (filled) {
@@ -478,20 +487,33 @@ var GraphImage = Class.create();
 GraphImage.prototype = {
 	initialize: function(graph, src, x, y, w, h) {
 		this.graph = graph;
+		++this.graph.numImages;
+		this.src = this.graph.imagePath + '/' + src;
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
+		this.loaded = false;
 		this.img = new Image();
-		this.img.onload = this.draw.bind(this);
-		this.img.src = src;
+		this.img.onload = this.succeeded.bind(this);
+		this.img.onerror = this.finished.bind(this);
+		this.img.onabort = this.finished.bind(this);
+		this.img.src = this.src;
+	},
+	succeeded: function() {
+		this.loaded = true;
+		this.finished();
+	},
+	finished: function() {
+		++this.graph.numImagesFinished;
+		if (this.graph.numImages == this.graph.numImagesFinished) {
+			this.graph.draw(true);
+		}
 	},
 	draw: function() {
-		this.graph.ctx.save();
-		this.graph.ctx.translate(this.graph.padding, this.graph.padding);
-		this.graph.ctx.scale(this.graph.scale * this.graph.systemScale, this.graph.scale * this.graph.systemScale);
-		this.graph.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
-		this.graph.ctx.restore();
+		if (this.loaded) {
+			this.graph.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+		}
 	}
 }
 
