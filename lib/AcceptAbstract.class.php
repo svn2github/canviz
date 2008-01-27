@@ -44,8 +44,7 @@ class AcceptAbstract {
 		}
 		
 		// Sort descending by quality.
-		function qcmp($a, $b) { return ($a['q'] == $b['q']) ? 0 : ($a['q'] > $b['q']) ? -1 : 1; }
-		usort($temp, 'qcmp');
+		usort($temp, create_function('$a, $b', 'return ($a["q"] == $b["q"]) ? 0 : ($a["q"] > $b["q"]) ? -1 : 1;'));
 		
 		// Unfudge the quality parameter and simplify the array.
 		foreach ($temp as $x) {
