@@ -7,7 +7,7 @@ TEMP_HEADER=$(mktemp -t canviz)
 DOT_VERSION=$($INSTALL_DIR/bin/dot -V 2>&1)
 OUTPUT_GRAPHS=./graphs
 
-echo "Generating with $DOT_VERSION"
+echo "Generating with $DOT_VERSION in $INSTALL_DIR"
 for PROGRAM in dot neato fdp circo twopi; do
 	printf '%-8s' "$PROGRAM:"
 	mkdir -p $OUTPUT_GRAPHS/$PROGRAM
