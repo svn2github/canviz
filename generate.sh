@@ -1,6 +1,7 @@
 #!/bin/bash
 
-INSTALL_DIR=/usr/local/graphviz-devel
+DOT=$(which dot)
+INSTALL_DIR=$(dirname $(dirname $DOT))
 TEMP_GRAPH=$(mktemp -t canviz)
 TEMP_HEADER=$(mktemp -t canviz)
 DOT_VERSION=$($INSTALL_DIR/bin/dot -V 2>&1)
