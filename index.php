@@ -12,7 +12,7 @@ foreach ($engines as $i => $engine) {
 }
 usort($engines, 'strcasecmp');
 $default_engine = 'dot';
-$graphs = glob(GRAPHS_PATH . '/dot/*.dot');
+$graphs = glob(GRAPHS_PATH . '/dot/*.{dot,gv}', GLOB_BRACE);
 foreach ($graphs as $i => $graph) {
 	$graphs[$i] = basename($graph);
 }
