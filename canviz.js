@@ -127,7 +127,7 @@ Graph.prototype = {
 						entity = matches[1];
 						params = matches[2];
 						do {
-							matches = params.match(/^(\S+?)=(""|".*?[^\\]"|<(<[^>]+>|[^<>]+?)+>|\S+?)(?:,\s*|$)/);
+							matches = params.match(/^(\S+?)=(""|".*?[^\\]"|<(<[^>]+>|[^<>]+?)+>|\S+?)(?:[,\s]+|$)/);
 							if (matches) {
 								params = params.substr(matches[0].length);
 								param_name = matches[1];
