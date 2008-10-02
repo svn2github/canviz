@@ -12,7 +12,7 @@ for PROGRAM in dot neato fdp circo twopi; do
 	printf '%-8s' "$PROGRAM:"
 	mkdir -p $OUTPUT_GRAPHS/$PROGRAM
 	for FILE_PATH in $(find $INSTALL_DIR/share/graphviz/graphs -type f -name '*.dot' -or -name '*.gv'); do
-		FILE_NAME=$(basename $(basename $FILE_PATH .dot) .gv).dot
+		FILE_NAME=$(basename $FILE_PATH)
 		echo -n "."
 		(time $INSTALL_DIR/bin/$PROGRAM -Txdot $FILE_PATH > $TEMP_GRAPH) 2> $TEMP_HEADER
 		if [ -s $TEMP_GRAPH ]; then
