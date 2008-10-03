@@ -456,7 +456,7 @@ Graph.prototype = {
 					return '#' + matches[1] + matches[2] + matches[3];
 				}
 			} else {
-				matches = color.match(/(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/);
+				matches = color.match(/(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)/);
 				if (matches) { // hsv
 					return this.hsvToRgbColor(matches[1], matches[2], matches[3]);
 				}
