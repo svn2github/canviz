@@ -461,7 +461,7 @@ Graph.prototype = {
 		}
 		// named color
 		if (gvcolors[color]) {
-			return 'rgb(' + gvcolors[color][0] + ',' + gvcolors[color][1] + ',' + gvcolors[color][2] + ')';
+			return 'rgb(' + gvcolors[color].join(',') + ')';
 		}
 		// unknown
 		debug('unknown color ' + color);
