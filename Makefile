@@ -1,11 +1,15 @@
 # $Id$
 
 AWK=awk
-colorlist:=$(shell ls graphviz-*/lib/common/color_names | tail -n 1)
+GRAPHVIZ_SRC:=$(shell find . -type d -name 'graphviz-*' | tail -n 1)
 
-gvcolors.js: $(colorlist)
+gvcolors.js: $(GRAPHVIZ_SRC)/lib/common/color_names
 	@echo '// $$Id$$' > gvcolors.js
 	@echo '' >> gvcolors.js
 	@echo 'gvcolors={' >> gvcolors.js
-	@$(AWK) '{if (line) print line ","; line=sprintf("%s:[%d,%d,%d]", $$1, $$2, $$3, $$4)} END {print line}' < $(colorlist) >> gvcolors.js
+	@$(AWK) '{if (line) print line ","; line=sprintf("%s:[%d,%d,%d]", $$1, $$2, $$3, $$4)} END {print line}' < $(GRAPHVIZ_SRC)/lib/common/color_names >> gvcolors.js
 	@echo '};' >> gvcolors.js
+
+/lib/common/color_names:
+	@echo 'Unpack the Graphviz source in this directory first.' 1>&2
+	@exit 1
