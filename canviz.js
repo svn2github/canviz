@@ -460,8 +460,9 @@ Graph.prototype = {
 			return this.hsvToRgbColor(matches[1], matches[2], matches[3]);
 		}
 		// named color
-		if (gvcolors[color]) {
-			return 'rgb(' + gvcolors[color].join(',') + ')';
+		var color_name = color.toLowerCase();
+		if (gvcolors[color_name]) {
+			return 'rgb(' + gvcolors[color_name].join(',') + ')';
 		}
 		// unknown
 		debug('unknown color ' + color);
