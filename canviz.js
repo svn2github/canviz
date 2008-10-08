@@ -461,8 +461,14 @@ Graph.prototype = {
 		}
 		// named color
 		var color_name = color.toLowerCase();
-		if (gvcolors[color_name]) {
-			return 'rgb(' + gvcolors[color_name].join(',') + ')';
+		var color_scheme = 'X11';
+		var color_scheme_name = color_scheme.toLowerCase();
+		if (gvcolors[color_scheme_name]) {
+			if (gvcolors[color_scheme_name][color_name]) {
+				return 'rgb(' + gvcolors[color_scheme_name][color_name].join(',') + ')';
+			}
+		} else {
+			debug('unknown color scheme ' + color_scheme);
 		}
 		// unknown
 		debug('unknown color ' + color);

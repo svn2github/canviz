@@ -1,6 +1,7 @@
 // $Id$
 
 gvcolors={
+x11:{
 aliceblue:[240,248,255],
 antiquewhite:[250,235,215],
 antiquewhite1:[255,239,219],
@@ -656,4 +657,5 @@ yellow2:[238,238,0],
 yellow3:[205,205,0],
 yellow4:[139,139,0],
 yellowgreen:[154,205,50]
+}
 };
