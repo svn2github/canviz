@@ -31,7 +31,7 @@ $default_graph = $graphs[0];
 	<script type="text/javascript" src="prototype/prototype.js"></script>
 	<script type="text/javascript" src="path/path.js"></script>
 	<script type="text/javascript" src="canviz.js"></script>
-	<script type="text/javascript" src="gvcolors.js"></script>
+	<script type="text/javascript" src="x11colors.js"></script>
 	<script type="text/javascript"><!--
 Ajax.Responders.register({
 	onCreate: function() {

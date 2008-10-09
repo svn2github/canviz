@@ -3,7 +3,7 @@
 AWK=awk
 GRAPHVIZ_SRC:=$(shell find . -type d -name 'graphviz-*' | tail -n 1)
 
-gvcolors.js: $(GRAPHVIZ_SRC)/lib/common/color_names
+x11colors.js: $(GRAPHVIZ_SRC)/lib/common/color_names
 	@echo '// $$I''d$$' > $@
 	@echo '' >> $@
 	@echo 'gvcolors={' >> $@
