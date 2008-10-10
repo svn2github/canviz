@@ -30,7 +30,7 @@ Tokenizer.prototype = {
 			num = 1;
 		}
 		if (1 == num) {
-			return Number(this.takeChars())
+			return Number(this.takeChars());
 		} else {
 			var tokens = this.takeChars(num);
 			while (num--) {
@@ -481,7 +481,7 @@ Graph.prototype = {
 		f = h / 60 - i;
 		p = v * (1 - s);
 		q = v * (1 - f * s);
-		t = v * (1 - (1 - f) * s)
+		t = v * (1 - (1 - f) * s);
 		switch (i) {
 			case 0: r = v; g = t; b = p; break;
 			case 1: r = q; g = v; b = p; break;
