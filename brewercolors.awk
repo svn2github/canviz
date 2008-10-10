@@ -4,7 +4,7 @@ BEGIN {
 	FS = ","
 	print "// $I" "d$"
 	print
-	print "gvcolors={"
+	print "gvcolors.merge({"
 }
 
 /^[^#]/ {
@@ -27,5 +27,5 @@ BEGIN {
 END {
 	print line
 	print "}"
-	print "};"
+	print "});"
 }

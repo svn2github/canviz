@@ -1,5 +1,7 @@
 // $Id$
 
+var gvcolors = $H();
+
 var Tokenizer = Class.create();
 Tokenizer.prototype = {
 	initialize: function(str) {

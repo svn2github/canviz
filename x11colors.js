@@ -1,6 +1,6 @@
 // $Id$
 
-gvcolors={
+gvcolors.merge({
 x11:{
 aliceblue:[240,248,255],
 antiquewhite:[250,235,215],
@@ -658,4 +658,4 @@ yellow3:[205,205,0],
 yellow4:[139,139,0],
 yellowgreen:[154,205,50]
 }
-};
+});
