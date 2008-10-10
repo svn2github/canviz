@@ -465,7 +465,7 @@ Graph.prototype = {
 		var color_scheme_name = color_scheme.toLowerCase();
 		if (gvcolors[color_scheme_name]) {
 			if (gvcolors[color_scheme_name][color_name]) {
-				return 'rgb(' + gvcolors[color_scheme_name][color_name].join(',') + ')';
+				return (3 == gvcolors[color_scheme_name][color_name].length ? 'rgb(' : 'rgba(') + gvcolors[color_scheme_name][color_name].join(',') + ')';
 			}
 		} else {
 			debug('unknown color scheme ' + color_scheme);

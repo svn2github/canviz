@@ -11,7 +11,12 @@ BEGIN {
 	if (line != "") {
 		print line ","
 	}
-	line = sprintf("%s:[%d,%d,%d]", $1, $2, $3, $4)
+	if ($5 != 255) {
+		alpha = "," $5
+	} else {
+		alpha = ""
+	}
+	line = sprintf("%s:[%d,%d,%d%s]", $1, $2, $3, $4, alpha)
 }
 
 END {
