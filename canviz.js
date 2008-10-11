@@ -99,7 +99,7 @@ Graph.prototype = {
 		this.fontName = 'Times New Roman';
 		this.fontSize = 14;
 		var graph_src = request.responseText;
-		var lines = graph_src.split('\n');
+		var lines = graph_src.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, is_graph, entity, params, param_name, param_value;
 		var container_stack = new Array();
