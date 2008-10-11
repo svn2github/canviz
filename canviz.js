@@ -463,20 +463,21 @@ Graph.prototype = {
 		}
 		// named color
 		var color_scheme = 'X11';
+		var color_name = color;
 		matches = color.match(/^\/(.*)\/(.*)$/);
 		if (matches) {
 			if (matches[1]) {
 				color_scheme = matches[1];
 			}
-			color = matches[2];
+			color_name = matches[2];
 		} else {
 			matches = color.match(/^\/(.*)$/);
 			if (matches) {
 				color_scheme = 'X11';
-				color = matches[1];
+				color_name = matches[1];
 			}
 		}
-		var color_name = color.toLowerCase();
+		color_name = color_name.toLowerCase();
 		var color_scheme_name = color_scheme.toLowerCase();
 		if (gvcolors[color_scheme_name]) {
 			if (gvcolors[color_scheme_name][color_name]) {
