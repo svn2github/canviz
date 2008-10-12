@@ -83,7 +83,7 @@ Graph.prototype = {
 			onComplete: this.parse.bind(this)
 		});
 	},
-	parse: function(request) {
+	parse: function(response) {
 		this.xdotversion = false;
 		this.commands = new Array();
 		this.width = 0;
@@ -98,7 +98,7 @@ Graph.prototype = {
 		this.dotSpacing = 4;
 		this.fontName = 'Times New Roman';
 		this.fontSize = 14;
-		var graph_src = request.responseText;
+		var graph_src = response.responseText;
 		var lines = graph_src.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, is_graph, entity, params, param_name, param_value;
