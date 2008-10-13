@@ -42,12 +42,23 @@ Tokenizer.prototype = {
 		}
 	},
 	takeString: function() {
-		var chars = Number(this.takeChars());
+		var byte_count = Number(this.takeChars()), char_count = 0, char_code;
 		if ('-' != this.str.charAt(0)) {
 			return false;
 		}
-		var str = this.str.substr(1, chars);
-		this.str = this.str.substr(1 + chars).replace(/^\s+/, '');
+		while (0 < byte_count) {
+			++char_count;
+			char_code = this.str.charCodeAt(char_count);
+			if (0x80 > char_code) {
+				--byte_count;
+			} else if (0x800 > char_code) {
+				byte_count -= 2;
+			} else {
+				byte_count -= 3;
+			}
+		}
+		var str = this.str.substr(1, char_count);
+		this.str = this.str.substr(1 + char_count).replace(/^\s+/, '');
 		return str;
 	}
 }
