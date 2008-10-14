@@ -1,16 +1,18 @@
 # $Id$
 
 AWK=awk
+FIND=find
 SORT=sort
+TAIL=tail
 DOT=$(shell which dot)
 GRAPHVIZ_PREFIX=$(shell dirname $(shell dirname $(DOT)))
+GRAPHVIZ_SRC:=$(shell $(FIND) . -type d -name 'graphviz-*' | $(TAIL) -n 1)
 GRAPHVIZ_LAYOUTS=circo dot fdp neato twopi
 GRAPHVIZ_FIRST_LAYOUT=$(firstword $(GRAPHVIZ_LAYOUTS))
 EXAMPLE_GRAPHS_SRC_DIR:=$(GRAPHVIZ_PREFIX)/share/graphviz/graphs
-EXAMPLE_GRAPHS_SRC:=$(shell find $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.dot' -or -name '*.gv')
+EXAMPLE_GRAPHS_SRC:=$(shell $(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.dot' -or -name '*.gv')
 EXAMPLE_GRAPHS_DIR=./graphs
 EXAMPLE_GRAPHS=$(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,$(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.txt,$(EXAMPLE_GRAPHS_SRC))
-GRAPHVIZ_SRC:=$(shell find . -type d -name 'graphviz-*' | tail -n 1)
 
 .PHONY: all examples clean
 
