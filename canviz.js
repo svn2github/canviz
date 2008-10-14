@@ -1,6 +1,12 @@
 // $Id$
 
-var gvcolors = $H();
+var gvcolors = $H({
+	x11:{
+		black:[0,0,0],
+		lightgrey:[211,211,211],
+		white:[255,255,255]
+	}
+});
 
 var Tokenizer = Class.create();
 Tokenizer.prototype = {
