@@ -65,7 +65,7 @@ Tokenizer.prototype = {
 
 var Graph = Class.create();
 Graph.prototype = {
-	initialize: function(ctx, file, engine) {
+	initialize: function(ctx, url) {
 		this.maxXdotVersion = 1.2;
 		this.systemScale = 4/3;
 		this.scale = 1;
@@ -74,23 +74,17 @@ Graph.prototype = {
 		this.images = new Hash();
 		this.numImages = 0;
 		this.numImagesFinished = 0;
-		if (file) {
-			this.load(file, engine);
+		if (url) {
+			this.load(url);
 		}
 	},
 	setImagePath: function(imagePath) {
 		this.imagePath = imagePath;
 	},
-	load: function(file, engine) {
+	load: function(url) {
 		$('debug_output').innerHTML = '';
-		var url = 'graph.php';
-		var params = 'file=' + file;
-		if (engine) {
-			params += '&engine=' + engine;
-		}
 		new Ajax.Request(url, {
 			method: 'get',
-			parameters: params,
 			onComplete: this.parse.bind(this)
 		});
 	},

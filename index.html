@@ -1,26 +1,6 @@
-<?php
-
-// $Id$
-
-header('Content-Type: text/html; charset=utf-8');
-
-define('GRAPHS_PATH', 'graphs');
-
-$engines = glob(GRAPHS_PATH . '/*');
-foreach ($engines as $i => $engine) {
-	$engines[$i] = basename($engine);
-}
-usort($engines, 'strcasecmp');
-$default_engine = 'dot';
-$graphs = glob(GRAPHS_PATH . '/dot/*.{dot,gv}', GLOB_BRACE);
-foreach ($graphs as $i => $graph) {
-	$graphs[$i] = basename($graph);
-}
-usort($graphs, 'strcasecmp');
-$default_graph = $graphs[0];
-//$default_graph = 'crazy.dot';
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- $Id$ -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
@@ -32,6 +12,8 @@ $default_graph = $graphs[0];
 	<script type="text/javascript" src="path/path.js"></script>
 	<script type="text/javascript" src="canviz.js"></script>
 	<script type="text/javascript" src="x11colors.js"></script>
+	<script type="text/javascript" src="graphs/graphlist.js"></script>
+	<script type="text/javascript" src="graphs/layoutlist.js"></script>
 	<script type="text/javascript"><!--
 Ajax.Responders.register({
 	onCreate: function() {
@@ -46,6 +28,25 @@ Ajax.Responders.register({
 
 var canvas, graph;
 function init() {
+	var list = $('graph_name');
+	graphs.sort(function(a, b) {
+		a = a.replace(/.*\//, '').toLowerCase();
+		b = b.replace(/.*\//, '').toLowerCase();
+		return (a > b) ? 1 : (a < b) ? -1 : 0;
+	}).each(function(graph, index) {
+		list.options[list.options.length] = new Option(graph.replace(/.*\/(.*)\.txt/, '$1'), graph, false, 0 == index);
+	});
+	
+	list = $('graph_engine');
+	layouts.each(function(layout) {
+		list.options[list.options.length] = new Option(layout, layout, false, 'dot' == layout);
+	});
+	
+	list = $('graph_scale');
+	[4, 2, 1.5, 1, 0.75, 0.5].each(function(scale) {
+		list.options[list.options.length] = new Option(100 * scale + '%', scale, false, 1 == scale);
+	});
+	
 	canvas = $('graph_canvas');
 	if (canvas.getContext) {
 		var ctx = canvas.getContext('2d');
@@ -57,7 +58,7 @@ function init() {
 }
 function load_graph() {
 	if (canvas.getContext) {
-		graph.load($F('graph_name'), $F('graph_engine'));
+		graph.load(graph_url());
 	}
 }
 function set_graph_scale() {
@@ -83,7 +84,10 @@ function change_scale(inc) {
 	set_graph_scale();
 }
 function view_source() {
-	window.open('graph.php?file=' + $F('graph_name') + '&engine=' + $F('graph_engine'));
+	window.open(graph_url());
+}
+function graph_url() {
+	return 'graphs/' + $F('graph_engine') + '/' + $F('graph_name');
 }
 // --></script>
 </head>
@@ -97,13 +101,6 @@ function view_source() {
 <legend>Graph file</legend>
 <input type="button" class="little_button" value="&lt;" onclick="change_graph(-1)" />
 <select name="graph_name" id="graph_name" onchange="load_graph()">
-<?php
-foreach ($graphs as $graph) {
-	echo '<option value="' . htmlspecialchars($graph) . '"';
-	if ($graph == $default_graph) echo ' selected="selected"';
-	echo '>' . htmlspecialchars($graph) . '</option>' . "\n";
-}
-?>
 </select>
 <input type="button" class="little_button" value="&gt;" onclick="change_graph(1)" />
 </fieldset>
@@ -112,13 +109,6 @@ foreach ($graphs as $graph) {
 <legend>Layout engine</legend>
 <input type="button" class="little_button" value="&lt;" onclick="change_engine(-1)" />
 <select name="graph_engine" id="graph_engine" onchange="load_graph()">
-<?php
-foreach ($engines as $engine) {
-	echo '<option value="' . htmlspecialchars($engine) . '"';
-	if ($engine == $default_engine) echo ' selected="selected"';
-	echo '>' . htmlspecialchars($engine) . '</option>' . "\n";
-}
-?>
 </select>
 <input type="button" class="little_button" value="&gt;" onclick="change_engine(1)" />
 </fieldset>
@@ -127,13 +117,6 @@ foreach ($engines as $engine) {
 <legend>Magnification</legend>
 <input type="button" class="little_button" value="-" onclick="change_scale(1)" />
 <select name="graph_scale" id="graph_scale" onchange="set_graph_scale()">
-<?php
-foreach (array(4, 2, 1.5, 1, 0.75, 0.5) as $scale) {
-	echo '<option value="' . htmlspecialchars($scale) . '"';
-	if (1 == $scale) echo ' selected="selected"';
-	echo '>' . htmlspecialchars(100 * $scale) . '%</option>' . "\n";
-}
-?>
 </select>
 <input type="button" class="little_button" value="+" onclick="change_scale(-1)" />
 </fieldset>
