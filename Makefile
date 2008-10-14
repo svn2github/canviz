@@ -16,7 +16,9 @@ EXAMPLE_GRAPHS=$(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,$(EXAMPLE_GRAPHS_DIR)/$(GR
 
 .PHONY: all examples clean
 
-all: x11colors.js brewercolors.js
+all: colorschemes
+
+colorschemes: x11colors.js brewercolors.js
 
 examples: $(EXAMPLE_GRAPHS_DIR)/graphlist.js $(EXAMPLE_GRAPHS_DIR)/layoutlist.js $(EXAMPLE_GRAPHS)
 
