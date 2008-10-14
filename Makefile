@@ -14,9 +14,9 @@ EXAMPLE_GRAPHS_SRC:=$(shell $(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.d
 EXAMPLE_GRAPHS_DIR=./graphs
 EXAMPLE_GRAPHS=$(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,$(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.txt,$(EXAMPLE_GRAPHS_SRC))
 
-.PHONY: all examples clean
+.PHONY: all examples colorschemes clean
 
-all: colorschemes
+all: examples
 
 colorschemes: x11colors.js brewercolors.js
 
