@@ -468,7 +468,7 @@ Graph.prototype = {
 			}
 		}
 		// hsv
-		matches = color.match(/(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)/);
+		matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
 		if (matches) {
 			return this.hsvToRgbColor(matches[1], matches[2], matches[3]);
 		}
