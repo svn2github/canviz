@@ -34,7 +34,7 @@ function init() {
 		b = b.replace(/.*\//, '').toLowerCase();
 		return (a > b) ? 1 : (a < b) ? -1 : 0;
 	}).each(function(graph, index) {
-		list.options[list.options.length] = new Option(graph.replace(/.*\/(.*)\.txt/, '$1'), graph, false, 0 == index);
+		list.options[list.options.length] = new Option(graph.replace(/^.*\/(.*)$/, '$1').replace(/^(.*)\.txt$/, '$1'), graph, false, 0 == index);
 	});
 	
 	list = $('graph_engine');
