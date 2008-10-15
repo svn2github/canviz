@@ -40,7 +40,8 @@ $(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.gv.txt: $(EXAMPLE_GRAPHS_SRC_DI
 	$(render-example-graph)
 
 define render-example-graph
-./render_example_graph.sh $(EXAMPLE_GRAPHS_SRC_DIR) $(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,%,$<) $(EXAMPLE_GRAPHS_DIR) $(GRAPHVIZ_PREFIX) $(GRAPHVIZ_LAYOUTS)
+@echo "Rendering $(subst /$(GRAPHVIZ_FIRST_LAYOUT)/,/*/,$@)"
+@./render_example_graph.sh $(EXAMPLE_GRAPHS_SRC_DIR) $(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,%,$<) $(EXAMPLE_GRAPHS_DIR) $(GRAPHVIZ_PREFIX) $(GRAPHVIZ_LAYOUTS)
 endef
 
 x11colors.js: gvcolors.awk $(GRAPHVIZ_SRC)/lib/common/color_names
