@@ -131,6 +131,9 @@ Graph.prototype = {
 				} else if ('}' == line) {
 //					debug('end container ' + container_stack.last());
 					container_stack.pop();
+					if (0 == container_stack.length) {
+						break;
+					}
 				} else {
 //					matches = line.match(/^(".*?[^\\]"|\S+?)\s+\[(.+)\];$/);
 					matches = line.match(/^(.*?)\s+\[(.+)\];$/);
