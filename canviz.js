@@ -143,6 +143,9 @@ Graph.prototype = {
 						entity = matches[1];
 						params = matches[2];
 						do {
+							if (0 == params.length) {
+								break;
+							}
 							matches = params.match(/^(\S+?)=(""|".*?[^\\]"|<(<[^>]+>|[^<>]+?)+>|\S+?)(?:[,\s]+|$)/);
 							if (matches) {
 								params = params.substr(matches[0].length);
@@ -198,6 +201,8 @@ Graph.prototype = {
 										this.commands.push(param_value);
 										break;
 								}
+							} else {
+								debug('can\'t read attributes for entity ' + entity);
 							}
 						} while (matches);
 					}
