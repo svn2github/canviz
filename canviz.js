@@ -73,7 +73,6 @@ var Graph = Class.create();
 Graph.prototype = {
 	initialize: function(ctx, url) {
 		this.maxXdotVersion = 1.2;
-		this.systemScale = 4/3;
 		this.scale = 1;
 		this.padding = 8;
 		this.ctx = ctx;
@@ -103,6 +102,7 @@ Graph.prototype = {
 		this.maxHeight = false;
 		this.bbEnlarge = false;
 		this.bbScale = 1;
+		this.dpi = 96;
 		this.orientation = 'portrait';
 		this.bgcolor = '#ffffff';
 		this.dashLength = 6;
@@ -162,6 +162,9 @@ Graph.prototype = {
 										case 'bgcolor':
 											this.bgcolor = this.parseColor(param_value);
 											break;
+										case 'dpi':
+											this.dpi = param_value;
+											break;
 										case 'size':
 											var size = param_value.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
 											if (size) {
@@ -209,6 +212,7 @@ Graph.prototype = {
 				}
 			}
 		}
+		this.systemScale = this.dpi / 72;
 		if (!this.xdotversion) {
 			this.xdotversion = 1.0;
 		}
