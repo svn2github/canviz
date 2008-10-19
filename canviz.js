@@ -255,7 +255,6 @@ Graph.prototype = {
 		this.ctx.fillRect(0, 0, width, height);
 		this.ctx.translate(this.padding, this.padding);
 		this.ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
-		this.ctx.lineWidth = 1 / this.systemScale;
 		var i, tokens;
 		var entity_id = 0;
 		var text_divs = '';
@@ -406,12 +405,12 @@ Graph.prototype = {
 									this.dashStyle = style;
 									break;
 								case 'bold':
-									this.ctx.lineWidth = 2 / this.systemScale;
+									this.ctx.lineWidth = 2;
 									break;
 								default:
 									matches = style.match(/^setlinewidth\((.*)\)$/);
 									if (matches) {
-										this.ctx.lineWidth = Number(matches[1]) / this.systemScale;
+										this.ctx.lineWidth = Number(matches[1]);
 									} else {
 										debug('unknown style ' + style);
 									}
