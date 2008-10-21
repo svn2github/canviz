@@ -83,7 +83,7 @@ Object.extend(Graph.prototype, {
 	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Graph.prototype.idMatch + '?\\s*{$', 'i'),
 	nodeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
 	edgeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + '\\s*-[->]\\s*' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
-	paramMatchRe: new RegExp('^' + Graph.prototype.idMatch + '=' + Graph.prototype.idMatch + '(?:[,\\s]+|$)'),
+	attrMatchRe: new RegExp('^' + Graph.prototype.idMatch + '=' + Graph.prototype.idMatch + '(?:[,\\s]+|$)'),
 	initialize: function(ctx, url) {
 		this.maxXdotVersion = 1.2;
 		this.scale = 1;
@@ -125,7 +125,7 @@ Object.extend(Graph.prototype, {
 		var graph_src = response.responseText;
 		var lines = graph_src.split(/\r?\n/);
 		var i = 0;
-		var line, lastchar, matches, is_graph, entity, params, param_name, param_value;
+		var line, lastchar, matches, is_graph, entity, attrs, attr_name, attr_value;
 		var container_stack = new Array();
 		while (i < lines.length) {
 			line = lines[i++].replace(/^\s+/, '');
@@ -163,43 +163,43 @@ Object.extend(Graph.prototype, {
 					matches = line.match(this.nodeMatchRe);
 					if (matches) {
 						entity = matches[1];
-						params = matches[5];
+						attrs = matches[5];
 //						debug('node: ' + entity);
 					} else {
 						matches = line.match(this.edgeMatchRe);
 						if (matches) {
 							entity = matches[1];
-							params = matches[8];
+							attrs = matches[8];
 //							debug('edge: ' + entity);
 						}
 					}
 					if (matches) {
 						is_graph = ('graph' == entity);
 						do {
-							if (0 == params.length) {
+							if (0 == attrs.length) {
 								break;
 							}
-							matches = params.match(this.paramMatchRe);
+							matches = attrs.match(this.attrMatchRe);
 							if (matches) {
-								params = params.substr(matches[0].length);
-								param_name = matches[1];
-								param_value = this.unescape(matches[2]);
-//								debug(param_name + ' ' + param_value);
+								attrs = attrs.substr(matches[0].length);
+								attr_name = matches[1];
+								attr_value = this.unescape(matches[2]);
+//								debug(attr_name + ' ' + attr_value);
 								if (is_graph && 1 == container_stack.length) {
-									switch (param_name) {
+									switch (attr_name) {
 										case 'bb':
-											var bb = param_value.split(/,/);
+											var bb = attr_value.split(/,/);
 											this.width  = Number(bb[2]);
 											this.height = Number(bb[3]);
 											break;
 										case 'bgcolor':
-											this.bgcolor = this.parseColor(param_value);
+											this.bgcolor = this.parseColor(attr_value);
 											break;
 										case 'dpi':
-											this.dpi = param_value;
+											this.dpi = attr_value;
 											break;
 										case 'size':
-											var size = param_value.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
+											var size = attr_value.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
 											if (size) {
 												this.maxWidth  = 72 * Number(size[1]);
 												this.maxHeight = 72 * Number(size[2]);
@@ -209,36 +209,36 @@ Object.extend(Graph.prototype, {
 											}
 											break;
 										case 'orientation':
-											if (param_value.match(/^l/i)) {
+											if (attr_value.match(/^l/i)) {
 												this.orientation = 'landscape';
 											}
 											break;
 										case 'rotate':
-											if (90 == param_value) {
+											if (90 == attr_value) {
 												this.orientation = 'landscape';
 											}
 											break;
 										case 'xdotversion':
-											this.xdotversion = parseFloat(param_value);
+											this.xdotversion = parseFloat(attr_value);
 											if (this.maxXdotVersion < this.xdotversion) {
 												debug('unsupported xdotversion ' + this.xdotversion + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
 											}
 											break;
 									}
 								}
-								switch (param_name) {
+								switch (attr_name) {
 									case '_draw_':
 									case '_ldraw_':
 									case '_hdraw_':
 									case '_tdraw_':
 									case '_hldraw_':
 									case '_tldraw_':
-//										debug(entity + ': ' + param_value);
-										this.commands.push(param_value);
+//										debug(entity + ': ' + attr_value);
+										this.commands.push(attr_value);
 										break;
 								}
 							} else {
-								debug('can\'t read attributes for entity ' + entity + ' from ' + params);
+								debug('can\'t read attributes for entity ' + entity + ' from ' + attrs);
 							}
 						} while (matches);
 					}
