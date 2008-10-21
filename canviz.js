@@ -71,6 +71,19 @@ Tokenizer.prototype = {
 
 var Graph = Class.create();
 Graph.prototype = {
+	// an alphanumeric string or a number or a double-quoted string or an HTML string
+	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
+}
+Object.extend(Graph.prototype, {
+	// ID or ID:port or ID:compass_pt or ID:port:compass_pt
+	nodeIdMatch: Graph.prototype.idMatch + '(?::' + Graph.prototype.idMatch + ')?(?::' + Graph.prototype.idMatch + ')?'
+});
+Object.extend(Graph.prototype, {
+	graphMatchRe: new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + Graph.prototype.idMatch + ')?\\s*{$', 'i'),
+	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Graph.prototype.idMatch + '?\\s*{$', 'i'),
+	nodeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
+	edgeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + '\\s*-[->]\\s*' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
+	paramMatchRe: new RegExp('^' + Graph.prototype.idMatch + '=' + Graph.prototype.idMatch + '(?:[,\\s]+|$)'),
 	initialize: function(ctx, url) {
 		this.maxXdotVersion = 1.2;
 		this.scale = 1;
@@ -124,9 +137,21 @@ Graph.prototype = {
 					line += lines[i++];
 				}
 //				debug(line);
-				matches = line.match(/^(.*?)\s*{$/);
+				if (0 == container_stack.length) {
+					matches = line.match(this.graphMatchRe);
+					if (matches) {
+						entity = matches[3];
+//						debug('graph: ' + entity);
+					}
+				} else {
+					matches = line.match(this.subgraphMatchRe);
+					if (matches) {
+						entity = matches[1];
+//						debug('subgraph: ' + entity);
+					}
+				}
 				if (matches) {
-					container_stack.push(matches[1]);
+					container_stack.push(entity);
 //					debug('begin container ' + container_stack.last());
 				} else if ('}' == line) {
 //					debug('end container ' + container_stack.last());
@@ -135,18 +160,26 @@ Graph.prototype = {
 						break;
 					}
 				} else {
-//					matches = line.match(/^(".*?[^\\]"|\S+?)\s+\[(.+)\];$/);
-					matches = line.match(/^(.*?)\s+\[(.+)\];$/);
+					matches = line.match(this.nodeMatchRe);
 					if (matches) {
-						is_graph = ('graph' == matches[1]);
-//						entity = this.unescape(matches[1]);
 						entity = matches[1];
-						params = matches[2];
+						params = matches[5];
+//						debug('node: ' + entity);
+					} else {
+						matches = line.match(this.edgeMatchRe);
+						if (matches) {
+							entity = matches[1];
+							params = matches[8];
+//							debug('edge: ' + entity);
+						}
+					}
+					if (matches) {
+						is_graph = ('graph' == entity);
 						do {
 							if (0 == params.length) {
 								break;
 							}
-							matches = params.match(/^(\S+?)=(""|".*?[^\\]"|<(<[^>]+>|[^<>]+?)+>|\S+?)(?:[,\s]+|$)/);
+							matches = params.match(this.paramMatchRe);
 							if (matches) {
 								params = params.substr(matches[0].length);
 								param_name = matches[1];
@@ -205,7 +238,7 @@ Graph.prototype = {
 										break;
 								}
 							} else {
-								debug('can\'t read attributes for entity ' + entity);
+								debug('can\'t read attributes for entity ' + entity + ' from ' + params);
 							}
 						} while (matches);
 					}
@@ -530,7 +563,7 @@ Graph.prototype = {
 		}
 		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
 	}
-}
+});
 
 var GraphImage = Class.create();
 GraphImage.prototype = {
