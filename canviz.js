@@ -534,9 +534,9 @@ Object.extend(Graph.prototype, {
 		}
 		color_name = color_name.toLowerCase();
 		var color_scheme_name = color_scheme.toLowerCase();
-		if (gvcolors[color_scheme_name]) {
-			if (gvcolors[color_scheme_name][color_name]) {
-				return (3 == gvcolors[color_scheme_name][color_name].length ? 'rgb(' : 'rgba(') + gvcolors[color_scheme_name][color_name].join(',') + ')';
+		if (gvcolors.get(color_scheme_name)) {
+			if (gvcolors.get(color_scheme_name)[color_name]) {
+				return (3 == gvcolors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + gvcolors.get(color_scheme_name)[color_name].join(',') + ')';
 			}
 		} else {
 			debug('unknown color scheme ' + color_scheme);

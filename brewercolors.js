@@ -1,6 +1,6 @@
 // $Id$
 
-gvcolors.merge({
+gvcolors.update({
 accent3:{
 1:[127,201,127],
 2:[190,174,212],

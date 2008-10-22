@@ -3,7 +3,7 @@
 BEGIN { 
 	print "// $I" "d$"
 	print
-	print "gvcolors.merge({"
+	print "gvcolors.update({"
 	last_color_scheme = ""
 }
 
