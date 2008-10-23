@@ -103,10 +103,12 @@ Object.extend(Graph.prototype, {
 		$('debug_output').innerHTML = '';
 		new Ajax.Request(url, {
 			method: 'get',
-			onComplete: this.parse.bind(this)
+			onComplete: function(response) {
+				this.parse(response.responseText);
+			}.bind(this)
 		});
 	},
-	parse: function(response) {
+	parse: function(xdot) {
 		this.xdotversion = false;
 		this.commands = new Array();
 		this.width = 0;
@@ -122,8 +124,7 @@ Object.extend(Graph.prototype, {
 		this.dotSpacing = 4;
 		this.fontName = 'Times New Roman';
 		this.fontSize = 14;
-		var graph_src = response.responseText;
-		var lines = graph_src.split(/\r?\n/);
+		var lines = xdot.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, is_graph, entity, attrs, attr_name, attr_value;
 		var container_stack = new Array();
