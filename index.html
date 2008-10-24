@@ -51,7 +51,7 @@ function init() {
 	if (canvas.getContext) {
 		var ctx = canvas.getContext('2d');
 		graph = new Graph(ctx);
-		graph.setImagePath('image.php');
+		graph.setImagePath('image.php/');
 		graph.scale = $F('graph_scale');
 		load_graph();
 	}

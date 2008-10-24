@@ -624,7 +624,7 @@ GraphImage.prototype = {
 	initialize: function(graph, src, x, y, w, h) {
 		this.graph = graph;
 		++this.graph.numImages;
-		this.src = this.graph.imagePath + '/' + src;
+		this.src = this.graph.imagePath + src;
 		this.x = x;
 		this.y = y;
 		this.w = w;
