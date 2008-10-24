@@ -5,6 +5,7 @@ FIND=find
 SED=sed
 SORT=sort
 TAIL=tail
+XARGS=xargs
 DOT=$(shell which dot)
 GRAPHVIZ_PREFIX=$(shell dirname $(shell dirname $(DOT)))
 GRAPHVIZ_SRC:=$(shell $(FIND) . -type d -name 'graphviz-*' | $(TAIL) -n 1 | $(SED) s%^\./%%)
@@ -14,18 +15,22 @@ EXAMPLE_GRAPHS_SRC_DIR:=$(GRAPHVIZ_PREFIX)/share/graphviz/graphs
 #EXAMPLE_GRAPHS_SRC_DIR:=$(GRAPHVIZ_SRC)/rtest/graphs
 EXAMPLE_GRAPHS_SRC:=$(shell $(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.dot' -or -name '*.gv')
 EXAMPLE_GRAPHS_DIR=./graphs
+EXAMPLE_GRAPH_IMAGES_DIR=$(EXAMPLE_GRAPHS_DIR)/images
 EXAMPLE_GRAPHS=$(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,$(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.txt,$(EXAMPLE_GRAPHS_SRC))
 
-.PHONY: all examples colorschemes clean
+.PHONY: all examples examples-images colorschemes clean
 
 all: examples
 
 colorschemes: x11colors.js brewercolors.js
 
-examples: $(EXAMPLE_GRAPHS_DIR)/graphlist.js $(EXAMPLE_GRAPHS_DIR)/layoutlist.js $(EXAMPLE_GRAPHS)
+examples: $(EXAMPLE_GRAPHS_DIR)/graphlist.js $(EXAMPLE_GRAPHS_DIR)/layoutlist.js $(EXAMPLE_GRAPHS) examples-images
 
 $(EXAMPLE_GRAPHS_DIR):
 	mkdir $(EXAMPLE_GRAPHS_DIR)
+
+$(EXAMPLE_GRAPH_IMAGES_DIR):
+	mkdir $(EXAMPLE_GRAPH_IMAGES_DIR)
 
 $(EXAMPLE_GRAPHS_DIR)/graphlist.js: graphlist.awk $(EXAMPLE_GRAPHS_DIR)
 	@echo "Generating $@"
@@ -45,6 +50,10 @@ define render-example-graph
 @echo "Rendering $(subst /$(GRAPHVIZ_FIRST_LAYOUT)/,/*/,$@)"
 @./render_example_graph.sh $(EXAMPLE_GRAPHS_SRC_DIR) $(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,%,$<) $(EXAMPLE_GRAPHS_DIR) $(GRAPHVIZ_PREFIX) $(GRAPHVIZ_LAYOUTS)
 endef
+
+examples-images: $(EXAMPLE_GRAPH_IMAGES_DIR)
+	$(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.gif' -or -name '*.jpg' -or -name '*.png' -print0 | $(XARGS) -0 -t -n 1 -J % cp % $(EXAMPLE_GRAPH_IMAGES_DIR)
+
 
 x11colors.js: gvcolors.awk $(GRAPHVIZ_SRC)/lib/common/color_names
 	$(AWK) -f gvcolors.awk < $(GRAPHVIZ_SRC)/lib/common/color_names > $@

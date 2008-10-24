@@ -2,7 +2,7 @@
 
 // $Id$
 
-define('GRAPH_IMAGES_PATH', 'graph-images');
+define('GRAPH_IMAGES_PATH', 'graphs/images');
 
 $image = GRAPH_IMAGES_PATH . $_SERVER['PATH_INFO'];
 $image = strtr($image, array('../' => ''));
