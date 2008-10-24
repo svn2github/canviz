@@ -607,11 +607,11 @@ var Graph = Class.create(Subgraph, {
 	// an alphanumeric string or a number or a double-quoted string or an HTML string
 	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
 });
-Graph.addMethods({
+Object.extend(Graph.prototype, {
 	// ID or ID:port or ID:compass_pt or ID:port:compass_pt
 	nodeIdMatch: Graph.prototype.idMatch + '(?::' + Graph.prototype.idMatch + ')?(?::' + Graph.prototype.idMatch + ')?'
 });
-Graph.addMethods({
+Object.extend(Graph.prototype, {
 	graphMatchRe: new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + Graph.prototype.idMatch + ')?\\s*{$', 'i'),
 	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Graph.prototype.idMatch + '?\\s*{$', 'i'),
 	nodeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
