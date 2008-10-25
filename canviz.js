@@ -8,8 +8,7 @@ var gvcolors = $H({
 	}
 });
 
-var Tokenizer = Class.create();
-Tokenizer.prototype = {
+var Tokenizer = Class.create({
 	initialize: function(str) {
 		this.str = str;
 	},
@@ -67,7 +66,7 @@ Tokenizer.prototype = {
 		this.str = this.str.substr(1 + char_count).replace(/^\s+/, '');
 		return str;
 	}
-}
+});
 
 var Entity = Class.create({
 	initialize: function(name) {
@@ -619,8 +618,7 @@ Object.extend(Graph.prototype, {
 	attrMatchRe: new RegExp('^' + Graph.prototype.idMatch + '=' + Graph.prototype.idMatch + '(?:[,\\s]+|$)'),
 });
 
-var GraphImage = Class.create();
-GraphImage.prototype = {
+var GraphImage = Class.create({
 	initialize: function(graph, src, x, y, w, h) {
 		this.graph = graph;
 		++this.graph.numImages;
@@ -651,7 +649,7 @@ GraphImage.prototype = {
 			this.graph.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
 		}
 	}
-}
+});
 
 function debug(str, escape) {
 	str = String(str);
