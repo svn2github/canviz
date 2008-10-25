@@ -653,6 +653,13 @@ GraphImage.prototype = {
 	}
 }
 
-function debug(str) {
-	$('debug_output').innerHTML += '&raquo;' + String(str).escapeHTML() + '&laquo;<br />';
+function debug(str, escape) {
+	str = String(str);
+	if (Object.isUndefined(escape)) {
+		escape = true;
+	}
+	if (escape) {
+		str = str.escapeHTML();
+	}
+	$('debug_output').innerHTML += '&raquo;' + str + '&laquo;<br />';
 }
