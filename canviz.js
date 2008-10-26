@@ -70,10 +70,7 @@ var Tokenizer = Class.create({
 
 var Entity = Class.create({
 	initialize: function(name) {
-		this.clear();
 		this.name = name;
-	},
-	clear: function() {
 		this.attrs = $H();
 		this.drawAttrs = $H();
 	}
@@ -89,9 +86,9 @@ var Edge = Class.create(Entity, {
 	}
 });
 
-var Subgraph = Class.create(Entity, {
-	clear: function($super) {
-		$super();
+var Graph = Class.create(Entity, {
+	initialize: function($super, name) {
+		$super(name);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.subgraphs = $A();
@@ -100,13 +97,13 @@ var Subgraph = Class.create(Entity, {
 	}
 });
 
-var Graph = Class.create(Subgraph, {
-	initialize: function($super, ctx, url) {
-		$super();
+var Canviz = Class.create({
+	initialize: function(ctx, url) {
 		this.maxXdotVersion = 1.2;
 		this.scale = 1;
 		this.padding = 8;
 		this.ctx = ctx;
+		this.graphs = $A();
 		this.images = new Hash();
 		this.numImages = 0;
 		this.numImagesFinished = 0;
@@ -127,7 +124,7 @@ var Graph = Class.create(Subgraph, {
 		});
 	},
 	parse: function(xdot) {
-		this.clear();
+		this.graphs = $A();
 		this.xdotversion = false;
 		this.commands = new Array();
 		this.width = 0;
@@ -160,16 +157,16 @@ var Graph = Class.create(Subgraph, {
 				if (0 == containers.length) {
 					matches = line.match(this.graphMatchRe);
 					if (matches) {
-						containers.unshift(this);
+						containers.unshift(new Graph(matches[3]));
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
-						containers[0].name = matches[3];
+						this.graphs.push(containers[0]);
 //						debug('graph: ' + containers[0].name);
 					}
 				} else {
 					matches = line.match(this.subgraphMatchRe);
 					if (matches) {
-						containers.unshift(new Subgraph(matches[1]));
+						containers.unshift(new Graph(matches[1]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -606,16 +603,16 @@ var Graph = Class.create(Subgraph, {
 	// an alphanumeric string or a number or a double-quoted string or an HTML string
 	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
 });
-Object.extend(Graph.prototype, {
+Object.extend(Canviz.prototype, {
 	// ID or ID:port or ID:compass_pt or ID:port:compass_pt
-	nodeIdMatch: Graph.prototype.idMatch + '(?::' + Graph.prototype.idMatch + ')?(?::' + Graph.prototype.idMatch + ')?'
+	nodeIdMatch: Canviz.prototype.idMatch + '(?::' + Canviz.prototype.idMatch + ')?(?::' + Canviz.prototype.idMatch + ')?'
 });
-Object.extend(Graph.prototype, {
-	graphMatchRe: new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + Graph.prototype.idMatch + ')?\\s*{$', 'i'),
-	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Graph.prototype.idMatch + '?\\s*{$', 'i'),
-	nodeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
-	edgeMatchRe: new RegExp('^(' + Graph.prototype.nodeIdMatch + '\\s*-[->]\\s*' + Graph.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
-	attrMatchRe: new RegExp('^' + Graph.prototype.idMatch + '=' + Graph.prototype.idMatch + '(?:[,\\s]+|$)'),
+Object.extend(Canviz.prototype, {
+	graphMatchRe: new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + Canviz.prototype.idMatch + ')?\\s*{$', 'i'),
+	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Canviz.prototype.idMatch + '?\\s*{$', 'i'),
+	nodeMatchRe: new RegExp('^(' + Canviz.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
+	edgeMatchRe: new RegExp('^(' + Canviz.prototype.nodeIdMatch + '\\s*-[->]\\s*' + Canviz.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
+	attrMatchRe: new RegExp('^' + Canviz.prototype.idMatch + '=' + Canviz.prototype.idMatch + '(?:[,\\s]+|$)'),
 });
 
 var GraphImage = Class.create({
