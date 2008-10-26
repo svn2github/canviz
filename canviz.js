@@ -91,9 +91,9 @@ var Graph = Class.create(Entity, {
 		$super(name);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
-		this.subgraphs = $A();
 		this.nodes = $A();
 		this.edges = $A();
+		this.subgraphs = $A();
 	}
 });
 
