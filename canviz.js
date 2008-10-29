@@ -332,14 +332,12 @@ var Canviz = Class.create({
 		this.ctx.translate(this.padding, this.padding);
 		this.ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
 		var i, tokens;
-		var entity_id = 0;
 		for (var command_index = 0; command_index < this.commands.length; command_index++) {
 			var command = this.commands[command_index];
 //			debug(command);
 			var tokenizer = new Tokenizer(command);
 			var token = tokenizer.takeChars();
 			if (token) {
-				++entity_id;
 				this.dashStyle = 'solid';
 				this.ctx.save();
 				while (token) {
