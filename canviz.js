@@ -94,6 +94,7 @@ var Graph = Class.create(Entity, {
 		this.nodes = $A();
 		this.edges = $A();
 		this.subgraphs = $A();
+		this.attrs.set('xdotversion', 1.0);
 	}
 });
 
@@ -134,7 +135,6 @@ var Canviz = Class.create({
 	},
 	parse: function(xdot) {
 		this.graphs = $A();
-		this.xdotversion = false;
 		this.commands = new Array();
 		this.width = 0;
 		this.height = 0;
@@ -276,9 +276,9 @@ var Canviz = Class.create({
 											}
 											break;
 										case 'xdotversion':
-											this.xdotversion = parseFloat(attr_value);
-											if (this.maxXdotVersion < this.xdotversion) {
-												debug('unsupported xdotversion ' + this.xdotversion + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
+											containers[0].attrs.set('xdotversion', parseFloat(attr_value));
+											if (this.maxXdotVersion < containers[0].attrs.get('xdotversion')) {
+												debug('unsupported xdotversion ' + containers[0].attrs.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
 											}
 											break;
 									}
@@ -292,9 +292,6 @@ var Canviz = Class.create({
 			}
 		}
 		this.systemScale = this.dpi / 72;
-		if (!this.xdotversion) {
-			this.xdotversion = 1.0;
-		}
 /*
 		if (this.maxWidth && this.maxHeight) {
 			if (this.width > this.maxWidth || this.height > this.maxHeight || this.bbEnlarge) {
