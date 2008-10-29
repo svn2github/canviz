@@ -49,14 +49,14 @@ function init() {
 	
 	canviz = new Canviz('graph_container');
 	canviz.setImagePath('graphs/images/');
-	canviz.scale = $F('graph_scale');
+	canviz.setScale($F('graph_scale'));
 	load_graph();
 }
 function load_graph() {
 	canviz.load(graph_url());
 }
 function set_graph_scale() {
-	canviz.scale = $F('graph_scale');
+	canviz.setScale($F('graph_scale'));
 	canviz.draw();
 }
 function change_graph(inc) {

@@ -117,6 +117,9 @@ var Canviz = Class.create({
 			this.load(url);
 		}
 	},
+	setScale: function(scale) {
+		this.scale = scale;
+	},
 	setImagePath: function(imagePath) {
 		this.imagePath = imagePath;
 	},
