@@ -98,11 +98,17 @@ var Graph = Class.create(Entity, {
 });
 
 var Canviz = Class.create({
-	initialize: function(ctx, url) {
+	initialize: function(container, url) {
+		this.canvas = new Element('canvas');
+		this.texts = new Element('div');
+		this.texts.makePositioned();
+		this.container = $(container);
+		this.container.appendChild(this.texts);
+		this.container.appendChild(this.canvas);
+		this.ctx = this.canvas.getContext('2d');
 		this.maxXdotVersion = 1.2;
 		this.scale = 1;
 		this.padding = 8;
-		this.ctx = ctx;
 		this.graphs = $A();
 		this.images = new Hash();
 		this.numImages = 0;
@@ -308,16 +314,18 @@ var Canviz = Class.create({
 		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
 		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
 		if (!redraw_canvas) {
-			canvas.width  = width;
-			canvas.height = height;
-			Element.setStyle(canvas, {
+			this.canvas.width  = width;
+			this.canvas.height = height;
+			this.canvas.setStyle({
 				width:  width  + 'px',
 				height: height + 'px'
 			});
-			Element.setStyle('graph_container', {
+			this.container.setStyle({
 				width:  width  + 'px'
 			});
-			$('graph_texts').innerHTML = '';
+			while (this.texts.firstChild) {
+				this.texts.removeChild(this.texts.firstChild);
+			}
 		}
 		this.ctx.save();
 		this.ctx.lineCap = 'round';
@@ -327,7 +335,6 @@ var Canviz = Class.create({
 		this.ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
 		var i, tokens;
 		var entity_id = 0;
-		var text_divs = '';
 		for (var command_index = 0; command_index < this.commands.length; command_index++) {
 			var command = this.commands[command_index];
 //			debug(command);
@@ -335,7 +342,6 @@ var Canviz = Class.create({
 			var token = tokenizer.takeChars();
 			if (token) {
 				++entity_id;
-				var entity_text_divs = '';
 				this.dashStyle = 'solid';
 				this.ctx.save();
 				while (token) {
@@ -419,20 +425,36 @@ var Canviz = Class.create({
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								entity_text_divs += '<div style="font:' + Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px \'' + this.fontName +'\';color:' + this.ctx.strokeStyle + ';';
+								var text = new Element('div').update(str);
+								text.setStyle({
+									fontSize: Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px',
+									fontFamily: this.fontName,
+									color: this.ctx.strokeStyle,
+									position: 'absolute',
+									top: y + 'px',
+									width: (2 * text_width) + 'px'
+								});
 								switch (text_align) {
 									case -1: //left
-										entity_text_divs += 'left:' + x + 'px;';
+										text.setStyle({
+											left: x + 'px'
+										});
 										break;
 									case 1: // right
-										entity_text_divs += 'text-align:right;right:' + x + 'px;';
+										text.setStyle({
+											textAlign: 'right',
+											right: x + 'px'
+										});
 										break;
 									case 0: // center
 									default:
-										entity_text_divs += 'text-align:center;left:' + (x - text_width) + 'px;';
+										text.setStyle({
+											textAlign: 'center',
+											left: (x - text_width) + 'px'
+										});
 										break;
 								}
-								entity_text_divs += 'top:' + y + 'px;width:' + (2 * text_width) + 'px">' + str + '</div>';
+								this.texts.appendChild(text);
 							}
 							break;
 						case 'C': // set fill color
@@ -493,13 +515,9 @@ var Canviz = Class.create({
 					token = tokenizer.takeChars();
 				}
 				this.ctx.restore();
-				if (entity_text_divs) {
-					text_divs += '<div id="entity' + entity_id + '">' + entity_text_divs + '</div>';
-				}
 			}
 		};
 		this.ctx.restore();
-		if (!redraw_canvas) $('graph_texts').innerHTML = text_divs;
 	},
 	render: function(path, filled) {
 		if (filled) {

@@ -26,7 +26,7 @@ Ajax.Responders.register({
 	}
 });
 
-var canvas, canviz;
+var canviz;
 function init() {
 	var list = $('graph_name');
 	graphs.sort(function(a, b) {
@@ -47,25 +47,17 @@ function init() {
 		list.options[list.options.length] = new Option(100 * scale + '%', scale, false, 1 == scale);
 	});
 	
-	canvas = $('graph_canvas');
-	if (canvas.getContext) {
-		var ctx = canvas.getContext('2d');
-		canviz = new Canviz(ctx);
-		canviz.setImagePath('graphs/images/');
-		canviz.scale = $F('graph_scale');
-		load_graph();
-	}
+	canviz = new Canviz('graph_container');
+	canviz.setImagePath('graphs/images/');
+	canviz.scale = $F('graph_scale');
+	load_graph();
 }
 function load_graph() {
-	if (canvas.getContext) {
-		canviz.load(graph_url());
-	}
+	canviz.load(graph_url());
 }
 function set_graph_scale() {
-	if (canvas.getContext) {
-		canviz.scale = $F('graph_scale');
-		canviz.draw();
-	}
+	canviz.scale = $F('graph_scale');
+	canviz.draw();
 }
 function change_graph(inc) {
 	$('graph_name').selectedIndex = (($('graph_name').selectedIndex + inc) + $('graph_name').options.length) % $('graph_name').options.length;
@@ -127,10 +119,7 @@ function graph_url() {
 
 </form>
 
-<div id="graph_container">
-	<div id="graph_texts"></div>
-	<canvas id="graph_canvas" width="40" height="40"></canvas>
-</div>
+<div id="graph_container"></div>
 
 <div id="debug_output"></div>
 
