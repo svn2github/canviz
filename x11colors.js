@@ -1,6 +1,6 @@
 // $Id$
 
-gvcolors.update({
+Canviz.prototype.colors.update({
 x11:{
 aliceblue:[240,248,255],
 antiquewhite:[250,235,215],

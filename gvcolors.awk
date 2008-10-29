@@ -3,7 +3,7 @@
 BEGIN { 
 	print "// $I" "d$"
 	print
-	print "gvcolors.update({"
+	print "Canviz.prototype.colors.update({"
 	last_color_scheme = ""
 }
 

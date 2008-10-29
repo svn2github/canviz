@@ -1,13 +1,5 @@
 // $Id$
 
-var gvcolors = $H({
-	x11:{
-		black:[0,0,0],
-		lightgrey:[211,211,211],
-		white:[255,255,255]
-	}
-});
-
 var Tokenizer = Class.create({
 	initialize: function(str) {
 		this.str = str;
@@ -100,6 +92,13 @@ var Graph = Class.create(Entity, {
 
 var Canviz = Class.create({
 	maxXdotVersion: '1.2',
+	colors: $H({
+		x11:{
+			black:[0,0,0],
+			lightgrey:[211,211,211],
+			white:[255,255,255]
+		}
+	}),
 	initialize: function(container, url) {
 		this.canvas = new Element('canvas');
 		this.texts = new Element('div');
@@ -584,9 +583,9 @@ var Canviz = Class.create({
 		}
 		color_name = color_name.toLowerCase();
 		var color_scheme_name = color_scheme.toLowerCase();
-		if (gvcolors.get(color_scheme_name)) {
-			if (gvcolors.get(color_scheme_name)[color_name]) {
-				return (3 == gvcolors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + gvcolors.get(color_scheme_name)[color_name].join(',') + ')';
+		if (this.colors.get(color_scheme_name)) {
+			if (this.colors.get(color_scheme_name)[color_name]) {
+				return (3 == this.colors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + this.colors.get(color_scheme_name)[color_name].join(',') + ')';
 			}
 		} else {
 			debug('unknown color scheme ' + color_scheme);
