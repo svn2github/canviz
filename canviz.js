@@ -307,11 +307,11 @@ var Canviz = Class.create({
 //		debug('done');
 		this.draw();
 	},
-	draw: function(redraw_canvas) {
-		if (!redraw_canvas) redraw_canvas = false;
+	draw: function(redraw_canvas_only) {
+		if (Object.isUndefined(redraw_canvas_only)) redraw_canvas_only = false;
 		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
 		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
-		if (!redraw_canvas) {
+		if (!redraw_canvas_only) {
 			this.canvas.width  = width;
 			this.canvas.height = height;
 			this.canvas.setStyle({
@@ -410,7 +410,7 @@ var Canviz = Class.create({
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(this.scale * this.systemScale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
-							if (!redraw_canvas && !str.match(/^\s*$/)) {
+							if (!redraw_canvas_only && !str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
 								str = str.escapeHTML();
 								do {
