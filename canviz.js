@@ -98,6 +98,7 @@ var Graph = Class.create(Entity, {
 });
 
 var Canviz = Class.create({
+	maxXdotVersion: 1.2,
 	initialize: function(container, url) {
 		this.canvas = new Element('canvas');
 		this.texts = new Element('div');
@@ -106,7 +107,6 @@ var Canviz = Class.create({
 		this.container.appendChild(this.texts);
 		this.container.appendChild(this.canvas);
 		this.ctx = this.canvas.getContext('2d');
-		this.maxXdotVersion = 1.2;
 		this.scale = 1;
 		this.padding = 8;
 		this.graphs = $A();
