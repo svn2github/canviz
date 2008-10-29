@@ -431,26 +431,22 @@ var Canviz = Class.create({
 									fontFamily: this.fontName,
 									color: this.ctx.strokeStyle,
 									position: 'absolute',
+									left: (x - (1 + text_align) * text_width) + 'px',
 									top: y + 'px',
 									width: (2 * text_width) + 'px'
 								});
 								switch (text_align) {
 									case -1: //left
-										text.setStyle({
-											left: x + 'px'
-										});
 										break;
 									case 1: // right
 										text.setStyle({
-											textAlign: 'right',
-											right: x + 'px'
+											textAlign: 'right'
 										});
 										break;
 									case 0: // center
 									default:
 										text.setStyle({
-											textAlign: 'center',
-											left: (x - text_width) + 'px'
+											textAlign: 'center'
 										});
 										break;
 								}
