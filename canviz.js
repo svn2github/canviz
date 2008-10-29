@@ -94,12 +94,12 @@ var Graph = Class.create(Entity, {
 		this.nodes = $A();
 		this.edges = $A();
 		this.subgraphs = $A();
-		this.attrs.set('xdotversion', 1.0);
+		this.attrs.set('xdotversion', '1.0');
 	}
 });
 
 var Canviz = Class.create({
-	maxXdotVersion: 1.2,
+	maxXdotVersion: '1.2',
 	initialize: function(container, url) {
 		this.canvas = new Element('canvas');
 		this.texts = new Element('div');
@@ -276,9 +276,8 @@ var Canviz = Class.create({
 											}
 											break;
 										case 'xdotversion':
-											containers[0].attrs.set('xdotversion', parseFloat(attr_value));
-											if (this.maxXdotVersion < containers[0].attrs.get('xdotversion')) {
-												debug('unsupported xdotversion ' + containers[0].attrs.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
+											if (0 > this.versionCompare(this.maxXdotVersion, attr_hash.get('xdotversion'))) {
+												debug('unsupported xdotversion ' + attr_hash.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
 											}
 											break;
 									}
@@ -613,6 +612,18 @@ var Canviz = Class.create({
 			case 5: r = v; g = p; b = q; break;
 		}
 		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
+	},
+	versionCompare: function(a, b) {
+		a = a.split('.');
+		b = b.split('.');
+		var a1, b1;
+		while (a.length || b.length) {
+			a1 = a.length ? a.shift() : 0;
+			b1 = b.length ? b.shift() : 0;
+			if (a1 < b1) return -1;
+			if (a1 > b1) return 1;
+		}
+		return 0;
 	},
 	// an alphanumeric string or a number or a double-quoted string or an HTML string
 	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
