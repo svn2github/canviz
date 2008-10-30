@@ -144,8 +144,6 @@ var Canviz = Class.create({
 		this.bgcolor = '#ffffff';
 		this.dashLength = 6;
 		this.dotSpacing = 4;
-		this.fontName = 'Times New Roman';
-		this.fontSize = 14;
 		var lines = xdot.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
@@ -388,7 +386,7 @@ var Canviz = Class.create({
 							break;
 						case 'T': // text
 							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.padding);
-							var y = Math.round(height - (ctx_scale * (tokenizer.takeNumber() + this.bbScale * this.fontSize) + this.padding));
+							var y = Math.round(height - (ctx_scale * (tokenizer.takeNumber() + this.bbScale * font_size) + this.padding));
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
@@ -407,8 +405,8 @@ var Canviz = Class.create({
 								} while (matches);
 								var text = new Element('div').update(str);
 								text.setStyle({
-									fontSize: Math.round(this.fontSize * ctx_scale * this.bbScale) + 'px',
-									fontFamily: this.fontName,
+									fontSize: Math.round(font_size * ctx_scale * this.bbScale) + 'px',
+									fontFamily: font_family,
 									color: this.ctx.strokeStyle,
 									position: 'absolute',
 									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
@@ -430,22 +428,22 @@ var Canviz = Class.create({
 							}
 							break;
 						case 'F': // set font
-							this.fontSize = tokenizer.takeNumber();
-							this.fontName = tokenizer.takeString();
-							switch (this.fontName) {
+							font_size = tokenizer.takeNumber();
+							font_family = tokenizer.takeString();
+							switch (font_family) {
 								case 'Times-Roman':
-									this.fontName = 'Times New Roman';
+									font_family = 'Times New Roman';
 									break;
 								case 'Courier':
-									this.fontName = 'Courier New';
+									font_family = 'Courier New';
 									break;
 								case 'Helvetica':
-									this.fontName = 'Arial';
+									font_family = 'Arial';
 									break;
 								default:
 									// nothing
 							}
-//							debug('set font ' + this.fontSize + 'pt ' + this.fontName);
+//							debug('set font ' + font_size + 'pt ' + font_family);
 							break;
 						case 'S': // set style
 							var style = tokenizer.takeString();
