@@ -86,7 +86,6 @@ var Graph = Class.create(Entity, {
 		this.nodes = $A();
 		this.edges = $A();
 		this.subgraphs = $A();
-		this.attrs.set('xdotversion', '1.0');
 	}
 });
 
@@ -168,6 +167,7 @@ var Canviz = Class.create({
 						containers.unshift(new Graph(matches[3]));
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
+						containers[0].attrs.set('xdotversion', '1.0');
 						this.graphs.push(containers[0]);
 //						debug('graph: ' + containers[0].name);
 					}
