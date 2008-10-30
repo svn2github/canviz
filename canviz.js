@@ -278,7 +278,6 @@ var Canviz = Class.create({
 				}
 			}
 		}
-		this.systemScale = this.dpi / 72;
 /*
 		if (this.maxWidth && this.maxHeight) {
 			if (this.width > this.maxWidth || this.height > this.maxHeight || this.bbEnlarge) {
@@ -293,8 +292,9 @@ var Canviz = Class.create({
 	},
 	draw: function(redraw_canvas_only) {
 		if (Object.isUndefined(redraw_canvas_only)) redraw_canvas_only = false;
-		var width  = Math.round(this.scale * this.systemScale * this.width  + 2 * this.padding);
-		var height = Math.round(this.scale * this.systemScale * this.height + 2 * this.padding);
+		var ctx_scale = this.scale * this.dpi / 72;
+		var width  = Math.round(ctx_scale * this.width  + 2 * this.padding);
+		var height = Math.round(ctx_scale * this.height + 2 * this.padding);
 		if (!redraw_canvas_only) {
 			this.canvas.width  = width;
 			this.canvas.height = height;
@@ -314,7 +314,7 @@ var Canviz = Class.create({
 		this.ctx.fillStyle = this.bgcolor;
 		this.ctx.fillRect(0, 0, width, height);
 		this.ctx.translate(this.padding, this.padding);
-		this.ctx.scale(this.scale * this.systemScale, this.scale * this.systemScale);
+		this.ctx.scale(ctx_scale, ctx_scale);
 		var i, tokens;
 		for (var command_index = 0; command_index < this.commands.length; command_index++) {
 			var command = this.commands[command_index];
@@ -387,10 +387,10 @@ var Canviz = Class.create({
 							this.images[src].draw();
 							break;
 						case 'T': // text
-							var x = Math.round(this.scale * this.systemScale * tokenizer.takeNumber() + this.padding);
-							var y = Math.round(height - (this.scale * this.systemScale * (tokenizer.takeNumber() + this.bbScale * this.fontSize) + this.padding));
+							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.padding);
+							var y = Math.round(height - (ctx_scale * (tokenizer.takeNumber() + this.bbScale * this.fontSize) + this.padding));
 							var text_align = tokenizer.takeNumber();
-							var text_width = Math.round(this.scale * this.systemScale * tokenizer.takeNumber());
+							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
 							if (!redraw_canvas_only && !str.match(/^\s*$/)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
@@ -407,7 +407,7 @@ var Canviz = Class.create({
 								} while (matches);
 								var text = new Element('div').update(str);
 								text.setStyle({
-									fontSize: Math.round(this.fontSize * this.scale * this.systemScale * this.bbScale) + 'px',
+									fontSize: Math.round(this.fontSize * ctx_scale * this.bbScale) + 'px',
 									fontFamily: this.fontName,
 									color: this.ctx.strokeStyle,
 									position: 'absolute',
