@@ -108,6 +108,8 @@ var Canviz = Class.create({
 		this.ctx = this.canvas.getContext('2d');
 		this.scale = 1;
 		this.padding = 8;
+		this.dashLength = 6;
+		this.dotSpacing = 4;
 		this.graphs = $A();
 		this.images = new Hash();
 		this.numImages = 0;
@@ -142,8 +144,6 @@ var Canviz = Class.create({
 		this.bbScale = 1;
 		this.dpi = 96;
 		this.bgcolor = '#ffffff';
-		this.dashLength = 6;
-		this.dotSpacing = 4;
 		var lines = xdot.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
