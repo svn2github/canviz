@@ -141,7 +141,6 @@ var Canviz = Class.create({
 		this.bbEnlarge = false;
 		this.bbScale = 1;
 		this.dpi = 96;
-		this.orientation = 'portrait';
 		this.bgcolor = '#ffffff';
 		this.dashLength = 6;
 		this.dotSpacing = 4;
@@ -264,16 +263,6 @@ var Canviz = Class.create({
 												debug('can\'t parse size');
 											}
 											break;
-										case 'orientation':
-											if (attr_value.match(/^l/i)) {
-												this.orientation = 'landscape';
-											}
-											break;
-										case 'rotate':
-											if (90 == attr_value) {
-												this.orientation = 'landscape';
-											}
-											break;
 										case 'xdotversion':
 											if (0 > this.versionCompare(this.maxXdotVersion, attr_hash.get('xdotversion'))) {
 												debug('unsupported xdotversion ' + attr_hash.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
@@ -296,11 +285,6 @@ var Canviz = Class.create({
 				this.bbScale = Math.min(this.maxWidth / this.width, this.maxHeight / this.height);
 				this.width  = Math.round(this.width  * this.bbScale);
 				this.height = Math.round(this.height * this.bbScale);
-			}
-			if ('landscape' == this.orientation) {
-				var temp    = this.width;
-				this.width  = this.height;
-				this.height = temp;
 			}
 		}
 */
