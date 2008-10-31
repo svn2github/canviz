@@ -70,8 +70,8 @@ var Entity = Class.create({
 	},
 	draw: function(ctx, ctx_scale, redraw_canvas_only) {
 		var i, tokens;
-		for (var command_index = 0; command_index < this.canviz.commands.length; command_index++) {
-			var command = this.canviz.commands[command_index];
+		this.drawAttrs.each(function(draw_attr) {
+			var command = draw_attr.value;
 //			debug(command);
 			var tokenizer = new Tokenizer(command);
 			var token = tokenizer.takeChars();
@@ -232,7 +232,7 @@ var Entity = Class.create({
 				}
 				ctx.restore();
 			}
-		}
+		});
 	}
 });
 
@@ -254,6 +254,14 @@ var Graph = Class.create(Entity, {
 		this.nodes = $A();
 		this.edges = $A();
 		this.subgraphs = $A();
+	},
+	draw: function($super, ctx, ctx_scale, redraw_canvas_only) {
+		$super(ctx, ctx_scale, redraw_canvas_only);
+		[this.subgraphs, this.nodes, this.edges].each(function(type) {
+			type.each(function(entity) {
+				entity.draw(ctx, ctx_scale, redraw_canvas_only);
+			})
+		});
 	}
 });
 
@@ -303,7 +311,6 @@ var Canviz = Class.create({
 	},
 	parse: function(xdot) {
 		this.graphs = $A();
-		this.commands = new Array();
 		this.width = 0;
 		this.height = 0;
 		this.maxWidth = false;
@@ -400,7 +407,6 @@ var Canviz = Class.create({
 								attr_name = matches[1];
 								attr_value = this.unescape(matches[2]);
 								if (attr_name.match(/^_.*draw_$/)) {
-									this.commands.push(attr_value);
 									draw_attr_hash.set(attr_name, attr_value);
 								} else {
 									attr_hash.set(attr_name, attr_value);
