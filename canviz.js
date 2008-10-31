@@ -76,7 +76,7 @@ var Entity = Class.create({
 			var tokenizer = new Tokenizer(command);
 			var token = tokenizer.takeChars();
 			if (token) {
-				this.canviz.dashStyle = 'solid';
+				var dash_style = 'solid';
 				ctx.save();
 				while (token) {
 //					debug('processing token ' + token);
@@ -88,7 +88,7 @@ var Entity = Class.create({
 							var cy = this.canviz.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
-							this.canviz.drawPath(ctx, new Ellipse(cx, cy, rx, ry), filled);
+							this.canviz.drawPath(ctx, new Ellipse(cx, cy, rx, ry), filled, dash_style);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -110,7 +110,7 @@ var Entity = Class.create({
 									new Point(tokens[0],                  this.canviz.height - tokens[1])
 								]);
 							}
-							this.canviz.drawPath(ctx, path, filled);
+							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
@@ -126,7 +126,7 @@ var Entity = Class.create({
 									new Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
 								]);
 							}
-							this.canviz.drawPath(ctx, path, filled);
+							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'I': // image
 							var x = tokenizer.takeNumber();
@@ -210,7 +210,7 @@ var Entity = Class.create({
 									break;
 								case 'dashed':
 								case 'dotted':
-									this.canviz.dashStyle = style;
+									dash_style = style;
 									break;
 								case 'bold':
 									ctx.lineWidth = 2;
@@ -484,14 +484,14 @@ var Canviz = Class.create({
 		this.graphs[0].draw(this.ctx, ctx_scale, redraw_canvas_only);
 		this.ctx.restore();
 	},
-	drawPath: function(ctx, path, filled) {
+	drawPath: function(ctx, path, filled, dash_style) {
 		if (filled) {
 			ctx.beginPath();
 			path.draw(ctx);
 			ctx.fill();
 		}
 		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
-			switch (this.dashStyle) {
+			switch (dash_style) {
 				case 'dashed':
 					ctx.beginPath();
 					path.drawDashed(ctx, this.dashLength);
