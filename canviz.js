@@ -332,7 +332,7 @@ var Canviz = Class.create({
 							var cy = this.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
-							this.render(new Ellipse(cx, cy, rx, ry), filled);
+							this.drawPath(new Ellipse(cx, cy, rx, ry), filled);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -354,7 +354,7 @@ var Canviz = Class.create({
 									new Point(tokens[0],                  this.height - tokens[1])
 								]);
 							}
-							this.render(path, filled);
+							this.drawPath(path, filled);
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
@@ -370,7 +370,7 @@ var Canviz = Class.create({
 									new Point(tokens[i + 4], this.height - tokens[i + 5])
 								]);
 							}
-							this.render(path, filled);
+							this.drawPath(path, filled);
 							break;
 						case 'I': // image
 							var x = tokenizer.takeNumber();
@@ -479,7 +479,7 @@ var Canviz = Class.create({
 		};
 		this.ctx.restore();
 	},
-	render: function(path, filled) {
+	drawPath: function(path, filled) {
 		if (filled) {
 			this.ctx.beginPath();
 			path.draw(this.ctx);
