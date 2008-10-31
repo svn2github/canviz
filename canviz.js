@@ -61,26 +61,194 @@ var Tokenizer = Class.create({
 });
 
 var Entity = Class.create({
-	initialize: function(name) {
+	initialize: function(name, canviz, root_graph) {
 		this.name = name;
+		this.canviz = canviz;
+		this.rootGraph = root_graph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
+	},
+	draw: function(ctx, ctx_scale, redraw_canvas_only) {
+		var i, tokens;
+		for (var command_index = 0; command_index < this.canviz.commands.length; command_index++) {
+			var command = this.canviz.commands[command_index];
+//			debug(command);
+			var tokenizer = new Tokenizer(command);
+			var token = tokenizer.takeChars();
+			if (token) {
+				this.canviz.dashStyle = 'solid';
+				ctx.save();
+				while (token) {
+//					debug('processing token ' + token);
+					switch (token) {
+						case 'E': // filled ellipse
+						case 'e': // unfilled ellipse
+							var filled = ('E' == token);
+							var cx = tokenizer.takeNumber();
+							var cy = this.canviz.height - tokenizer.takeNumber();
+							var rx = tokenizer.takeNumber();
+							var ry = tokenizer.takeNumber();
+							this.canviz.drawPath(ctx, new Ellipse(cx, cy, rx, ry), filled);
+							break;
+						case 'P': // filled polygon
+						case 'p': // unfilled polygon
+						case 'L': // polyline
+							var filled = ('P' == token);
+							var closed = ('L' != token);
+							var num_points = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num_points); // points
+							var path = new Path();
+							for (i = 2; i < 2 * num_points; i += 2) {
+								path.addBezier([
+									new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
+									new Point(tokens[i],     this.canviz.height - tokens[i + 1])
+								]);
+							}
+							if (closed) {
+								path.addBezier([
+									new Point(tokens[2 * num_points - 2], this.canviz.height - tokens[2 * num_points - 1]),
+									new Point(tokens[0],                  this.canviz.height - tokens[1])
+								]);
+							}
+							this.canviz.drawPath(ctx, path, filled);
+							break;
+						case 'B': // unfilled b-spline
+						case 'b': // filled b-spline
+							var filled = ('b' == token);
+							var num_points = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * num_points); // points
+							var path = new Path();
+							for (i = 2; i < 2 * num_points; i += 6) {
+								path.addBezier([
+									new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
+									new Point(tokens[i],     this.canviz.height - tokens[i + 1]),
+									new Point(tokens[i + 2], this.canviz.height - tokens[i + 3]),
+									new Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
+								]);
+							}
+							this.canviz.drawPath(ctx, path, filled);
+							break;
+						case 'I': // image
+							var x = tokenizer.takeNumber();
+							var y = this.canviz.height - tokenizer.takeNumber();
+							var w = tokenizer.takeNumber();
+							var h = tokenizer.takeNumber();
+							var src = tokenizer.takeString();
+							if (!this.canviz.images[src]) {
+								y -= h;
+								this.canviz.images[src] = new GraphImage(this.canviz, src, x, y, w, h);
+							}
+							this.canviz.images[src].draw();
+							break;
+						case 'T': // text
+							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
+							var y = Math.round(ctx_scale * this.canviz.height + 2 * this.canviz.padding - (ctx_scale * (tokenizer.takeNumber() + this.canviz.bbScale * font_size) + this.canviz.padding));
+							var text_align = tokenizer.takeNumber();
+							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
+							var str = tokenizer.takeString();
+							if (!redraw_canvas_only && !str.match(/^\s*$/)) {
+//								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
+								str = str.escapeHTML();
+								do {
+									matches = str.match(/ ( +)/);
+									if (matches) {
+										var spaces = ' ';
+										matches[1].length.times(function() {
+											spaces += '&nbsp;';
+										});
+										str = str.replace(/  +/, spaces);
+									}
+								} while (matches);
+								var text = new Element('div').update(str);
+								text.setStyle({
+									fontSize: Math.round(font_size * ctx_scale * this.canviz.bbScale) + 'px',
+									fontFamily: font_family,
+									color: ctx.strokeStyle,
+									position: 'absolute',
+									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
+									left: (x - (1 + text_align) * text_width) + 'px',
+									top: y + 'px',
+									width: (2 * text_width) + 'px'
+								});
+								this.canviz.texts.appendChild(text);
+							}
+							break;
+						case 'C': // set fill color
+						case 'c': // set pen color
+							var fill = ('C' == token);
+							var color = this.canviz.parseColor(tokenizer.takeString());
+							if (fill) {
+								ctx.fillStyle = color;
+							} else {
+								ctx.strokeStyle = color;
+							}
+							break;
+						case 'F': // set font
+							font_size = tokenizer.takeNumber();
+							font_family = tokenizer.takeString();
+							switch (font_family) {
+								case 'Times-Roman':
+									font_family = 'Times New Roman';
+									break;
+								case 'Courier':
+									font_family = 'Courier New';
+									break;
+								case 'Helvetica':
+									font_family = 'Arial';
+									break;
+								default:
+									// nothing
+							}
+//							debug('set font ' + font_size + 'pt ' + font_family);
+							break;
+						case 'S': // set style
+							var style = tokenizer.takeString();
+							switch (style) {
+								case 'solid':
+								case 'filled':
+									// nothing
+									break;
+								case 'dashed':
+								case 'dotted':
+									this.canviz.dashStyle = style;
+									break;
+								case 'bold':
+									ctx.lineWidth = 2;
+									break;
+								default:
+									matches = style.match(/^setlinewidth\((.*)\)$/);
+									if (matches) {
+										ctx.lineWidth = Number(matches[1]);
+									} else {
+										debug('unknown style ' + style);
+									}
+							}
+							break;
+						default:
+							debug('unknown token ' + token);
+							return;
+					}
+					token = tokenizer.takeChars();
+				}
+				ctx.restore();
+			}
+		}
 	}
 });
 
 var Node = Class.create(Entity, {});
 
 var Edge = Class.create(Entity, {
-	initialize: function($super, name, from_node, to_node) {
-		$super(name);
+	initialize: function($super, name, canviz, root_graph, from_node, to_node) {
+		$super(name, canviz, root_graph);
 		this.fromNode = from_node;
 		this.toNode = to_node;
 	}
 });
 
 var Graph = Class.create(Entity, {
-	initialize: function($super, name) {
-		$super(name);
+	initialize: function($super, name, canviz, root_graph) {
+		$super(name, canviz, root_graph);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.nodes = $A();
@@ -161,7 +329,7 @@ var Canviz = Class.create({
 				if (0 == containers.length) {
 					matches = line.match(this.graphMatchRe);
 					if (matches) {
-						containers.unshift(new Graph(matches[3]));
+						containers.unshift(new Graph(matches[3], this));
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
@@ -171,7 +339,7 @@ var Canviz = Class.create({
 				} else {
 					matches = line.match(this.subgraphMatchRe);
 					if (matches) {
-						containers.unshift(new Graph(matches[1]));
+						containers.unshift(new Graph(matches[1], this, containers[0]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -203,7 +371,7 @@ var Canviz = Class.create({
 								attr_hash = containers[0].edgeAttrs;
 								break;
 							default:
-								entity = new Node(entity_name);
+								entity = new Node(entity_name, this, containers[0]);
 								attr_hash = entity.attrs;
 								draw_attr_hash = entity.drawAttrs;
 								containers[0].nodes.push(entity);
@@ -214,7 +382,7 @@ var Canviz = Class.create({
 						if (matches) {
 							entity_name = matches[1];
 							attrs = matches[8];
-							entity = new Edge(entity_name, matches[2], matches[5]);
+							entity = new Edge(entity_name, this, containers[0], matches[2], matches[5]);
 							attr_hash = entity.attrs;
 							draw_attr_hash = entity.drawAttrs;
 							containers[0].edges.push(entity);
@@ -313,170 +481,7 @@ var Canviz = Class.create({
 		this.ctx.fillRect(0, 0, width, height);
 		this.ctx.translate(this.padding, this.padding);
 		this.ctx.scale(ctx_scale, ctx_scale);
-		var i, tokens;
-		for (var command_index = 0; command_index < this.commands.length; command_index++) {
-			var command = this.commands[command_index];
-//			debug(command);
-			var tokenizer = new Tokenizer(command);
-			var token = tokenizer.takeChars();
-			if (token) {
-				this.dashStyle = 'solid';
-				this.ctx.save();
-				while (token) {
-//					debug('processing token ' + token);
-					switch (token) {
-						case 'E': // filled ellipse
-						case 'e': // unfilled ellipse
-							var filled = ('E' == token);
-							var cx = tokenizer.takeNumber();
-							var cy = this.height - tokenizer.takeNumber();
-							var rx = tokenizer.takeNumber();
-							var ry = tokenizer.takeNumber();
-							this.drawPath(this.ctx, new Ellipse(cx, cy, rx, ry), filled);
-							break;
-						case 'P': // filled polygon
-						case 'p': // unfilled polygon
-						case 'L': // polyline
-							var filled = ('P' == token);
-							var closed = ('L' != token);
-							var num_points = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num_points); // points
-							var path = new Path();
-							for (i = 2; i < 2 * num_points; i += 2) {
-								path.addBezier([
-									new Point(tokens[i - 2], this.height - tokens[i - 1]),
-									new Point(tokens[i],     this.height - tokens[i + 1])
-								]);
-							}
-							if (closed) {
-								path.addBezier([
-									new Point(tokens[2 * num_points - 2], this.height - tokens[2 * num_points - 1]),
-									new Point(tokens[0],                  this.height - tokens[1])
-								]);
-							}
-							this.drawPath(this.ctx, path, filled);
-							break;
-						case 'B': // unfilled b-spline
-						case 'b': // filled b-spline
-							var filled = ('b' == token);
-							var num_points = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num_points); // points
-							var path = new Path();
-							for (i = 2; i < 2 * num_points; i += 6) {
-								path.addBezier([
-									new Point(tokens[i - 2], this.height - tokens[i - 1]),
-									new Point(tokens[i],     this.height - tokens[i + 1]),
-									new Point(tokens[i + 2], this.height - tokens[i + 3]),
-									new Point(tokens[i + 4], this.height - tokens[i + 5])
-								]);
-							}
-							this.drawPath(this.ctx, path, filled);
-							break;
-						case 'I': // image
-							var x = tokenizer.takeNumber();
-							var y = this.height - tokenizer.takeNumber();
-							var w = tokenizer.takeNumber();
-							var h = tokenizer.takeNumber();
-							var src = tokenizer.takeString();
-							if (!this.images[src]) {
-								y -= h;
-								this.images[src] = new GraphImage(this, src, x, y, w, h);
-							}
-							this.images[src].draw();
-							break;
-						case 'T': // text
-							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.padding);
-							var y = Math.round(height - (ctx_scale * (tokenizer.takeNumber() + this.bbScale * font_size) + this.padding));
-							var text_align = tokenizer.takeNumber();
-							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
-							var str = tokenizer.takeString();
-							if (!redraw_canvas_only && !str.match(/^\s*$/)) {
-//								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
-								str = str.escapeHTML();
-								do {
-									matches = str.match(/ ( +)/);
-									if (matches) {
-										var spaces = ' ';
-										matches[1].length.times(function() {
-											spaces += '&nbsp;';
-										});
-										str = str.replace(/  +/, spaces);
-									}
-								} while (matches);
-								var text = new Element('div').update(str);
-								text.setStyle({
-									fontSize: Math.round(font_size * ctx_scale * this.bbScale) + 'px',
-									fontFamily: font_family,
-									color: this.ctx.strokeStyle,
-									position: 'absolute',
-									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
-									left: (x - (1 + text_align) * text_width) + 'px',
-									top: y + 'px',
-									width: (2 * text_width) + 'px'
-								});
-								this.texts.appendChild(text);
-							}
-							break;
-						case 'C': // set fill color
-						case 'c': // set pen color
-							var fill = ('C' == token);
-							var color = this.parseColor(tokenizer.takeString());
-							if (fill) {
-								this.ctx.fillStyle = color;
-							} else {
-								this.ctx.strokeStyle = color;
-							}
-							break;
-						case 'F': // set font
-							font_size = tokenizer.takeNumber();
-							font_family = tokenizer.takeString();
-							switch (font_family) {
-								case 'Times-Roman':
-									font_family = 'Times New Roman';
-									break;
-								case 'Courier':
-									font_family = 'Courier New';
-									break;
-								case 'Helvetica':
-									font_family = 'Arial';
-									break;
-								default:
-									// nothing
-							}
-//							debug('set font ' + font_size + 'pt ' + font_family);
-							break;
-						case 'S': // set style
-							var style = tokenizer.takeString();
-							switch (style) {
-								case 'solid':
-								case 'filled':
-									// nothing
-									break;
-								case 'dashed':
-								case 'dotted':
-									this.dashStyle = style;
-									break;
-								case 'bold':
-									this.ctx.lineWidth = 2;
-									break;
-								default:
-									matches = style.match(/^setlinewidth\((.*)\)$/);
-									if (matches) {
-										this.ctx.lineWidth = Number(matches[1]);
-									} else {
-										debug('unknown style ' + style);
-									}
-							}
-							break;
-						default:
-							debug('unknown token ' + token);
-							return;
-					}
-					token = tokenizer.takeChars();
-				}
-				this.ctx.restore();
-			}
-		};
+		this.graphs[0].draw(this.ctx, ctx_scale, redraw_canvas_only);
 		this.ctx.restore();
 	},
 	drawPath: function(ctx, path, filled) {
