@@ -332,7 +332,7 @@ var Canviz = Class.create({
 							var cy = this.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
-							this.drawPath(new Ellipse(cx, cy, rx, ry), filled);
+							this.drawPath(this.ctx, new Ellipse(cx, cy, rx, ry), filled);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -354,7 +354,7 @@ var Canviz = Class.create({
 									new Point(tokens[0],                  this.height - tokens[1])
 								]);
 							}
-							this.drawPath(path, filled);
+							this.drawPath(this.ctx, path, filled);
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
@@ -370,7 +370,7 @@ var Canviz = Class.create({
 									new Point(tokens[i + 4], this.height - tokens[i + 5])
 								]);
 							}
-							this.drawPath(path, filled);
+							this.drawPath(this.ctx, path, filled);
 							break;
 						case 'I': // image
 							var x = tokenizer.takeNumber();
@@ -479,33 +479,33 @@ var Canviz = Class.create({
 		};
 		this.ctx.restore();
 	},
-	drawPath: function(path, filled) {
+	drawPath: function(ctx, path, filled) {
 		if (filled) {
-			this.ctx.beginPath();
-			path.draw(this.ctx);
-			this.ctx.fill();
+			ctx.beginPath();
+			path.draw(ctx);
+			ctx.fill();
 		}
-		if (this.ctx.fillStyle != this.ctx.strokeStyle || !filled) {
+		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
 			switch (this.dashStyle) {
 				case 'dashed':
-					this.ctx.beginPath();
-					path.drawDashed(this.ctx, this.dashLength);
+					ctx.beginPath();
+					path.drawDashed(ctx, this.dashLength);
 					break;
 				case 'dotted':
-					var oldLineWidth = this.ctx.lineWidth;
-					this.ctx.lineWidth *= 2;
-					this.ctx.beginPath();
-					path.drawDotted(this.ctx, this.dotSpacing);
+					var oldLineWidth = ctx.lineWidth;
+					ctx.lineWidth *= 2;
+					ctx.beginPath();
+					path.drawDotted(ctx, this.dotSpacing);
 					break;
 				case 'solid':
 				default:
 					if (!filled) {
-						this.ctx.beginPath();
-						path.draw(this.ctx);
+						ctx.beginPath();
+						path.draw(ctx);
 					}
 			}
-			this.ctx.stroke();
-			if (oldLineWidth) this.ctx.lineWidth = oldLineWidth;
+			ctx.stroke();
+			if (oldLineWidth) ctx.lineWidth = oldLineWidth;
 		}
 	},
 	unescape: function(str) {
