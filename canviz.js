@@ -61,13 +61,29 @@ var Tokenizer = Class.create({
 });
 
 var Entity = Class.create({
-	initialize: function(name, canviz, root_graph, parent_graph) {
+	initialize: function(default_attr_hash_name, name, canviz, root_graph, parent_graph) {
+		this.defaultAttrHashName = default_attr_hash_name;
 		this.name = name;
 		this.canviz = canviz;
 		this.rootGraph = root_graph;
 		this.parentGraph = parent_graph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
+	},
+	getAttr: function(attr_name) {
+		var attr_value = this.attrs.get(attr_name);
+		if (Object.isUndefined(attr_value)) {
+			var graph = this.parentGraph;
+			while (!Object.isUndefined(graph)) {
+				attr_value = graph[this.defaultAttrHashName].get(attr_name);
+				if (Object.isUndefined(attr_value)) {
+					graph = graph.parentGraph;
+				} else {
+					break;
+				}
+			}
+		}
+		return attr_value;
 	},
 	draw: function(ctx, ctx_scale, redraw_canvas_only) {
 		var i, tokens;
@@ -237,11 +253,15 @@ var Entity = Class.create({
 	}
 });
 
-var Node = Class.create(Entity, {});
+var Node = Class.create(Entity, {
+	initialize: function($super, name, canviz, root_graph, parent_graph) {
+		$super('nodeAttrs', name, canviz, root_graph, parent_graph);
+	}
+});
 
 var Edge = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph, from_node, to_node) {
-		$super(name, canviz, root_graph, parent_graph);
+		$super('edgeAttrs', name, canviz, root_graph, parent_graph);
 		this.fromNode = from_node;
 		this.toNode = to_node;
 	}
@@ -249,7 +269,7 @@ var Edge = Class.create(Entity, {
 
 var Graph = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
-		$super(name, canviz, root_graph, parent_graph);
+		$super('attrs', name, canviz, root_graph, parent_graph);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.nodes = $A();
