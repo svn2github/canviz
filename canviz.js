@@ -261,7 +261,7 @@ var Graph = Class.create(Entity, {
 		[this.subgraphs, this.nodes, this.edges].each(function(type) {
 			type.each(function(entity) {
 				entity.draw(ctx, ctx_scale, redraw_canvas_only);
-			})
+			});
 		});
 	}
 });
