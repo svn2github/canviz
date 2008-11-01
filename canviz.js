@@ -193,7 +193,7 @@ var Entity = Class.create({
 						case 'C': // set fill color
 						case 'c': // set pen color
 							var fill = ('C' == token);
-							var color = this.canviz.parseColor(tokenizer.takeString());
+							var color = this.parseColor(tokenizer.takeString());
 							if (fill) {
 								ctx.fillStyle = color;
 							} else {
@@ -250,6 +250,50 @@ var Entity = Class.create({
 				ctx.restore();
 			}
 		}.bind(this));
+	},
+	parseColor: function(color) {
+		// rgb/rgba
+		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
+		if (matches) {
+			if (matches[4]) { // rgba
+				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
+			} else { // rgb
+				return '#' + matches[1] + matches[2] + matches[3];
+			}
+		}
+		// hsv
+		matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
+		if (matches) {
+			return this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
+		}
+		// named color
+		var color_scheme = this.getAttr('colorscheme');
+		var color_name = color;
+		matches = color.match(/^\/(.*)\/(.*)$/);
+		if (matches) {
+			if (matches[1]) {
+				color_scheme = matches[1];
+			}
+			color_name = matches[2];
+		} else {
+			matches = color.match(/^\/(.*)$/);
+			if (matches) {
+				color_scheme = 'X11';
+				color_name = matches[1];
+			}
+		}
+		color_name = color_name.toLowerCase();
+		var color_scheme_name = color_scheme.toLowerCase();
+		if (this.canviz.colors.get(color_scheme_name)) {
+			if (this.canviz.colors.get(color_scheme_name)[color_name]) {
+				return (3 == this.canviz.colors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + this.canviz.colors.get(color_scheme_name)[color_name].join(',') + ')';
+			}
+		} else {
+			debug('unknown color scheme ' + color_scheme);
+		}
+		// unknown
+		debug('unknown color ' + color + '; color scheme is ' + color_scheme);
+		return '#000000';
 	}
 });
 
@@ -362,6 +406,9 @@ var Canviz = Class.create({
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
+						containers[0].attrs.set('colorscheme', 'X11');
+						containers[0].nodeAttrs.set('colorscheme', 'X11');
+						containers[0].edgeAttrs.set('colorscheme', 'X11');
 						this.graphs.push(containers[0]);
 //						debug('graph: ' + containers[0].name);
 					}
@@ -442,7 +489,7 @@ var Canviz = Class.create({
 											this.height = Number(bb[3]);
 											break;
 										case 'bgcolor':
-											this.bgcolor = this.parseColor(attr_value);
+											this.bgcolor = root_graph.parseColor(attr_value);
 											break;
 										case 'dpi':
 											this.dpi = attr_value;
@@ -548,50 +595,6 @@ var Canviz = Class.create({
 		} else {
 			return str;
 		}
-	},
-	parseColor: function(color) {
-		// rgb/rgba
-		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
-		if (matches) {
-			if (matches[4]) { // rgba
-				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
-			} else { // rgb
-				return '#' + matches[1] + matches[2] + matches[3];
-			}
-		}
-		// hsv
-		matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
-		if (matches) {
-			return this.hsvToRgbColor(matches[1], matches[2], matches[3]);
-		}
-		// named color
-		var color_scheme = 'X11';
-		var color_name = color;
-		matches = color.match(/^\/(.*)\/(.*)$/);
-		if (matches) {
-			if (matches[1]) {
-				color_scheme = matches[1];
-			}
-			color_name = matches[2];
-		} else {
-			matches = color.match(/^\/(.*)$/);
-			if (matches) {
-				color_scheme = 'X11';
-				color_name = matches[1];
-			}
-		}
-		color_name = color_name.toLowerCase();
-		var color_scheme_name = color_scheme.toLowerCase();
-		if (this.colors.get(color_scheme_name)) {
-			if (this.colors.get(color_scheme_name)[color_name]) {
-				return (3 == this.colors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + this.colors.get(color_scheme_name)[color_name].join(',') + ')';
-			}
-		} else {
-			debug('unknown color scheme ' + color_scheme);
-		}
-		// unknown
-		debug('unknown color ' + color);
-		return '#000000';
 	},
 	hsvToRgbColor: function(h, s, v) {
 		var i, f, p, q, t, r, g, b;
