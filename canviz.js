@@ -163,7 +163,7 @@ var Entity = Class.create({
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
-							if (!redraw_canvas_only && !str.match(/^\s*$/)) {
+							if (!redraw_canvas_only && !/^\s*$/.test(str)) {
 //								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
 								str = str.escapeHTML();
 								do {
@@ -475,7 +475,7 @@ var Canviz = Class.create({
 								attrs = attrs.substr(matches[0].length);
 								attr_name = matches[1];
 								attr_value = this.unescape(matches[2]);
-								if (attr_name.match(/^_.*draw_$/)) {
+								if (/^_.*draw_$/.test(attr_name)) {
 									draw_attr_hash.set(attr_name, attr_value);
 								} else {
 									attr_hash.set(attr_name, attr_value);
