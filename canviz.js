@@ -61,10 +61,11 @@ var Tokenizer = Class.create({
 });
 
 var Entity = Class.create({
-	initialize: function(name, canviz, root_graph) {
+	initialize: function(name, canviz, root_graph, parent_graph) {
 		this.name = name;
 		this.canviz = canviz;
 		this.rootGraph = root_graph;
+		this.parentGraph = parent_graph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
 	},
@@ -239,16 +240,16 @@ var Entity = Class.create({
 var Node = Class.create(Entity, {});
 
 var Edge = Class.create(Entity, {
-	initialize: function($super, name, canviz, root_graph, from_node, to_node) {
-		$super(name, canviz, root_graph);
+	initialize: function($super, name, canviz, root_graph, parent_graph, from_node, to_node) {
+		$super(name, canviz, root_graph, parent_graph);
 		this.fromNode = from_node;
 		this.toNode = to_node;
 	}
 });
 
 var Graph = Class.create(Entity, {
-	initialize: function($super, name, canviz, root_graph) {
-		$super(name, canviz, root_graph);
+	initialize: function($super, name, canviz, root_graph, parent_graph) {
+		$super(name, canviz, root_graph, parent_graph);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.nodes = $A();
@@ -321,7 +322,7 @@ var Canviz = Class.create({
 		this.bgcolor = '#ffffff';
 		var lines = xdot.split(/\r?\n/);
 		var i = 0;
-		var line, lastchar, matches, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
+		var line, lastchar, matches, root_graph, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
 		var containers = $A();
 		while (i < lines.length) {
 			line = lines[i++].replace(/^\s+/, '');
@@ -336,7 +337,8 @@ var Canviz = Class.create({
 				if (0 == containers.length) {
 					matches = line.match(this.graphMatchRe);
 					if (matches) {
-						containers.unshift(new Graph(matches[3], this));
+						root_graph = new Graph(matches[3], this);
+						containers.unshift(root_graph);
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
@@ -346,7 +348,7 @@ var Canviz = Class.create({
 				} else {
 					matches = line.match(this.subgraphMatchRe);
 					if (matches) {
-						containers.unshift(new Graph(matches[1], this, containers[0]));
+						containers.unshift(new Graph(matches[1], this, root_graph, containers[0]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -378,7 +380,7 @@ var Canviz = Class.create({
 								attr_hash = containers[0].edgeAttrs;
 								break;
 							default:
-								entity = new Node(entity_name, this, containers[0]);
+								entity = new Node(entity_name, this, root_graph, containers[0]);
 								attr_hash = entity.attrs;
 								draw_attr_hash = entity.drawAttrs;
 								containers[0].nodes.push(entity);
@@ -389,7 +391,7 @@ var Canviz = Class.create({
 						if (matches) {
 							entity_name = matches[1];
 							attrs = matches[8];
-							entity = new Edge(entity_name, this, containers[0], matches[2], matches[5]);
+							entity = new Edge(entity_name, this, root_graph, containers[0], matches[2], matches[5]);
 							attr_hash = entity.attrs;
 							draw_attr_hash = entity.drawAttrs;
 							containers[0].edges.push(entity);
