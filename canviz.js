@@ -249,7 +249,7 @@ var Entity = Class.create({
 				}
 				ctx.restore();
 			}
-		});
+		}.bind(this));
 	}
 });
 
