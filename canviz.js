@@ -661,16 +661,16 @@ var GraphImage = Class.create({
 		this.src = this.canviz.imagePath + src;
 		this.loaded = false;
 		this.img = new Image();
-		this.img.onload = this.succeeded.bind(this);
-		this.img.onerror = this.finished.bind(this);
-		this.img.onabort = this.finished.bind(this);
+		this.img.onload = this.onLoad.bind(this);
+		this.img.onerror = this.onFinish.bind(this);
+		this.img.onabort = this.onFinish.bind(this);
 		this.img.src = this.src;
 	},
-	succeeded: function() {
+	onLoad: function() {
 		this.loaded = true;
-		this.finished();
+		this.onFinish();
 	},
-	finished: function() {
+	onFinish: function() {
 		++this.canviz.numImagesFinished;
 		if (this.canviz.numImages == this.canviz.numImagesFinished) {
 			this.canviz.draw(true);
