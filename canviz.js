@@ -156,11 +156,11 @@ var Entity = Class.create({
 							var w = tokenizer.takeNumber();
 							var h = tokenizer.takeNumber();
 							var src = tokenizer.takeString();
+							y -= h;
 							if (!this.canviz.images[src]) {
-								y -= h;
-								this.canviz.images[src] = new GraphImage(this.canviz, src, x, y, w, h);
+								this.canviz.images[src] = new GraphImage(this.canviz, src);
 							}
-							this.canviz.images[src].draw();
+							this.canviz.images[src].draw(x, y, w, h);
 							break;
 						case 'T': // text
 							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
@@ -656,14 +656,10 @@ Object.extend(Canviz.prototype, {
 });
 
 var GraphImage = Class.create({
-	initialize: function(graph, src, x, y, w, h) {
+	initialize: function(graph, src) {
 		this.graph = graph;
 		++this.graph.numImages;
 		this.src = this.graph.imagePath + src;
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
 		this.loaded = false;
 		this.img = new Image();
 		this.img.onload = this.succeeded.bind(this);
@@ -681,9 +677,9 @@ var GraphImage = Class.create({
 			this.graph.draw(true);
 		}
 	},
-	draw: function() {
+	draw: function(x, y, w, h) {
 		if (this.loaded) {
-			this.graph.ctx.drawImage(this.img, this.x, this.y, this.w, this.h);
+			this.graph.ctx.drawImage(this.img, x, y, w, h);
 		}
 	}
 });
