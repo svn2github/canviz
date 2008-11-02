@@ -113,7 +113,6 @@ var Entity = Class.create({
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
 							var path = new Ellipse(cx, cy, rx, ry);
-							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -135,7 +134,6 @@ var Entity = Class.create({
 									new Point(tokens[0],                  this.canviz.height - tokens[1])
 								]);
 							}
-							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
@@ -151,7 +149,6 @@ var Entity = Class.create({
 									new Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
 								]);
 							}
-							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'I': // image
 							var x = tokenizer.takeNumber();
@@ -254,6 +251,7 @@ var Entity = Class.create({
 							return;
 					}
 					if (path) {
+						this.canviz.drawPath(ctx, path, filled, dash_style);
 						if (!redraw_canvas_only) this.bbRect.expandToInclude(path.getBB());
 						path = undefined;
 					}
