@@ -70,6 +70,12 @@ var Entity = Class.create({
 		this.attrs = $H();
 		this.drawAttrs = $H();
 	},
+	initBB: function() {
+		var matches = this.getAttr('pos').match(/([0-9.]+),([0-9.]+)/);
+		var x = Math.round(matches[1]);
+		var y = Math.round(this.canviz.height - matches[2]);
+		this.bbRect = new Rect(x, y, x, y);
+	},
 	getAttr: function(attr_name) {
 		var attr_value = this.attrs.get(attr_name);
 		if (Object.isUndefined(attr_value)) {
@@ -87,6 +93,7 @@ var Entity = Class.create({
 	},
 	draw: function(ctx, ctx_scale, redraw_canvas_only) {
 		var i, tokens;
+		if (!redraw_canvas_only) this.initBB();
 		this.drawAttrs.each(function(draw_attr) {
 			var command = draw_attr.value;
 //			debug(command);
@@ -105,7 +112,8 @@ var Entity = Class.create({
 							var cy = this.canviz.height - tokenizer.takeNumber();
 							var rx = tokenizer.takeNumber();
 							var ry = tokenizer.takeNumber();
-							this.canviz.drawPath(ctx, new Ellipse(cx, cy, rx, ry), filled, dash_style);
+							var path = new Ellipse(cx, cy, rx, ry);
+							this.canviz.drawPath(ctx, path, filled, dash_style);
 							break;
 						case 'P': // filled polygon
 						case 'p': // unfilled polygon
@@ -245,6 +253,10 @@ var Entity = Class.create({
 							debug('unknown token ' + token);
 							return;
 					}
+					if (path) {
+						if (!redraw_canvas_only) this.bbRect.expandToInclude(path.getBB());
+						path = undefined;
+					}
 					token = tokenizer.takeChars();
 				}
 				ctx.restore();
@@ -319,6 +331,10 @@ var Graph = Class.create(Entity, {
 		this.nodes = $A();
 		this.edges = $A();
 		this.subgraphs = $A();
+	},
+	initBB: function() {
+		var coords = this.getAttr('bb').split(',');
+		this.bbRect = new Rect(coords[0], this.canviz.height - coords[1], coords[2], this.canviz.height - coords[3]);
 	},
 	draw: function($super, ctx, ctx_scale, redraw_canvas_only) {
 		$super(ctx, ctx_scale, redraw_canvas_only);
