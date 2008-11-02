@@ -157,7 +157,7 @@ var Entity = Class.create({
 							var h = tokenizer.takeNumber();
 							var src = tokenizer.takeString();
 							if (!this.canviz.images[src]) {
-								this.canviz.images[src] = new GraphImage(this.canviz, src);
+								this.canviz.images[src] = new CanvizImage(this.canviz, src);
 							}
 							this.canviz.images[src].draw(ctx, l, b - h, w, h);
 							break;
@@ -654,7 +654,7 @@ Object.extend(Canviz.prototype, {
 	attrMatchRe: new RegExp('^' + Canviz.prototype.idMatch + '=' + Canviz.prototype.idMatch + '(?:[,\\s]+|$)')
 });
 
-var GraphImage = Class.create({
+var CanvizImage = Class.create({
 	initialize: function(canviz, src) {
 		this.canviz = canviz;
 		++this.canviz.numImages;
