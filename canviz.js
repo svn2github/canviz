@@ -293,9 +293,11 @@ var Entity = Class.create({
 		}
 		color_name = color_name.toLowerCase();
 		var color_scheme_name = color_scheme.toLowerCase();
-		if (Canviz.prototype.colors.get(color_scheme_name)) {
-			if (Canviz.prototype.colors.get(color_scheme_name)[color_name]) {
-				return (3 == Canviz.prototype.colors.get(color_scheme_name)[color_name].length ? 'rgb(' : 'rgba(') + Canviz.prototype.colors.get(color_scheme_name)[color_name].join(',') + ')';
+		var color_scheme_data = Canviz.prototype.colors.get(color_scheme_name);
+		if (color_scheme_data) {
+			var color_data = color_scheme_data[color_name];
+			if (color_data) {
+				return (3 == color_data.length ? 'rgb(' : 'rgba(') + color_data.join(',') + ')';
 			}
 		} else {
 			debug('unknown color scheme ' + color_scheme);
