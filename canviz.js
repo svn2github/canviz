@@ -655,10 +655,10 @@ Object.extend(Canviz.prototype, {
 });
 
 var GraphImage = Class.create({
-	initialize: function(graph, src) {
-		this.graph = graph;
-		++this.graph.numImages;
-		this.src = this.graph.imagePath + src;
+	initialize: function(canviz, src) {
+		this.canviz = canviz;
+		++this.canviz.numImages;
+		this.src = this.canviz.imagePath + src;
 		this.loaded = false;
 		this.img = new Image();
 		this.img.onload = this.succeeded.bind(this);
@@ -671,9 +671,9 @@ var GraphImage = Class.create({
 		this.finished();
 	},
 	finished: function() {
-		++this.graph.numImagesFinished;
-		if (this.graph.numImages == this.graph.numImagesFinished) {
-			this.graph.draw(true);
+		++this.canviz.numImagesFinished;
+		if (this.canviz.numImages == this.canviz.numImagesFinished) {
+			this.canviz.draw(true);
 		}
 	},
 	draw: function(ctx, l, t, w, h) {
