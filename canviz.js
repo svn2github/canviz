@@ -658,13 +658,12 @@ var GraphImage = Class.create({
 	initialize: function(canviz, src) {
 		this.canviz = canviz;
 		++this.canviz.numImages;
-		this.src = this.canviz.imagePath + src;
 		this.finished = this.loaded = false;
 		this.img = new Image();
 		this.img.onload = this.onLoad.bind(this);
 		this.img.onerror = this.onFinish.bind(this);
 		this.img.onabort = this.onFinish.bind(this);
-		this.img.src = this.src;
+		this.img.src = this.canviz.imagePath + src;
 	},
 	onLoad: function() {
 		this.loaded = true;
@@ -682,7 +681,7 @@ var GraphImage = Class.create({
 			if (this.loaded) {
 				ctx.drawImage(this.img, l, t, w, h);
 			} else {
-				debug('can\'t load image ' + this.src);
+				debug('can\'t load image ' + this.img.src);
 				this.drawBrokenImage(ctx, l, t, w, h);
 			}
 		}
