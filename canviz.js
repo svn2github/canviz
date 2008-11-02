@@ -159,7 +159,7 @@ var Entity = Class.create({
 							if (!this.canviz.images[src]) {
 								this.canviz.images[src] = new GraphImage(this.canviz, src);
 							}
-							this.canviz.images[src].draw(l, b - h, w, h);
+							this.canviz.images[src].draw(ctx, l, b - h, w, h);
 							break;
 						case 'T': // text
 							var l = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
@@ -676,9 +676,9 @@ var GraphImage = Class.create({
 			this.graph.draw(true);
 		}
 	},
-	draw: function(l, t, w, h) {
+	draw: function(ctx, l, t, w, h) {
 		if (this.loaded) {
-			this.graph.ctx.drawImage(this.img, l, t, w, h);
+			ctx.drawImage(this.img, l, t, w, h);
 		}
 	}
 });
