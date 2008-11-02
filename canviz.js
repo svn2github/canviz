@@ -151,25 +151,24 @@ var Entity = Class.create({
 							}
 							break;
 						case 'I': // image
-							var x = tokenizer.takeNumber();
-							var y = this.canviz.height - tokenizer.takeNumber();
+							var l = tokenizer.takeNumber();
+							var b = this.canviz.height - tokenizer.takeNumber();
 							var w = tokenizer.takeNumber();
 							var h = tokenizer.takeNumber();
 							var src = tokenizer.takeString();
-							y -= h;
 							if (!this.canviz.images[src]) {
 								this.canviz.images[src] = new GraphImage(this.canviz, src);
 							}
-							this.canviz.images[src].draw(x, y, w, h);
+							this.canviz.images[src].draw(l, b - h, w, h);
 							break;
 						case 'T': // text
-							var x = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
-							var y = Math.round(ctx_scale * this.canviz.height + 2 * this.canviz.padding - (ctx_scale * (tokenizer.takeNumber() + this.canviz.bbScale * font_size) + this.canviz.padding));
+							var l = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
+							var t = Math.round(ctx_scale * this.canviz.height + 2 * this.canviz.padding - (ctx_scale * (tokenizer.takeNumber() + this.canviz.bbScale * font_size) + this.canviz.padding));
 							var text_align = tokenizer.takeNumber();
 							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
 							if (!redraw_canvas_only && !/^\s*$/.test(str)) {
-//								debug('draw text ' + str + ' ' + x + ' ' + y + ' ' + text_align + ' ' + text_width);
+//								debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + text_align + ' ' + text_width);
 								str = str.escapeHTML();
 								do {
 									matches = str.match(/ ( +)/);
@@ -188,8 +187,8 @@ var Entity = Class.create({
 									color: ctx.strokeStyle,
 									position: 'absolute',
 									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
-									left: (x - (1 + text_align) * text_width) + 'px',
-									top: y + 'px',
+									left: (l - (1 + text_align) * text_width) + 'px',
+									top: t + 'px',
 									width: (2 * text_width) + 'px'
 								});
 								this.canviz.texts.appendChild(text);
@@ -677,9 +676,9 @@ var GraphImage = Class.create({
 			this.graph.draw(true);
 		}
 	},
-	draw: function(x, y, w, h) {
+	draw: function(l, t, w, h) {
 		if (this.loaded) {
-			this.graph.ctx.drawImage(this.img, x, y, w, h);
+			this.graph.ctx.drawImage(this.img, l, t, w, h);
 		}
 	}
 });
