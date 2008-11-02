@@ -27,7 +27,7 @@ Ajax.Responders.register({
 });
 
 var canviz;
-function init() {
+document.observe('dom:loaded', function() {
 	var list = $('graph_name');
 	graphs.sort(function(a, b) {
 		a = a.replace(/.*\//, '').toLowerCase();
@@ -51,7 +51,7 @@ function init() {
 	canviz.setImagePath('graphs/images/');
 	canviz.setScale($F('graph_scale'));
 	load_graph();
-}
+});
 function load_graph() {
 	canviz.load(graph_url());
 }
@@ -83,7 +83,7 @@ function graph_url() {
 }
 // --></script>
 </head>
-<body onload="init()">
+<body>
 
 <div id="busy" style="display:none">Loading...</div>
 
