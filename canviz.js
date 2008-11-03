@@ -299,7 +299,12 @@ var Entity = Class.create({
 			if (color_data) {
 				return (3 == color_data.length ? 'rgb(' : 'rgba(') + color_data.join(',') + ')';
 			}
-		} else {
+		}
+		color_data = Canviz.prototype.colors.get('fallback')[color_name];
+		if (color_data) {
+			return 'rgb(' + color_data.join(',') + ')';
+		}
+		if (!color_scheme_data) {
 			debug('unknown color scheme ' + color_scheme);
 		}
 		// unknown
@@ -348,7 +353,7 @@ var Graph = Class.create(Entity, {
 var Canviz = Class.create({
 	maxXdotVersion: '1.2',
 	colors: $H({
-		x11:{
+		fallback:{
 			black:[0,0,0],
 			lightgrey:[211,211,211],
 			white:[255,255,255]
