@@ -303,7 +303,7 @@ var Entity = Class.create({
 			return this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
 		}
 		// named color
-		var color_scheme = this.getAttr('colorscheme');
+		var color_scheme = this.getAttr('colorscheme') || 'X11';
 		var color_name = color;
 		matches = color.match(/^\/(.*)\/(.*)$/);
 		if (matches) {
@@ -463,9 +463,6 @@ var Canviz = Class.create({
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
-						containers[0].attrs.set('colorscheme', 'X11');
-						containers[0].nodeAttrs.set('colorscheme', 'X11');
-						containers[0].edgeAttrs.set('colorscheme', 'X11');
 						this.graphs.push(containers[0]);
 //						debug('graph: ' + containers[0].name);
 					}
