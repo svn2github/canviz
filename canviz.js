@@ -77,7 +77,8 @@ var Entity = Class.create({
 		var y = Math.round(this.canviz.height - matches[2]);
 		this.bbRect = new Rect(x, y, x, y);
 	},
-	getAttr: function(attr_name) {
+	getAttr: function(attr_name, esc_string) {
+		if (Object.isUndefined(esc_string)) esc_string = false;
 		var attr_value = this.attrs.get(attr_name);
 		if (Object.isUndefined(attr_value)) {
 			var graph = this.parentGraph;
@@ -89,6 +90,19 @@ var Entity = Class.create({
 					break;
 				}
 			}
+		}
+		if (attr_value && esc_string) {
+			attr_value = attr_value.replace(this.escStringMatchRe, function(match, p1) {
+				switch (p1) {
+					case 'N': // fall through
+					case 'E': return this.name;
+					case 'T': return this.fromNode;
+					case 'H': return this.toNode;
+					case 'G': return this.immediateGraph.name;
+					case 'L': return this.getAttr('label', true);
+				}
+				return match;
+			}.bind(this));
 		}
 		return attr_value;
 	},
@@ -182,9 +196,9 @@ var Entity = Class.create({
 									}
 								} while (matches);
 								var text;
-								var href = this.getAttr('href') || this.getAttr('url');
+								var href = this.getAttr('href', true) || this.getAttr('url', true);
 								if (href) {
-									var target = this.getAttr('target') || '_self';
+									var target = this.getAttr('target', true) || '_self';
 //									debug(this.name + ', href ' + href + ', target ' + target);
 									text = new Element('a', {href: href, target: target});
 									text.setStyle({
@@ -329,7 +343,8 @@ var Entity = Class.create({
 var Node = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
 		$super('nodeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
-	}
+	},
+	escStringMatchRe: /\\([NGL])/g
 });
 
 var Edge = Class.create(Entity, {
@@ -337,7 +352,8 @@ var Edge = Class.create(Entity, {
 		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 		this.fromNode = from_node;
 		this.toNode = to_node;
-	}
+	},
+	escStringMatchRe: /\\([EGTHL])/g
 });
 
 var Graph = Class.create(Entity, {
@@ -360,7 +376,8 @@ var Graph = Class.create(Entity, {
 				entity.draw(ctx, ctx_scale, redraw_canvas_only);
 			});
 		});
-	}
+	},
+	escStringMatchRe: /\\([GL])/g
 });
 
 var Canviz = Class.create({
