@@ -343,7 +343,9 @@ var Entity = Class.create({
 var Node = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
 		$super('nodeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
-	},
+	}
+});
+Object.extend(Node.prototype, {
 	escStringMatchRe: /\\([NGL])/g
 });
 
@@ -352,7 +354,9 @@ var Edge = Class.create(Entity, {
 		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 		this.tailNode = tail_node;
 		this.headNode = head_node;
-	},
+	}
+});
+Object.extend(Edge.prototype, {
 	escStringMatchRe: /\\([EGTHL])/g
 });
 
@@ -376,7 +380,9 @@ var Graph = Class.create(Entity, {
 				entity.draw(ctx, ctx_scale, redraw_canvas_only);
 			});
 		});
-	},
+	}
+});
+Object.extend(Graph.prototype, {
 	escStringMatchRe: /\\([GL])/g
 });
 
