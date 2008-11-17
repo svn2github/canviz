@@ -96,8 +96,8 @@ var Entity = Class.create({
 				switch (p1) {
 					case 'N': // fall through
 					case 'E': return this.name;
-					case 'T': return this.fromNode;
-					case 'H': return this.toNode;
+					case 'T': return this.tailNode;
+					case 'H': return this.headNode;
 					case 'G': return this.immediateGraph.name;
 					case 'L': return this.getAttr('label', true);
 				}
@@ -348,10 +348,10 @@ var Node = Class.create(Entity, {
 });
 
 var Edge = Class.create(Entity, {
-	initialize: function($super, name, canviz, root_graph, parent_graph, from_node, to_node) {
+	initialize: function($super, name, canviz, root_graph, parent_graph, tail_node, head_node) {
 		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
-		this.fromNode = from_node;
-		this.toNode = to_node;
+		this.tailNode = tail_node;
+		this.headNode = head_node;
 	},
 	escStringMatchRe: /\\([EGTHL])/g
 });
