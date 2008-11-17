@@ -61,12 +61,13 @@ var Tokenizer = Class.create({
 });
 
 var Entity = Class.create({
-	initialize: function(default_attr_hash_name, name, canviz, root_graph, parent_graph) {
+	initialize: function(default_attr_hash_name, name, canviz, root_graph, parent_graph, immediate_graph) {
 		this.defaultAttrHashName = default_attr_hash_name;
 		this.name = name;
 		this.canviz = canviz;
 		this.rootGraph = root_graph;
 		this.parentGraph = parent_graph;
+		this.immediateGraph = immediate_graph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
 	},
@@ -327,13 +328,13 @@ var Entity = Class.create({
 
 var Node = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
-		$super('nodeAttrs', name, canviz, root_graph, parent_graph);
+		$super('nodeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 	}
 });
 
 var Edge = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph, from_node, to_node) {
-		$super('edgeAttrs', name, canviz, root_graph, parent_graph);
+		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 		this.fromNode = from_node;
 		this.toNode = to_node;
 	}
@@ -341,7 +342,7 @@ var Edge = Class.create(Entity, {
 
 var Graph = Class.create(Entity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
-		$super('attrs', name, canviz, root_graph, parent_graph);
+		$super('attrs', name, canviz, root_graph, parent_graph, this);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.nodes = $A();
