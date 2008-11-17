@@ -359,7 +359,7 @@ var Canviz = Class.create({
 			white:[255,255,255]
 		}
 	}),
-	initialize: function(container, url) {
+	initialize: function(container, url, url_params) {
 		this.canvas = new Element('canvas');
 		this.texts = new Element('div');
 		this.texts.makePositioned();
@@ -376,7 +376,7 @@ var Canviz = Class.create({
 		this.numImages = 0;
 		this.numImagesFinished = 0;
 		if (url) {
-			this.load(url);
+			this.load(url, url_params);
 		}
 	},
 	setScale: function(scale) {
@@ -385,10 +385,11 @@ var Canviz = Class.create({
 	setImagePath: function(imagePath) {
 		this.imagePath = imagePath;
 	},
-	load: function(url) {
+	load: function(url, url_params) {
 		$('debug_output').innerHTML = '';
 		new Ajax.Request(url, {
 			method: 'get',
+			parameters: url_params,
 			onComplete: function(response) {
 				this.parse(response.responseText);
 			}.bind(this)
