@@ -180,7 +180,19 @@ var Entity = Class.create({
 										str = str.replace(/  +/, spaces);
 									}
 								} while (matches);
-								var text = new Element('div').update(str);
+								var text;
+								var href = this.getAttr('href') || this.getAttr('url');
+								if (href) {
+									var target = this.getAttr('target') || '_self';
+//									debug(this.name + ', href ' + href + ', target ' + target);
+									text = new Element('a', {href: href, target: target});
+									text.setStyle({
+										textDecoration: 'none'
+									});
+								} else {
+									text = new Element('span');
+								}
+								text.update(str);
 								text.setStyle({
 									fontSize: Math.round(font_size * ctx_scale * this.canviz.bbScale) + 'px',
 									fontFamily: font_family,
