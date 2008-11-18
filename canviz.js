@@ -202,6 +202,12 @@ var Entity = Class.create({
 									var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
 //									debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
 									text = new Element('a', {href: href, target: target, title: tooltip});
+									['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'].each(function(attr_name) {
+										var attr_value = this.getAttr(attr_name, true);
+										if (attr_value) {
+											text.writeAttribute(attr_name, attr_value);
+										}
+									}.bind(this));
 									text.setStyle({
 										textDecoration: 'none'
 									});
