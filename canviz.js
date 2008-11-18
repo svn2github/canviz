@@ -199,8 +199,9 @@ var Entity = Class.create({
 								var href = this.getAttr('href', true) || this.getAttr('url', true);
 								if (href) {
 									var target = this.getAttr('target', true) || '_self';
-//									debug(this.name + ', href ' + href + ', target ' + target);
-									text = new Element('a', {href: href, target: target});
+									var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
+//									debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
+									text = new Element('a', {href: href, target: target, title: tooltip});
 									text.setStyle({
 										textDecoration: 'none'
 									});
