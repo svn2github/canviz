@@ -225,7 +225,7 @@ var Entity = Class.create({
 									top: t + 'px',
 									width: (2 * text_width) + 'px'
 								});
-								this.canviz.texts.appendChild(text);
+								this.canviz.elements.appendChild(text);
 							}
 							break;
 						case 'C': // set fill color
@@ -404,10 +404,10 @@ var Canviz = Class.create({
 	}),
 	initialize: function(container, url, url_params) {
 		this.canvas = new Element('canvas');
-		this.texts = new Element('div');
-		this.texts.makePositioned();
+		this.elements = new Element('div');
+		this.elements.makePositioned();
 		this.container = $(container);
-		this.container.appendChild(this.texts);
+		this.container.appendChild(this.elements);
 		this.container.appendChild(this.canvas);
 		this.ctx = this.canvas.getContext('2d');
 		this.scale = 1;
@@ -607,8 +607,8 @@ var Canviz = Class.create({
 			this.container.setStyle({
 				width:  width  + 'px'
 			});
-			while (this.texts.firstChild) {
-				this.texts.removeChild(this.texts.firstChild);
+			while (this.elements.firstChild) {
+				this.elements.removeChild(this.elements.firstChild);
 			}
 		}
 		this.ctx.save();
