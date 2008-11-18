@@ -196,7 +196,7 @@ var Entity = Class.create({
 									}
 								} while (matches);
 								var text;
-								var href = this.getAttr('href', true) || this.getAttr('url', true);
+								var href = this.getAttr('href', true) || this.getAttr('URL', true);
 								if (href) {
 									var target = this.getAttr('target', true) || '_self';
 									var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
