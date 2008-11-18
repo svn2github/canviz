@@ -108,7 +108,11 @@ var Entity = Class.create({
 	},
 	draw: function(ctx, ctx_scale, redraw_canvas_only) {
 		var i, tokens;
-		if (!redraw_canvas_only) this.initBB();
+		if (!redraw_canvas_only) {
+			this.initBB();
+			var bb_div = new Element('div');
+			this.canviz.elements.appendChild(bb_div);
+		}
 		this.drawAttrs.each(function(draw_attr) {
 			var command = draw_attr.value;
 //			debug(command);
@@ -289,6 +293,15 @@ var Entity = Class.create({
 						path = undefined;
 					}
 					token = tokenizer.takeChars();
+				}
+				if (!redraw_canvas_only) {
+					bb_div.setStyle({
+						position: 'absolute',
+						left:   Math.round(ctx_scale * this.bbRect.l + this.canviz.padding) + 'px',
+						top:    Math.round(ctx_scale * this.bbRect.t + this.canviz.padding) + 'px',
+						width:  Math.round(ctx_scale * this.bbRect.getWidth()) + 'px',
+						height: Math.round(ctx_scale * this.bbRect.getHeight()) + 'px'
+					});
 				}
 				ctx.restore();
 			}
