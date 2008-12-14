@@ -416,12 +416,19 @@ var Canviz = Class.create({
 		}
 	}),
 	initialize: function(container, url, url_params) {
-		this.canvas = new Element('canvas');
+		// excanvas can't init the element if we use new Element()
+		this.canvas = document.createElement('canvas');
+		if (!Canviz.canvasCounter) Canviz.canvasCounter = 0;
+		this.canvas.id = 'canviz_canvas_' + ++Canviz.canvasCounter;
 		this.elements = new Element('div');
 		this.elements.makePositioned();
 		this.container = $(container);
 		this.container.appendChild(this.elements);
 		this.container.appendChild(this.canvas);
+		if (Prototype.Browser.IE) {
+			G_vmlCanvasManager.initElement(this.canvas);
+			this.canvas = $(this.canvas.id);
+		}
 		this.ctx = this.canvas.getContext('2d');
 		this.scale = 1;
 		this.padding = 8;
