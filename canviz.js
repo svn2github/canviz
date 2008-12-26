@@ -309,16 +309,11 @@ var Entity = Class.create({
 	},
 	parseColor: function(color) {
 		// rgb/rgba
-		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
-		if (matches) {
-			if (matches[4]) { // rgba
-				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
-			} else { // rgb
-				return '#' + matches[1] + matches[2] + matches[3];
-			}
+		if (/^#(?:[0-9a-f]{2}\s*){3,4}$/i.test(color)) {
+			return this.canviz.parseHexColor(color);
 		}
 		// hsv
-		matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
+		var matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
 		if (matches) {
 			return this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
 		}
@@ -683,6 +678,16 @@ var Canviz = Class.create({
 			return matches[1].replace(/\\"/g, '"');
 		} else {
 			return str;
+		}
+	},
+	parseHexColor: function(color) {
+		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
+		if (matches) {
+			if (matches[4]) { // rgba
+				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
+			} else { // rgb
+				return '#' + matches[1] + matches[2] + matches[3];
+			}
 		}
 	},
 	hsvToRgbColor: function(h, s, v) {
