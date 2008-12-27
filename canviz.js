@@ -339,7 +339,7 @@ var Entity = Class.create({
 		if (color_scheme_data) {
 			var color_data = color_scheme_data[color_name];
 			if (color_data) {
-				return (3 == color_data.length ? 'rgb(' : 'rgba(') + color_data.join(',') + ')';
+				return this.canviz.parseHexColor('#' + color_data);
 			}
 		}
 		color_data = Canviz.prototype.colors.get('fallback')[color_name];
@@ -405,9 +405,9 @@ var Canviz = Class.create({
 	maxXdotVersion: '1.2',
 	colors: $H({
 		fallback:{
-			black:[0,0,0],
-			lightgrey:[211,211,211],
-			white:[255,255,255]
+			black:'000000',
+			lightgrey:'d3d3d3',
+			white:'ffffff'
 		}
 	}),
 	initialize: function(container, url, url_params) {

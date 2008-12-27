@@ -28,11 +28,11 @@ BEGIN {
 		print line ","
 	}
 	if ($5 != 255) {
-		alpha = "," $5
+		alpha = sprintf("%02x", $5)
 	} else {
 		alpha = ""
 	}
-	line = sprintf("%s:[%d,%d,%d%s]", color_name, $2, $3, $4, alpha)
+	line = sprintf("%s:'%02x%02x%02x%s'", color_name, $2, $3, $4, alpha)
 }
 
 END {
