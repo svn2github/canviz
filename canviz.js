@@ -344,7 +344,7 @@ var Entity = Class.create({
 		}
 		color_data = Canviz.prototype.colors.get('fallback')[color_name];
 		if (color_data) {
-			return 'rgb(' + color_data.join(',') + ')';
+			return this.canviz.parseHexColor('#' + color_data);
 		}
 		if (!color_scheme_data) {
 			debug('unknown color scheme ' + color_scheme);
