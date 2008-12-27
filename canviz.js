@@ -107,7 +107,7 @@ var Entity = Class.create({
 		return attr_value;
 	},
 	draw: function(ctx, ctx_scale, redraw_canvas_only) {
-		var i, tokens;
+		var i, tokens, fill_color, stroke_color;
 		if (!redraw_canvas_only) {
 			this.initBB();
 			var bb_div = new Element('div');
@@ -222,13 +222,14 @@ var Entity = Class.create({
 								text.setStyle({
 									fontSize: Math.round(font_size * ctx_scale * this.canviz.bbScale) + 'px',
 									fontFamily: font_family,
-									color: ctx.strokeStyle,
+									color: stroke_color.textColor,
 									position: 'absolute',
 									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
 									left: (l - (1 + text_align) * text_width) + 'px',
 									top: t + 'px',
 									width: (2 * text_width) + 'px'
 								});
+								if (1 != stroke_color.opacity) text.setOpacity(stroke_color.opacity);
 								this.canviz.elements.appendChild(text);
 							}
 							break;
@@ -237,9 +238,11 @@ var Entity = Class.create({
 							var fill = ('C' == token);
 							var color = this.parseColor(tokenizer.takeString());
 							if (fill) {
-								ctx.fillStyle = color;
+								fill_color = color;
+								ctx.fillStyle = color.canvasColor;
 							} else {
-								ctx.strokeStyle = color;
+								stroke_color = color;
+								ctx.strokeStyle = color.canvasColor;
 							}
 							break;
 						case 'F': // set font
@@ -308,6 +311,7 @@ var Entity = Class.create({
 		}.bind(this));
 	},
 	parseColor: function(color) {
+		var parsed_color = {opacity: 1};
 		// rgb/rgba
 		if (/^#(?:[0-9a-f]{2}\s*){3,4}$/i.test(color)) {
 			return this.canviz.parseHexColor(color);
@@ -315,7 +319,8 @@ var Entity = Class.create({
 		// hsv
 		var matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
 		if (matches) {
-			return this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
+			parsed_color.canvasColor = parsed_color.textColor = this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
+			return parsed_color;
 		}
 		// named color
 		var color_scheme = this.getAttr('colorscheme') || 'X11';
@@ -351,7 +356,8 @@ var Entity = Class.create({
 		}
 		// unknown
 		debug('unknown color ' + color + '; color scheme is ' + color_scheme);
-		return '#000000';
+		parsed_color.canvasColor = parsed_color.textColor = '#000000';
+		return parsed_color;
 	}
 });
 
@@ -470,7 +476,8 @@ var Canviz = Class.create({
 		this.bbEnlarge = false;
 		this.bbScale = 1;
 		this.dpi = 96;
-		this.bgcolor = '#ffffff';
+		this.bgcolor = {opacity: 1};
+		this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
 		var lines = xdot.split(/\r?\n/);
 		var i = 0;
 		var line, lastchar, matches, root_graph, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
@@ -636,7 +643,7 @@ var Canviz = Class.create({
 		}
 		this.ctx.save();
 		this.ctx.lineCap = 'round';
-		this.ctx.fillStyle = this.bgcolor;
+		this.ctx.fillStyle = this.bgcolor.canvasColor;
 		this.ctx.fillRect(0, 0, width, height);
 		this.ctx.translate(this.padding, this.padding);
 		this.ctx.scale(ctx_scale, ctx_scale);
@@ -683,12 +690,15 @@ var Canviz = Class.create({
 	parseHexColor: function(color) {
 		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
 		if (matches) {
+			var canvas_color, text_color = '#' + matches[1] + matches[2] + matches[3], opacity = 1;
 			if (matches[4]) { // rgba
-				return 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + (parseInt(matches[4], 16) / 255) + ')';
+				opacity = parseInt(matches[4], 16) / 255;
+				canvas_color = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + opacity + ')';
 			} else { // rgb
-				return '#' + matches[1] + matches[2] + matches[3];
+				canvas_color = text_color;
 			}
 		}
+		return {canvasColor: canvas_color, textColor: text_color, opacity: opacity};
 	},
 	hsvToRgbColor: function(h, s, v) {
 		var i, f, p, q, t, r, g, b;
