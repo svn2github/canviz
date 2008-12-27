@@ -1,6 +1,9 @@
 <?php
 
-// $Id$
+/*
+ * This file is part of Canviz. See http://www.canviz.org/
+ * $Id$
+ */
 
 if (!isset($_GET['file'])) exit;
 $file_name = basename($_GET['file']);

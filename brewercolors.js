@@ -1,4 +1,7 @@
-// $Id$
+/*
+ * This file is part of Canviz. See http://www.canviz.org/
+ * $Id$
+ */
 
 Canviz.prototype.colors.update({
 accent3:{

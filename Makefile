@@ -1,4 +1,7 @@
+#
+# This file is part of Canviz. See http://www.canviz.org/
 # $Id$
+#
 
 AWK=awk
 FIND=find

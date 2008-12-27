@@ -1,6 +1,9 @@
 <?php
 
-// $Id$
+/*
+ * This file is part of Canviz. See http://www.canviz.org/
+ * $Id$
+ */
 
 define('GRAPH_IMAGES_PATH', 'graphs/images');
 

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#
+# This file is part of Canviz. See http://www.canviz.org/
+# $Id$
+#
+
 INPUT_GRAPH_DIR=$1
 shift
 INPUT_GRAPH=$1

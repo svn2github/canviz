@@ -1,8 +1,14 @@
+#
+# This file is part of Canviz. See http://www.canviz.org/
 # $Id$
-
+#
+ 
 BEGIN { 
-	print "// $I" "d$"
-	print
+	print "/*"
+	print " * This file is part of Canviz. See http://www.canviz.org/"
+	print " * $I" "d$"
+	print " */"
+	print ""
 	print "Canviz.prototype.colors.update({"
 	last_color_scheme = ""
 }
