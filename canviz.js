@@ -3,7 +3,7 @@
  * $Id$
  */
 
-var Tokenizer = Class.create({
+var CanvizTokenizer = Class.create({
 	initialize: function(str) {
 		this.str = str;
 	},
@@ -63,7 +63,7 @@ var Tokenizer = Class.create({
 	}
 });
 
-var Entity = Class.create({
+var CanvizEntity = Class.create({
 	initialize: function(default_attr_hash_name, name, canviz, root_graph, parent_graph, immediate_graph) {
 		this.defaultAttrHashName = default_attr_hash_name;
 		this.name = name;
@@ -119,7 +119,7 @@ var Entity = Class.create({
 		this.drawAttrs.each(function(draw_attr) {
 			var command = draw_attr.value;
 //			debug(command);
-			var tokenizer = new Tokenizer(command);
+			var tokenizer = new CanvizTokenizer(command);
 			var token = tokenizer.takeChars();
 			if (token) {
 				var dash_style = 'solid';
@@ -364,27 +364,27 @@ var Entity = Class.create({
 	}
 });
 
-var Node = Class.create(Entity, {
+var CanvizNode = Class.create(CanvizEntity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
 		$super('nodeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 	}
 });
-Object.extend(Node.prototype, {
+Object.extend(CanvizNode.prototype, {
 	escStringMatchRe: /\\([NGL])/g
 });
 
-var Edge = Class.create(Entity, {
+var CanvizEdge = Class.create(CanvizEntity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph, tail_node, head_node) {
 		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
 		this.tailNode = tail_node;
 		this.headNode = head_node;
 	}
 });
-Object.extend(Edge.prototype, {
+Object.extend(CanvizEdge.prototype, {
 	escStringMatchRe: /\\([EGTHL])/g
 });
 
-var Graph = Class.create(Entity, {
+var CanvizGraph = Class.create(CanvizEntity, {
 	initialize: function($super, name, canviz, root_graph, parent_graph) {
 		$super('attrs', name, canviz, root_graph, parent_graph, this);
 		this.nodeAttrs = $H();
@@ -406,7 +406,7 @@ var Graph = Class.create(Entity, {
 		});
 	}
 });
-Object.extend(Graph.prototype, {
+Object.extend(CanvizGraph.prototype, {
 	escStringMatchRe: /\\([GL])/g
 });
 
@@ -498,7 +498,7 @@ var Canviz = Class.create({
 				if (0 == containers.length) {
 					matches = line.match(this.graphMatchRe);
 					if (matches) {
-						root_graph = new Graph(matches[3], this);
+						root_graph = new CanvizGraph(matches[3], this);
 						containers.unshift(root_graph);
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
@@ -509,7 +509,7 @@ var Canviz = Class.create({
 				} else {
 					matches = line.match(this.subgraphMatchRe);
 					if (matches) {
-						containers.unshift(new Graph(matches[1], this, root_graph, containers[0]));
+						containers.unshift(new CanvizGraph(matches[1], this, root_graph, containers[0]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -541,7 +541,7 @@ var Canviz = Class.create({
 								attr_hash = containers[0].edgeAttrs;
 								break;
 							default:
-								entity = new Node(entity_name, this, root_graph, containers[0]);
+								entity = new CanvizNode(entity_name, this, root_graph, containers[0]);
 								attr_hash = entity.attrs;
 								draw_attr_hash = entity.drawAttrs;
 								containers[0].nodes.push(entity);
@@ -552,7 +552,7 @@ var Canviz = Class.create({
 						if (matches) {
 							entity_name = matches[1];
 							attrs = matches[8];
-							entity = new Edge(entity_name, this, root_graph, containers[0], matches[2], matches[5]);
+							entity = new CanvizEdge(entity_name, this, root_graph, containers[0], matches[2], matches[5]);
 							attr_hash = entity.attrs;
 							draw_attr_hash = entity.drawAttrs;
 							containers[0].edges.push(entity);
