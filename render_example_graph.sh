@@ -15,8 +15,12 @@ GRAPHVIZ_PREFIX=$1
 shift
 GRAPHVIZ_LAYOUTS=$@
 
-TEMP_GRAPH=$(mktemp -t canviz)
-TEMP_HEADER=$(mktemp -t canviz)
+if [ -z "$TMPDIR" ]; then
+	TMPDIR=/tmp
+fi
+
+TEMP_GRAPH=$(mktemp "$TMPDIR/canviz.graph.XXXXXXXX")
+TEMP_HEADER=$(mktemp "$TMPDIR/canviz.header.XXXXXXXX")
 for LAYOUT in $GRAPHVIZ_LAYOUTS; do
 	GRAPHVIZ_VERSION=$($GRAPHVIZ_PREFIX/bin/$LAYOUT -V 2>&1)
 	mkdir -p $OUTPUT_GRAPH_DIR/$LAYOUT/$(dirname $INPUT_GRAPH)
