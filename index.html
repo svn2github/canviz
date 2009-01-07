@@ -21,11 +21,11 @@ $Id$
 	<script type="text/javascript"><!--
 Ajax.Responders.register({
 	onCreate: function() {
-		Element.show('busy');
+		$('busy').show();
 	},
 	onComplete: function() {
 		if (0 == Ajax.activeRequestCount) {
-			Element.hide('busy');
+			$('busy').hide();
 		}
 	}
 });
