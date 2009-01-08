@@ -14,6 +14,7 @@ GRAPHVIZ_PREFIX=$(shell dirname $(shell dirname $(DOT)))
 GRAPHVIZ_SRC:=$(shell $(FIND) . -type d -name 'graphviz-*' | $(TAIL) -n 1 | $(SED) s%^\./%%)
 GRAPHVIZ_LAYOUTS=circo dot fdp neato twopi
 GRAPHVIZ_FIRST_LAYOUT=$(firstword $(GRAPHVIZ_LAYOUTS))
+EXAMPLES_DIR=examples
 EXAMPLE_GRAPHS_SRC_DIR:=$(GRAPHVIZ_PREFIX)/share/graphviz/graphs
 #EXAMPLE_GRAPHS_SRC_DIR:=$(GRAPHVIZ_SRC)/rtest/graphs
 EXAMPLE_GRAPHS_SRC:=$(shell $(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.dot' -or -name '*.gv')
@@ -21,13 +22,32 @@ EXAMPLE_GRAPHS_DIR=./graphs
 EXAMPLE_GRAPH_IMAGES_DIR=$(EXAMPLE_GRAPHS_DIR)/images
 EXAMPLE_GRAPHS=$(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,$(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.txt,$(EXAMPLE_GRAPHS_SRC))
 
-.PHONY: all examples examples-images colorschemes clean
+.PHONY: all examples hello-world-example examples-images colorschemes clean
 
 all: examples
 
 colorschemes: x11colors.js brewercolors.js
 
-examples: $(EXAMPLE_GRAPHS_DIR)/graphlist.js $(EXAMPLE_GRAPHS_DIR)/layoutlist.js $(EXAMPLE_GRAPHS) examples-images
+examples: hello-world-example $(EXAMPLE_GRAPHS_DIR)/graphlist.js $(EXAMPLE_GRAPHS_DIR)/layoutlist.js $(EXAMPLE_GRAPHS) examples-images
+
+hello-world-example: $(EXAMPLES_DIR)/hello_world/new.html $(EXAMPLES_DIR)/hello_world/old.html
+
+$(EXAMPLES_DIR)/hello_world/new.html: $(EXAMPLES_DIR)/hello_world/new.html.in $(EXAMPLES_DIR)/hello_world/graph.gv $(EXAMPLES_DIR)/hello_world/graph-xdot.gv insert_file.awk
+	$(AWK) -f insert_file.awk -v placeholder=@GRAPH@ $(EXAMPLES_DIR)/hello_world/graph.gv $< > $@
+
+$(EXAMPLES_DIR)/hello_world/old.html: $(EXAMPLES_DIR)/hello_world/old.html.in $(EXAMPLES_DIR)/hello_world/graph.gv $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $(EXAMPLES_DIR)/hello_world/graph.png insert_file.awk
+	$(AWK) -f insert_file.awk -v placeholder=@GRAPH@ $(EXAMPLES_DIR)/hello_world/graph.gv $< > $@.tmp
+	$(AWK) -f insert_file.awk -v placeholder=@CMAPX@ $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $@.tmp > $@
+	rm -f $@.tmp
+
+$(EXAMPLES_DIR)/hello_world/graph-xdot.gv: $(EXAMPLES_DIR)/hello_world/graph.gv
+	$(DOT) $< -Txdot -o$@
+
+$(EXAMPLES_DIR)/hello_world/graph-cmapx.html: $(EXAMPLES_DIR)/hello_world/graph.gv
+	$(DOT) $< -Tcmapx -o$@
+
+$(EXAMPLES_DIR)/hello_world/graph.png: $(EXAMPLES_DIR)/hello_world/graph.gv
+	$(DOT) $< -Tpng -o$@
 
 $(EXAMPLE_GRAPHS_DIR):
 	mkdir $(EXAMPLE_GRAPHS_DIR)
@@ -69,4 +89,4 @@ brewercolors.js: gvcolors.awk $(GRAPHVIZ_SRC)/lib/common/brewer_lib
 	@exit 1
 
 clean:
-	-rm -rf $(EXAMPLE_GRAPHS_DIR)
+	-rm -rf $(EXAMPLES_DIR)/hello_world/graph-xdot.gv $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $(EXAMPLES_DIR)/hello_world/graph.png $(EXAMPLES_DIR)/hello_world/new.html $(EXAMPLES_DIR)/hello_world/old.html $(EXAMPLES_DIR)/hello_world/old.html.tmp $(EXAMPLE_GRAPHS_DIR)
