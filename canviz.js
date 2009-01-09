@@ -42,35 +42,35 @@ var CanvizTokenizer = Class.create({
 		}
 	},
 	takeString: function() {
-		var byte_count = Number(this.takeChars()), char_count = 0, char_code;
+		var byteCount = Number(this.takeChars()), charCount = 0, charCode;
 		if ('-' != this.str.charAt(0)) {
 			return false;
 		}
-		while (0 < byte_count) {
-			++char_count;
-			char_code = this.str.charCodeAt(char_count);
-			if (0x80 > char_code) {
-				--byte_count;
-			} else if (0x800 > char_code) {
-				byte_count -= 2;
+		while (0 < byteCount) {
+			++charCount;
+			charCode = this.str.charCodeAt(charCount);
+			if (0x80 > charCode) {
+				--byteCount;
+			} else if (0x800 > charCode) {
+				byteCount -= 2;
 			} else {
-				byte_count -= 3;
+				byteCount -= 3;
 			}
 		}
-		var str = this.str.substr(1, char_count);
-		this.str = this.str.substr(1 + char_count).replace(/^\s+/, '');
+		var str = this.str.substr(1, charCount);
+		this.str = this.str.substr(1 + charCount).replace(/^\s+/, '');
 		return str;
 	}
 });
 
 var CanvizEntity = Class.create({
-	initialize: function(default_attr_hash_name, name, canviz, root_graph, parent_graph, immediate_graph) {
-		this.defaultAttrHashName = default_attr_hash_name;
+	initialize: function(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
+		this.defaultAttrHashName = defaultAttrHashName;
 		this.name = name;
 		this.canviz = canviz;
-		this.rootGraph = root_graph;
-		this.parentGraph = parent_graph;
-		this.immediateGraph = immediate_graph;
+		this.rootGraph = rootGraph;
+		this.parentGraph = parentGraph;
+		this.immediateGraph = immediateGraph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
 	},
@@ -80,22 +80,22 @@ var CanvizEntity = Class.create({
 		var y = Math.round(this.canviz.height - matches[2]);
 		this.bbRect = new Rect(x, y, x, y);
 	},
-	getAttr: function(attr_name, esc_string) {
-		if (Object.isUndefined(esc_string)) esc_string = false;
-		var attr_value = this.attrs.get(attr_name);
-		if (Object.isUndefined(attr_value)) {
+	getAttr: function(attrName, escString) {
+		if (Object.isUndefined(escString)) escString = false;
+		var attrValue = this.attrs.get(attrName);
+		if (Object.isUndefined(attrValue)) {
 			var graph = this.parentGraph;
 			while (!Object.isUndefined(graph)) {
-				attr_value = graph[this.defaultAttrHashName].get(attr_name);
-				if (Object.isUndefined(attr_value)) {
+				attrValue = graph[this.defaultAttrHashName].get(attrName);
+				if (Object.isUndefined(attrValue)) {
 					graph = graph.parentGraph;
 				} else {
 					break;
 				}
 			}
 		}
-		if (attr_value && esc_string) {
-			attr_value = attr_value.replace(this.escStringMatchRe, function(match, p1) {
+		if (attrValue && escString) {
+			attrValue = attrValue.replace(this.escStringMatchRe, function(match, p1) {
 				switch (p1) {
 					case 'N': // fall through
 					case 'E': return this.name;
@@ -107,22 +107,22 @@ var CanvizEntity = Class.create({
 				return match;
 			}.bind(this));
 		}
-		return attr_value;
+		return attrValue;
 	},
-	draw: function(ctx, ctx_scale, redraw_canvas_only) {
-		var i, tokens, fill_color, stroke_color;
-		if (!redraw_canvas_only) {
+	draw: function(ctx, ctxScale, redrawCanvasOnly) {
+		var i, tokens, fillColor, strokeColor;
+		if (!redrawCanvasOnly) {
 			this.initBB();
-			var bb_div = new Element('div');
-			this.canviz.elements.appendChild(bb_div);
+			var bbDiv = new Element('div');
+			this.canviz.elements.appendChild(bbDiv);
 		}
-		this.drawAttrs.each(function(draw_attr) {
-			var command = draw_attr.value;
+		this.drawAttrs.each(function(drawAttr) {
+			var command = drawAttr.value;
 //			debug(command);
 			var tokenizer = new CanvizTokenizer(command);
 			var token = tokenizer.takeChars();
 			if (token) {
-				var dash_style = 'solid';
+				var dashStyle = 'solid';
 				ctx.save();
 				while (token) {
 //					debug('processing token ' + token);
@@ -141,10 +141,10 @@ var CanvizEntity = Class.create({
 						case 'L': // polyline
 							var filled = ('P' == token);
 							var closed = ('L' != token);
-							var num_points = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num_points); // points
+							var numPoints = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * numPoints); // points
 							var path = new Path();
-							for (i = 2; i < 2 * num_points; i += 2) {
+							for (i = 2; i < 2 * numPoints; i += 2) {
 								path.addBezier([
 									new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
 									new Point(tokens[i],     this.canviz.height - tokens[i + 1])
@@ -152,7 +152,7 @@ var CanvizEntity = Class.create({
 							}
 							if (closed) {
 								path.addBezier([
-									new Point(tokens[2 * num_points - 2], this.canviz.height - tokens[2 * num_points - 1]),
+									new Point(tokens[2 * numPoints - 2], this.canviz.height - tokens[2 * numPoints - 1]),
 									new Point(tokens[0],                  this.canviz.height - tokens[1])
 								]);
 							}
@@ -160,10 +160,10 @@ var CanvizEntity = Class.create({
 						case 'B': // unfilled b-spline
 						case 'b': // filled b-spline
 							var filled = ('b' == token);
-							var num_points = tokenizer.takeNumber();
-							tokens = tokenizer.takeNumber(2 * num_points); // points
+							var numPoints = tokenizer.takeNumber();
+							tokens = tokenizer.takeNumber(2 * numPoints); // points
 							var path = new Path();
-							for (i = 2; i < 2 * num_points; i += 6) {
+							for (i = 2; i < 2 * numPoints; i += 6) {
 								path.addBezier([
 									new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
 									new Point(tokens[i],     this.canviz.height - tokens[i + 1]),
@@ -184,13 +184,13 @@ var CanvizEntity = Class.create({
 							this.canviz.images[src].draw(ctx, l, b - h, w, h);
 							break;
 						case 'T': // text
-							var l = Math.round(ctx_scale * tokenizer.takeNumber() + this.canviz.padding);
-							var t = Math.round(ctx_scale * this.canviz.height + 2 * this.canviz.padding - (ctx_scale * (tokenizer.takeNumber() + this.canviz.bbScale * font_size) + this.canviz.padding));
-							var text_align = tokenizer.takeNumber();
-							var text_width = Math.round(ctx_scale * tokenizer.takeNumber());
+							var l = Math.round(ctxScale * tokenizer.takeNumber() + this.canviz.padding);
+							var t = Math.round(ctxScale * this.canviz.height + 2 * this.canviz.padding - (ctxScale * (tokenizer.takeNumber() + this.canviz.bbScale * fontSize) + this.canviz.padding));
+							var textAlign = tokenizer.takeNumber();
+							var textWidth = Math.round(ctxScale * tokenizer.takeNumber());
 							var str = tokenizer.takeString();
-							if (!redraw_canvas_only && !/^\s*$/.test(str)) {
-//								debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + text_align + ' ' + text_width);
+							if (!redrawCanvasOnly && !/^\s*$/.test(str)) {
+//								debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + textAlign + ' ' + textWidth);
 								str = str.escapeHTML();
 								do {
 									matches = str.match(/ ( +)/);
@@ -209,10 +209,10 @@ var CanvizEntity = Class.create({
 									var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
 //									debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
 									text = new Element('a', {href: href, target: target, title: tooltip});
-									['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'].each(function(attr_name) {
-										var attr_value = this.getAttr(attr_name, true);
-										if (attr_value) {
-											text.writeAttribute(attr_name, attr_value);
+									['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'].each(function(attrName) {
+										var attrValue = this.getAttr(attrName, true);
+										if (attrValue) {
+											text.writeAttribute(attrName, attrValue);
 										}
 									}.bind(this));
 									text.setStyle({
@@ -223,16 +223,16 @@ var CanvizEntity = Class.create({
 								}
 								text.update(str);
 								text.setStyle({
-									fontSize: Math.round(font_size * ctx_scale * this.canviz.bbScale) + 'px',
-									fontFamily: font_family,
-									color: stroke_color.textColor,
+									fontSize: Math.round(fontSize * ctxScale * this.canviz.bbScale) + 'px',
+									fontFamily: fontFamily,
+									color: strokeColor.textColor,
 									position: 'absolute',
-									textAlign: (-1 == text_align) ? 'left' : (1 == text_align) ? 'right' : 'center',
-									left: (l - (1 + text_align) * text_width) + 'px',
+									textAlign: (-1 == textAlign) ? 'left' : (1 == textAlign) ? 'right' : 'center',
+									left: (l - (1 + textAlign) * textWidth) + 'px',
 									top: t + 'px',
-									width: (2 * text_width) + 'px'
+									width: (2 * textWidth) + 'px'
 								});
-								if (1 != stroke_color.opacity) text.setOpacity(stroke_color.opacity);
+								if (1 != strokeColor.opacity) text.setOpacity(strokeColor.opacity);
 								this.canviz.elements.appendChild(text);
 							}
 							break;
@@ -241,30 +241,30 @@ var CanvizEntity = Class.create({
 							var fill = ('C' == token);
 							var color = this.parseColor(tokenizer.takeString());
 							if (fill) {
-								fill_color = color;
+								fillColor = color;
 								ctx.fillStyle = color.canvasColor;
 							} else {
-								stroke_color = color;
+								strokeColor = color;
 								ctx.strokeStyle = color.canvasColor;
 							}
 							break;
 						case 'F': // set font
-							font_size = tokenizer.takeNumber();
-							font_family = tokenizer.takeString();
-							switch (font_family) {
+							fontSize = tokenizer.takeNumber();
+							fontFamily = tokenizer.takeString();
+							switch (fontFamily) {
 								case 'Times-Roman':
-									font_family = 'Times New Roman';
+									fontFamily = 'Times New Roman';
 									break;
 								case 'Courier':
-									font_family = 'Courier New';
+									fontFamily = 'Courier New';
 									break;
 								case 'Helvetica':
-									font_family = 'Arial';
+									fontFamily = 'Arial';
 									break;
 								default:
 									// nothing
 							}
-//							debug('set font ' + font_size + 'pt ' + font_family);
+//							debug('set font ' + fontSize + 'pt ' + fontFamily);
 							break;
 						case 'S': // set style
 							var style = tokenizer.takeString();
@@ -275,7 +275,7 @@ var CanvizEntity = Class.create({
 									break;
 								case 'dashed':
 								case 'dotted':
-									dash_style = style;
+									dashStyle = style;
 									break;
 								case 'bold':
 									ctx.lineWidth = 2;
@@ -294,19 +294,19 @@ var CanvizEntity = Class.create({
 							return;
 					}
 					if (path) {
-						this.canviz.drawPath(ctx, path, filled, dash_style);
-						if (!redraw_canvas_only) this.bbRect.expandToInclude(path.getBB());
+						this.canviz.drawPath(ctx, path, filled, dashStyle);
+						if (!redrawCanvasOnly) this.bbRect.expandToInclude(path.getBB());
 						path = undefined;
 					}
 					token = tokenizer.takeChars();
 				}
-				if (!redraw_canvas_only) {
-					bb_div.setStyle({
+				if (!redrawCanvasOnly) {
+					bbDiv.setStyle({
 						position: 'absolute',
-						left:   Math.round(ctx_scale * this.bbRect.l + this.canviz.padding) + 'px',
-						top:    Math.round(ctx_scale * this.bbRect.t + this.canviz.padding) + 'px',
-						width:  Math.round(ctx_scale * this.bbRect.getWidth()) + 'px',
-						height: Math.round(ctx_scale * this.bbRect.getHeight()) + 'px'
+						left:   Math.round(ctxScale * this.bbRect.l + this.canviz.padding) + 'px',
+						top:    Math.round(ctxScale * this.bbRect.t + this.canviz.padding) + 'px',
+						width:  Math.round(ctxScale * this.bbRect.getWidth()) + 'px',
+						height: Math.round(ctxScale * this.bbRect.getHeight()) + 'px'
 					});
 				}
 				ctx.restore();
@@ -314,7 +314,7 @@ var CanvizEntity = Class.create({
 		}.bind(this));
 	},
 	parseColor: function(color) {
-		var parsed_color = {opacity: 1};
+		var parsedColor = {opacity: 1};
 		// rgb/rgba
 		if (/^#(?:[0-9a-f]{2}\s*){3,4}$/i.test(color)) {
 			return this.canviz.parseHexColor(color);
@@ -322,51 +322,51 @@ var CanvizEntity = Class.create({
 		// hsv
 		var matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
 		if (matches) {
-			parsed_color.canvasColor = parsed_color.textColor = this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
-			return parsed_color;
+			parsedColor.canvasColor = parsedColor.textColor = this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
+			return parsedColor;
 		}
 		// named color
-		var color_scheme = this.getAttr('colorscheme') || 'X11';
-		var color_name = color;
+		var colorScheme = this.getAttr('colorscheme') || 'X11';
+		var colorName = color;
 		matches = color.match(/^\/(.*)\/(.*)$/);
 		if (matches) {
 			if (matches[1]) {
-				color_scheme = matches[1];
+				colorScheme = matches[1];
 			}
-			color_name = matches[2];
+			colorName = matches[2];
 		} else {
 			matches = color.match(/^\/(.*)$/);
 			if (matches) {
-				color_scheme = 'X11';
-				color_name = matches[1];
+				colorScheme = 'X11';
+				colorName = matches[1];
 			}
 		}
-		color_name = color_name.toLowerCase();
-		var color_scheme_name = color_scheme.toLowerCase();
-		var color_scheme_data = Canviz.prototype.colors.get(color_scheme_name);
-		if (color_scheme_data) {
-			var color_data = color_scheme_data[color_name];
-			if (color_data) {
-				return this.canviz.parseHexColor('#' + color_data);
+		colorName = colorName.toLowerCase();
+		var colorSchemeName = colorScheme.toLowerCase();
+		var colorSchemeData = Canviz.prototype.colors.get(colorSchemeName);
+		if (colorSchemeData) {
+			var colorData = colorSchemeData[colorName];
+			if (colorData) {
+				return this.canviz.parseHexColor('#' + colorData);
 			}
 		}
-		color_data = Canviz.prototype.colors.get('fallback')[color_name];
-		if (color_data) {
-			return this.canviz.parseHexColor('#' + color_data);
+		colorData = Canviz.prototype.colors.get('fallback')[colorName];
+		if (colorData) {
+			return this.canviz.parseHexColor('#' + colorData);
 		}
-		if (!color_scheme_data) {
-			debug('unknown color scheme ' + color_scheme);
+		if (!colorSchemeData) {
+			debug('unknown color scheme ' + colorScheme);
 		}
 		// unknown
-		debug('unknown color ' + color + '; color scheme is ' + color_scheme);
-		parsed_color.canvasColor = parsed_color.textColor = '#000000';
-		return parsed_color;
+		debug('unknown color ' + color + '; color scheme is ' + colorScheme);
+		parsedColor.canvasColor = parsedColor.textColor = '#000000';
+		return parsedColor;
 	}
 });
 
 var CanvizNode = Class.create(CanvizEntity, {
-	initialize: function($super, name, canviz, root_graph, parent_graph) {
-		$super('nodeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
+	initialize: function($super, name, canviz, rootGraph, parentGraph) {
+		$super('nodeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
 	}
 });
 Object.extend(CanvizNode.prototype, {
@@ -374,10 +374,10 @@ Object.extend(CanvizNode.prototype, {
 });
 
 var CanvizEdge = Class.create(CanvizEntity, {
-	initialize: function($super, name, canviz, root_graph, parent_graph, tail_node, head_node) {
-		$super('edgeAttrs', name, canviz, root_graph, parent_graph, parent_graph);
-		this.tailNode = tail_node;
-		this.headNode = head_node;
+	initialize: function($super, name, canviz, rootGraph, parentGraph, tailNode, headNode) {
+		$super('edgeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
+		this.tailNode = tailNode;
+		this.headNode = headNode;
 	}
 });
 Object.extend(CanvizEdge.prototype, {
@@ -385,8 +385,8 @@ Object.extend(CanvizEdge.prototype, {
 });
 
 var CanvizGraph = Class.create(CanvizEntity, {
-	initialize: function($super, name, canviz, root_graph, parent_graph) {
-		$super('attrs', name, canviz, root_graph, parent_graph, this);
+	initialize: function($super, name, canviz, rootGraph, parentGraph) {
+		$super('attrs', name, canviz, rootGraph, parentGraph, this);
 		this.nodeAttrs = $H();
 		this.edgeAttrs = $H();
 		this.nodes = $A();
@@ -397,11 +397,11 @@ var CanvizGraph = Class.create(CanvizEntity, {
 		var coords = this.getAttr('bb').split(',');
 		this.bbRect = new Rect(coords[0], this.canviz.height - coords[1], coords[2], this.canviz.height - coords[3]);
 	},
-	draw: function($super, ctx, ctx_scale, redraw_canvas_only) {
-		$super(ctx, ctx_scale, redraw_canvas_only);
+	draw: function($super, ctx, ctxScale, redrawCanvasOnly) {
+		$super(ctx, ctxScale, redrawCanvasOnly);
 		[this.subgraphs, this.nodes, this.edges].each(function(type) {
 			type.each(function(entity) {
-				entity.draw(ctx, ctx_scale, redraw_canvas_only);
+				entity.draw(ctx, ctxScale, redrawCanvasOnly);
 			});
 		});
 	}
@@ -419,7 +419,7 @@ var Canviz = Class.create({
 			white:'ffffff'
 		}
 	}),
-	initialize: function(container, url, url_params) {
+	initialize: function(container, url, urlParams) {
 		// excanvas can't init the element if we use new Element()
 		this.canvas = document.createElement('canvas');
 		Element.setStyle(this.canvas, {
@@ -451,7 +451,7 @@ var Canviz = Class.create({
 		this.numImages = 0;
 		this.numImagesFinished = 0;
 		if (url) {
-			this.load(url, url_params);
+			this.load(url, urlParams);
 		}
 	},
 	setScale: function(scale) {
@@ -460,11 +460,11 @@ var Canviz = Class.create({
 	setImagePath: function(imagePath) {
 		this.imagePath = imagePath;
 	},
-	load: function(url, url_params) {
+	load: function(url, urlParams) {
 		$('debug_output').innerHTML = '';
 		new Ajax.Request(url, {
 			method: 'get',
-			parameters: url_params,
+			parameters: urlParams,
 			onComplete: function(response) {
 				this.parse(response.responseText);
 			}.bind(this)
@@ -483,13 +483,13 @@ var Canviz = Class.create({
 		this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
 		var lines = xdot.split(/\r?\n/);
 		var i = 0;
-		var line, lastchar, matches, root_graph, is_graph, entity, entity_name, attrs, attr_name, attr_value, attr_hash, draw_attr_hash;
+		var line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash;
 		var containers = $A();
 		while (i < lines.length) {
 			line = lines[i++].replace(/^\s+/, '');
 			if ('' != line && '#' != line.substr(0, 1)) {
-				while (i < lines.length && ';' != (lastchar = line.substr(line.length - 1, line.length)) && '{' != lastchar && '}' != lastchar) {
-					if ('\\' == lastchar) {
+				while (i < lines.length && ';' != (lastChar = line.substr(line.length - 1, line.length)) && '{' != lastChar && '}' != lastChar) {
+					if ('\\' == lastChar) {
 						line = line.substr(0, line.length - 1);
 					}
 					line += lines[i++];
@@ -498,8 +498,8 @@ var Canviz = Class.create({
 				if (0 == containers.length) {
 					matches = line.match(this.graphMatchRe);
 					if (matches) {
-						root_graph = new CanvizGraph(matches[3], this);
-						containers.unshift(root_graph);
+						rootGraph = new CanvizGraph(matches[3], this);
+						containers.unshift(rootGraph);
 						containers[0].strict = !Object.isUndefined(matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
@@ -509,7 +509,7 @@ var Canviz = Class.create({
 				} else {
 					matches = line.match(this.subgraphMatchRe);
 					if (matches) {
-						containers.unshift(new CanvizGraph(matches[1], this, root_graph, containers[0]));
+						containers.unshift(new CanvizGraph(matches[1], this, rootGraph, containers[0]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -525,38 +525,38 @@ var Canviz = Class.create({
 				} else {
 					matches = line.match(this.nodeMatchRe);
 					if (matches) {
-						entity_name = matches[2];
+						entityName = matches[2];
 						attrs = matches[5];
-						draw_attr_hash = containers[0].drawAttrs;
-						is_graph = false;
-						switch (entity_name) {
+						drawAttrHash = containers[0].drawAttrs;
+						isGraph = false;
+						switch (entityName) {
 							case 'graph':
-								attr_hash = containers[0].attrs;
-								is_graph = true;
+								attrHash = containers[0].attrs;
+								isGraph = true;
 								break;
 							case 'node':
-								attr_hash = containers[0].nodeAttrs;
+								attrHash = containers[0].nodeAttrs;
 								break;
 							case 'edge':
-								attr_hash = containers[0].edgeAttrs;
+								attrHash = containers[0].edgeAttrs;
 								break;
 							default:
-								entity = new CanvizNode(entity_name, this, root_graph, containers[0]);
-								attr_hash = entity.attrs;
-								draw_attr_hash = entity.drawAttrs;
+								entity = new CanvizNode(entityName, this, rootGraph, containers[0]);
+								attrHash = entity.attrs;
+								drawAttrHash = entity.drawAttrs;
 								containers[0].nodes.push(entity);
 						}
-//						debug('node: ' + entity_name);
+//						debug('node: ' + entityName);
 					} else {
 						matches = line.match(this.edgeMatchRe);
 						if (matches) {
-							entity_name = matches[1];
+							entityName = matches[1];
 							attrs = matches[8];
-							entity = new CanvizEdge(entity_name, this, root_graph, containers[0], matches[2], matches[5]);
-							attr_hash = entity.attrs;
-							draw_attr_hash = entity.drawAttrs;
+							entity = new CanvizEdge(entityName, this, rootGraph, containers[0], matches[2], matches[5]);
+							attrHash = entity.attrs;
+							drawAttrHash = entity.drawAttrs;
 							containers[0].edges.push(entity);
-//							debug('edge: ' + entity_name);
+//							debug('edge: ' + entityName);
 						}
 					}
 					if (matches) {
@@ -567,29 +567,29 @@ var Canviz = Class.create({
 							matches = attrs.match(this.attrMatchRe);
 							if (matches) {
 								attrs = attrs.substr(matches[0].length);
-								attr_name = matches[1];
-								attr_value = this.unescape(matches[2]);
-								if (/^_.*draw_$/.test(attr_name)) {
-									draw_attr_hash.set(attr_name, attr_value);
+								attrName = matches[1];
+								attrValue = this.unescape(matches[2]);
+								if (/^_.*draw_$/.test(attrName)) {
+									drawAttrHash.set(attrName, attrValue);
 								} else {
-									attr_hash.set(attr_name, attr_value);
+									attrHash.set(attrName, attrValue);
 								}
-//								debug(attr_name + ' ' + attr_value);
-								if (is_graph && 1 == containers.length) {
-									switch (attr_name) {
+//								debug(attrName + ' ' + attrValue);
+								if (isGraph && 1 == containers.length) {
+									switch (attrName) {
 										case 'bb':
-											var bb = attr_value.split(/,/);
+											var bb = attrValue.split(/,/);
 											this.width  = Number(bb[2]);
 											this.height = Number(bb[3]);
 											break;
 										case 'bgcolor':
-											this.bgcolor = root_graph.parseColor(attr_value);
+											this.bgcolor = rootGraph.parseColor(attrValue);
 											break;
 										case 'dpi':
-											this.dpi = attr_value;
+											this.dpi = attrValue;
 											break;
 										case 'size':
-											var size = attr_value.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
+											var size = attrValue.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
 											if (size) {
 												this.maxWidth  = 72 * Number(size[1]);
 												this.maxHeight = 72 * Number(size[2]);
@@ -599,14 +599,14 @@ var Canviz = Class.create({
 											}
 											break;
 										case 'xdotversion':
-											if (0 > this.versionCompare(this.maxXdotVersion, attr_hash.get('xdotversion'))) {
-												debug('unsupported xdotversion ' + attr_hash.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
+											if (0 > this.versionCompare(this.maxXdotVersion, attrHash.get('xdotversion'))) {
+												debug('unsupported xdotversion ' + attrHash.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
 											}
 											break;
 									}
 								}
 							} else {
-								debug('can\'t read attributes for entity ' + entity_name + ' from ' + attrs);
+								debug('can\'t read attributes for entity ' + entityName + ' from ' + attrs);
 							}
 						} while (matches);
 					}
@@ -625,12 +625,12 @@ var Canviz = Class.create({
 //		debug('done');
 		this.draw();
 	},
-	draw: function(redraw_canvas_only) {
-		if (Object.isUndefined(redraw_canvas_only)) redraw_canvas_only = false;
-		var ctx_scale = this.scale * this.dpi / 72;
-		var width  = Math.round(ctx_scale * this.width  + 2 * this.padding);
-		var height = Math.round(ctx_scale * this.height + 2 * this.padding);
-		if (!redraw_canvas_only) {
+	draw: function(redrawCanvasOnly) {
+		if (Object.isUndefined(redrawCanvasOnly)) redrawCanvasOnly = false;
+		var ctxScale = this.scale * this.dpi / 72;
+		var width  = Math.round(ctxScale * this.width  + 2 * this.padding);
+		var height = Math.round(ctxScale * this.height + 2 * this.padding);
+		if (!redrawCanvasOnly) {
 			this.canvas.width  = width;
 			this.canvas.height = height;
 			this.canvas.setStyle({
@@ -649,18 +649,18 @@ var Canviz = Class.create({
 		this.ctx.fillStyle = this.bgcolor.canvasColor;
 		this.ctx.fillRect(0, 0, width, height);
 		this.ctx.translate(this.padding, this.padding);
-		this.ctx.scale(ctx_scale, ctx_scale);
-		this.graphs[0].draw(this.ctx, ctx_scale, redraw_canvas_only);
+		this.ctx.scale(ctxScale, ctxScale);
+		this.graphs[0].draw(this.ctx, ctxScale, redrawCanvasOnly);
 		this.ctx.restore();
 	},
-	drawPath: function(ctx, path, filled, dash_style) {
+	drawPath: function(ctx, path, filled, dashStyle) {
 		if (filled) {
 			ctx.beginPath();
 			path.draw(ctx);
 			ctx.fill();
 		}
 		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
-			switch (dash_style) {
+			switch (dashStyle) {
 				case 'dashed':
 					ctx.beginPath();
 					path.drawDashed(ctx, this.dashLength);
@@ -693,15 +693,15 @@ var Canviz = Class.create({
 	parseHexColor: function(color) {
 		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
 		if (matches) {
-			var canvas_color, text_color = '#' + matches[1] + matches[2] + matches[3], opacity = 1;
+			var canvasColor, textColor = '#' + matches[1] + matches[2] + matches[3], opacity = 1;
 			if (matches[4]) { // rgba
 				opacity = parseInt(matches[4], 16) / 255;
-				canvas_color = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + opacity + ')';
+				canvasColor = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + opacity + ')';
 			} else { // rgb
-				canvas_color = text_color;
+				canvasColor = textColor;
 			}
 		}
-		return {canvasColor: canvas_color, textColor: text_color, opacity: opacity};
+		return {canvasColor: canvasColor, textColor: textColor, opacity: opacity};
 	},
 	hsvToRgbColor: function(h, s, v) {
 		var i, f, p, q, t, r, g, b;
@@ -737,7 +737,7 @@ var Canviz = Class.create({
 	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
 });
 Object.extend(Canviz.prototype, {
-	// ID or ID:port or ID:compass_pt or ID:port:compass_pt
+	// ID or ID:port or ID:compassPoint or ID:port:compassPoint
 	nodeIdMatch: Canviz.prototype.idMatch + '(?::' + Canviz.prototype.idMatch + ')?(?::' + Canviz.prototype.idMatch + ')?'
 });
 Object.extend(Canviz.prototype, {
