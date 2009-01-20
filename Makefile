@@ -75,7 +75,7 @@ define render-example-graph
 endef
 
 examples-images: $(EXAMPLE_GRAPH_IMAGES_DIR)
-	$(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.gif' -or -name '*.jpg' -or -name '*.png' -print0 | $(XARGS) -0 -t -n 1 -J % cp % $(EXAMPLE_GRAPH_IMAGES_DIR)
+	$(FIND) $(EXAMPLE_GRAPHS_SRC_DIR) -type f -name '*.gif' -or -name '*.jpg' -or -name '*.png' -print0 | $(XARGS) -0 -t -n 1 -I % cp % $(EXAMPLE_GRAPH_IMAGES_DIR)
 
 
 x11colors.js: gvcolors.awk $(GRAPHVIZ_SRC)/lib/common/color_names
