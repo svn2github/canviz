@@ -656,26 +656,26 @@ var Canviz = Class.create({
 	drawPath: function(ctx, path, filled, dashStyle) {
 		if (filled) {
 			ctx.beginPath();
-			path.draw(ctx);
+			path.makePath(ctx);
 			ctx.fill();
 		}
 		if (ctx.fillStyle != ctx.strokeStyle || !filled) {
 			switch (dashStyle) {
 				case 'dashed':
 					ctx.beginPath();
-					path.drawDashed(ctx, this.dashLength);
+					path.makeDashedPath(ctx, this.dashLength);
 					break;
 				case 'dotted':
 					var oldLineWidth = ctx.lineWidth;
 					ctx.lineWidth *= 2;
 					ctx.beginPath();
-					path.drawDotted(ctx, this.dotSpacing);
+					path.makeDottedPath(ctx, this.dotSpacing);
 					break;
 				case 'solid':
 				default:
 					if (!filled) {
 						ctx.beginPath();
-						path.draw(ctx);
+						path.makePath(ctx);
 					}
 			}
 			ctx.stroke();
