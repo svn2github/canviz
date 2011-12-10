@@ -71,7 +71,7 @@ $(EXAMPLE_GRAPHS_DIR)/$(GRAPHVIZ_FIRST_LAYOUT)/%.gv.txt: $(EXAMPLE_GRAPHS_SRC_DI
 
 define render-example-graph
 @echo "Rendering $(subst /$(GRAPHVIZ_FIRST_LAYOUT)/,/*/,$@)"
-@./render_example_graph.sh $(EXAMPLE_GRAPHS_SRC_DIR) $(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,%,$<) $(EXAMPLE_GRAPHS_DIR) $(GRAPHVIZ_PREFIX) $(GRAPHVIZ_LAYOUTS)
+@bash render_example_graph.sh $(EXAMPLE_GRAPHS_SRC_DIR) $(patsubst $(EXAMPLE_GRAPHS_SRC_DIR)/%,%,$<) $(EXAMPLE_GRAPHS_DIR) $(GRAPHVIZ_PREFIX) $(GRAPHVIZ_LAYOUTS)
 endef
 
 examples-images: $(EXAMPLE_GRAPH_IMAGES_DIR)
