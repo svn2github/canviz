@@ -11,7 +11,7 @@ $Id$
 	<title>Canviz demo: Hello world: The new way</title>
 	<link rel="stylesheet" type="text/css" href="styles_inner.css" />
 	<!--[if IE]><script type="text/javascript" src="../../excanvas/excanvas.js"></script><![endif]-->
-	<script type="text/javascript" src="../../prototype/prototype.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
 	<script type="text/javascript" src="../../path/path.js"></script>
 	<script type="text/javascript" src="../../canviz.js"></script>
 	<script type="text/javascript" src="scripts_common.js"></script>
