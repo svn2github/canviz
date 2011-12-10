@@ -638,7 +638,8 @@ var Canviz = Class.create({
 				height: height + 'px'
 			});
 			this.container.setStyle({
-				width:  width  + 'px'
+				width:  width  + 'px',
+				height: height + 'px'
 			});
 			while (this.elements.firstChild) {
 				this.elements.removeChild(this.elements.firstChild);
