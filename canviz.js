@@ -81,13 +81,13 @@ var CanvizEntity = Class.create({
 		this.bbRect = new Rect(x, y, x, y);
 	},
 	getAttr: function(attrName, escString) {
-		if (Object.isUndefined(escString)) escString = false;
+		if ('undefined' === typeof escString) escString = false;
 		var attrValue = this.attrs.get(attrName);
-		if (Object.isUndefined(attrValue)) {
+		if ('undefined' === typeof attrValue) {
 			var graph = this.parentGraph;
-			while (!Object.isUndefined(graph)) {
+			while ('undefined' !== typeof graph) {
 				attrValue = graph[this.defaultAttrHashName].get(attrName);
-				if (Object.isUndefined(attrValue)) {
+				if ('undefined' === typeof attrValue) {
 					graph = graph.parentGraph;
 				} else {
 					break;
@@ -500,7 +500,7 @@ var Canviz = Class.create({
 					if (matches) {
 						rootGraph = new CanvizGraph(matches[3], this);
 						containers.unshift(rootGraph);
-						containers[0].strict = !Object.isUndefined(matches[1]);
+						containers[0].strict = ('undefined' !== typeof matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
 						containers[0].attrs.set('xdotversion', '1.0');
 						this.graphs.push(containers[0]);
@@ -626,7 +626,7 @@ var Canviz = Class.create({
 		this.draw();
 	},
 	draw: function(redrawCanvasOnly) {
-		if (Object.isUndefined(redrawCanvasOnly)) redrawCanvasOnly = false;
+		if ('undefined' === typeof redrawCanvasOnly) redrawCanvasOnly = false;
 		var ctxScale = this.scale * this.dpi / 72;
 		var width  = Math.round(ctxScale * this.width  + 2 * this.padding);
 		var height = Math.round(ctxScale * this.height + 2 * this.padding);
@@ -798,7 +798,7 @@ var CanvizImage = Class.create({
 
 function debug(str, escape) {
 	str = String(str);
-	if (Object.isUndefined(escape)) {
+	if ('undefined' === typeof escape) {
 		escape = true;
 	}
 	if (escape) {
