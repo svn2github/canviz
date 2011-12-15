@@ -1,0 +1,11 @@
+{
+  "name": "canviz",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "uglify-js": "~1.2.2"
+  },
+  "engines": {
+    "node": "~0.6.5"
+  }
+}
