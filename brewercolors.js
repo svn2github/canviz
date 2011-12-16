@@ -3,7 +3,7 @@
  * $Id$
  */
 
-Canviz.prototype.colors.update({
+Canviz.prototype.addColors({
 accent3:{
 1:'7fc97f',
 2:'beaed4',

@@ -722,6 +722,9 @@ var Canviz = Class.create({
 		}
 		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
 	},
+	addColors: function(colors) {
+		Canviz.prototype.colors.update(colors);
+	},
 	versionCompare: function(a, b) {
 		a = a.split('.');
 		b = b.split('.');
