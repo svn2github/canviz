@@ -1,4 +1,5 @@
 MIT-style software license for Canviz library
+=============================================
 
 Copyright (c) 2006-2009 Ryan Schmidt
 

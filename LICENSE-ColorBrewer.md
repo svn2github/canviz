@@ -1,5 +1,5 @@
-Apache-Style Software License for ColorBrewer software and ColorBrewer Color
-Schemes
+Apache-Style Software License for ColorBrewer software and ColorBrewer Color Schemes
+====================================================================================
 
 Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and The Pennsylvania State
 University.
