@@ -48,7 +48,7 @@ function graphviz(infile, outfile, format, cb) {
   });
 }
 
-desc('build the "multiple graphs" example');
+desc('builds the "multiple graphs" example');
 task('example-multiple', function() {
   var graphs = new jake.FileList();
   graphs.include('examples/multiple/*.gv');
