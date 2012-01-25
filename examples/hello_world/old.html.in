@@ -6,7 +6,6 @@ $Id$
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<title>Canviz demo: Hello world: The old way</title>
 	<link rel="stylesheet" type="text/css" href="styles_inner.css" />
