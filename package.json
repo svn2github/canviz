@@ -5,6 +5,7 @@
   "dependencies": {
     "jake": "~0.2.11",
     "minimatch": "~0.1.4",
+    "rimraf": "~1.0.9",
     "uglify-js": "~1.2.5"
   },
   "engines": {

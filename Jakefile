@@ -1,6 +1,7 @@
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
+var rimraf = require('rimraf');
 var uglify = require('uglify-js');
 
 
@@ -64,7 +65,5 @@ task('example-multiple', function() {
 
 desc('removes everything that was built');
 task('clean', function() {
-  ['build/canviz.js', 'build/canviz.min.js'].forEach(function(file) {
-    fs.unlink(file);
-  });
-});
+  rimraf('build', {gently: true}, complete);
+}, {async: true});
