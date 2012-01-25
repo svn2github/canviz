@@ -1,0 +1,6 @@
+digraph graph2 {
+  graph [rankdir=LR]
+  node [color=red, penwidth=2]
+  edge [color=red, penwidth=2]
+  "Here's" -> "a" -> "second" -> "one."
+}

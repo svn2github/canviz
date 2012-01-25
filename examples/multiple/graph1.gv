@@ -1,0 +1,4 @@
+digraph graph1 {
+  graph [rankdir=LR]
+  "This" -> "is" -> "a" -> "graph."
+}

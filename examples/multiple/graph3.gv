@@ -1,0 +1,6 @@
+digraph graph3 {
+  graph [rankdir=LR]
+  node [shape=box]
+  edge [style=dashed]
+  "And" -> "another" -> "one."
+}
