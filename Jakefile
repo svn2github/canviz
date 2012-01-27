@@ -18,9 +18,9 @@ desc('makes the build directory');
 directory('build');
 
 desc('builds the concatenated canviz library');
-file('build/canviz.js', ['build', 'path/path.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'], function() {
+file('build/canviz.js', ['build', 'src/path/Point.js', 'src/path/Bezier.js', 'src/path/Path.js', 'src/path/Polygon.js', 'src/path/Rect.js', 'src/path/Ellipse.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'], function() {
   var code = [];
-  ['path/path.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'].forEach(function(file) {
+  ['src/path/Point.js', 'src/path/Bezier.js', 'src/path/Path.js', 'src/path/Polygon.js', 'src/path/Rect.js', 'src/path/Ellipse.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'].forEach(function(file) {
     code.push(fs.readFileSync(file, 'utf8'));
   });
   fs.writeFileSync('build/canviz.js', code.join("\n"), 'utf8');
