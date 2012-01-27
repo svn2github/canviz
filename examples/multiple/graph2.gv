@@ -1,6 +1,9 @@
 digraph graph2 {
-  graph [rankdir=LR]
-  node [color=red, penwidth=2]
-  edge [color=red, penwidth=2]
-  "Here's" -> "a" -> "second" -> "one."
+  label=graph2
+  layout=neato
+  node [shape=circle, peripheries=2]
+  a e
+  node [peripheries=1]
+  a->{b c d e f}
+  e->{g h}
 }

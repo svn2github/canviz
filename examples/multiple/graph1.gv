@@ -1,4 +1,9 @@
-digraph graph1 {
-  graph [rankdir=LR]
-  "This" -> "is" -> "a" -> "graph."
+graph graph1 {
+  label=graph1
+  a--{b c}
+  a--d--e [color=turquoise2]
+  d--f
+  a [color=turquoise2]
+  d [color=turquoise2]
+  e [color=turquoise2]
 }
