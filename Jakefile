@@ -17,13 +17,47 @@ task('examples', ['example-multiple'], function() {});
 desc('makes the build directory');
 directory('build');
 
+function preprocessFile(file) {
+  var includeFiles = [];
+  function _preprocessFile(file) {
+    includeFiles.push(file);
+    var lines = fs.readFileSync(file, 'utf8').split("\n");
+    for (var i = 0; i < lines.length; ++i) {
+      var matches = /^\s*\/\/#include\s*(?:'([^']+)'|"([^"]+)")\s*$/.exec(lines[i]);
+      if (matches) {
+        var includeFile = path.join(path.dirname(file), matches[1]);
+        if (includeFiles.indexOf(includeFile) === -1) {
+          lines[i] = _preprocessFile(includeFile);
+        } else {
+          lines.splice(i--, 1);
+        }
+      }
+    }
+    return lines.join("\n");
+  }
+  return _preprocessFile(file);
+}
+
 desc('builds the concatenated canviz library');
-file('build/canviz.js', ['build', 'src/path/Point.js', 'src/path/Bezier.js', 'src/path/Path.js', 'src/path/Polygon.js', 'src/path/Rect.js', 'src/path/Ellipse.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'], function() {
-  var code = [];
-  ['src/path/Point.js', 'src/path/Bezier.js', 'src/path/Path.js', 'src/path/Polygon.js', 'src/path/Rect.js', 'src/path/Ellipse.js', 'src/Tokenizer.js', 'src/Entity.js', 'src/Node.js', 'src/Edge.js', 'src/Graph.js', 'src/Canviz.js', 'src/Image.js', 'src/debug.js'].forEach(function(file) {
-    code.push(fs.readFileSync(file, 'utf8'));
-  });
-  fs.writeFileSync('build/canviz.js', code.join("\n"), 'utf8');
+file('build/canviz.js', [
+  'build',
+  'src/Canviz.js',
+  'src/debug.js',
+  'src/Edge.js',
+  'src/Entity.js',
+  'src/Graph.js',
+  'src/Image.js',
+  'src/Node.js',
+  'src/path/Bezier.js',
+  'src/path/Ellipse.js',
+  'src/path/Path.js',
+  'src/path/Point.js',
+  'src/path/Polygon.js',
+  'src/path/Rect.js',
+  'src/Tokenizer.js',
+], function() {
+  var code = preprocessFile('src/all.js');
+  fs.writeFileSync('build/canviz.js', code, 'utf8');
 });
 
 desc('builds the minified canviz library for production');

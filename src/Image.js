@@ -1,4 +1,7 @@
-var CanvizImage = Class.create({
+//#include 'debug.js'
+//#include 'path/Rect.js'
+
+var CanvizImage = exports.CanvizImage = Class.create({
 	initialize: function(canviz, src) {
 		this.canviz = canviz;
 		++this.canviz.numImages;

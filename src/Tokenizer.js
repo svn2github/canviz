@@ -1,4 +1,4 @@
-var CanvizTokenizer = Class.create({
+var CanvizTokenizer = exports.CanvizTokenizer = Class.create({
 	initialize: function(str) {
 		this.str = str;
 	},

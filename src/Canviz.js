@@ -1,4 +1,9 @@
-var Canviz = Class.create({
+//#include 'debug.js'
+//#include 'Edge.js'
+//#include 'Graph.js'
+//#include 'Node.js'
+
+var Canviz = exports.Canviz = Class.create({
 	maxXdotVersion: '1.2',
 	colors: $H({
 		fallback:{

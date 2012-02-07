@@ -1,4 +1,12 @@
-var CanvizEntity = Class.create({
+//#include 'debug.js'
+//#include 'Image.js'
+//#include 'path/Ellipse.js'
+//#include 'path/Path.js'
+//#include 'path/Point.js'
+//#include 'path/Rect.js'
+//#include 'Tokenizer.js'
+
+var CanvizEntity = exports.CanvizEntity = Class.create({
 	initialize: function(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
 		this.defaultAttrHashName = defaultAttrHashName;
 		this.name = name;

@@ -1,4 +1,4 @@
-function debug(str, escape) {
+var debug = exports.debug = function(str, escape) {
 	str = String(str);
 	if ('undefined' === typeof escape) {
 		escape = true;
@@ -7,4 +7,4 @@ function debug(str, escape) {
 		str = str.escapeHTML();
 	}
 	$('debug_output').innerHTML += '&raquo;' + str + '&laquo;<br />';
-}
+};

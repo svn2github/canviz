@@ -1,4 +1,7 @@
-var CanvizGraph = Class.create(CanvizEntity, {
+//#include 'Entity.js'
+//#include 'path/Rect.js'
+
+var CanvizGraph = exports.CanvizGraph = Class.create(CanvizEntity, {
 	initialize: function($super, name, canviz, rootGraph, parentGraph) {
 		$super('attrs', name, canviz, rootGraph, parentGraph, this);
 		this.nodeAttrs = $H();
