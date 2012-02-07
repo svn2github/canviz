@@ -3,6 +3,8 @@
  * $Id$
  */
 
-document.observe('dom:loaded', function() {
-	new Canviz('canviz', 'graph-xdot.gv');
+contentLoaded(window, function() {
+  setTimeout(function() {
+    new Canviz('canviz', 'graph-xdot.gv');
+  }, 0);
 });
