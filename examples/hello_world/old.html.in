@@ -9,7 +9,6 @@ $Id$
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<title>Canviz demo: Hello world: The old way</title>
 	<link rel="stylesheet" type="text/css" href="styles_inner.css" />
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
 	<script type="text/javascript" src="scripts_common.js"></script>
 </head>
 <body>

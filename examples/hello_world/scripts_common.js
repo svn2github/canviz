@@ -4,5 +4,5 @@
  */
 
 function click_node(node) {
-	$('click_output').update('You clicked "' + node + '"');
+  document.getElementById('click_output').innerHTML = 'You clicked "' + node + '"';
 }
