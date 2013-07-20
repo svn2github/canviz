@@ -2,13 +2,13 @@
   "name": "canviz",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
+  "devDpendencies": {
     "jake": "~0.2.15",
     "minimatch": "~0.1.5",
     "rimraf": "~1.0.9",
     "uglify-js": "~1.2.5"
   },
   "engines": {
-    "node": "~0.6.5"
+    "node": ">=0.6.5"
   }
 }
