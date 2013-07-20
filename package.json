@@ -2,7 +2,7 @@
   "name": "canviz",
   "version": "0.1.0",
   "private": true,
-  "devDpendencies": {
+  "devDependencies": {
     "jake": "~0.6.1",
     "minimatch": "~0.1.5",
     "uglify-js": "~1.2.5"
