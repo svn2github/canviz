@@ -1,7 +1,6 @@
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
-var rimraf = require('rimraf');
 var uglify = require('uglify-js');
 
 
@@ -38,7 +37,7 @@ function preprocessFile(file) {
   return _preprocessFile(file);
 }
 
-desc('builds the concatenated canviz library');
+desc('builds the concatenated canviz library for development');
 file('build/canviz.js', [
   'build',
   'src/Canviz.js',
@@ -99,5 +98,5 @@ task('example-multiple', function() {
 
 desc('removes everything that was built');
 task('clean', function() {
-  rimraf('build', {gently: true}, complete);
-}, {async: true});
+  jake.rmRf('build');
+});
