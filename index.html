@@ -49,7 +49,7 @@ document.observe('dom:loaded', function() {
     list.options[list.options.length] = new Option(100 * scale + '%', scale, false, 1 == scale);
   });
   
-  canviz = new Canviz('graph_container');
+  canviz = Canviz('graph_container');
   canviz.setImagePath('graphs/images/');
   canviz.setScale($F('graph_scale'));
   load_graph();

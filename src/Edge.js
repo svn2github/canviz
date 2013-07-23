@@ -1,5 +1,6 @@
 // Constructor
 function Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode) {
+  if (!(this instanceof Edge)) return new Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode);
   this.tailNode = tailNode;
   this.headNode = headNode;
   Entity.call(this, 'edgeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
@@ -7,7 +8,7 @@ function Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode) {
 
 // Parent
 var Entity = require('./Entity.js');
-Edge.prototype = new Entity();
+Edge.prototype = Entity();
 
 // Properties
 Edge.escStringMatchRe = /\\([EGTHL])/g;

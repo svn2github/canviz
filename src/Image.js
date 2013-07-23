@@ -2,6 +2,7 @@
 
 // Constructor
 function CanvizImage(canviz, src) {
+  if (!(this instanceof CanvizImage)) return new CanvizImage(canviz, src);
   this.canviz = canviz;
   ++this.canviz.numImages;
   this.finished = this.loaded = false;
@@ -39,7 +40,7 @@ CanvizImage.prototype = {
   drawBrokenImage: function (ctx, l, t, w, h) {
     ctx.save();
     ctx.beginPath();
-    new Rect(l, t, l + w, t + w).draw(ctx);
+    Rect(l, t, l + w, t + w).draw(ctx);
     ctx.moveTo(l, t);
     ctx.lineTo(l + w, t + w);
     ctx.moveTo(l + w, t);

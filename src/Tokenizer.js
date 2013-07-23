@@ -1,5 +1,6 @@
 // Constructor
 function Tokenizer(str) {
+  if (!(this instanceof Tokenizer)) return new Tokenizer(str);
   this.str = str;
 }
 

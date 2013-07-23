@@ -1,5 +1,6 @@
 // Constructor
 function Canviz(container, url, urlParams) {
+  if (!(this instanceof Canviz)) return new Canviz(container, url, urlParams);
   this.canvas = document.createElement('canvas');
   Element.setStyle(this.canvas, {
     position: 'absolute'
@@ -106,7 +107,7 @@ Canviz.prototype = {
         if (0 == containers.length) {
           matches = line.match(GRAPH_MATCH_RE);
           if (matches) {
-            rootGraph = new Graph(matches[3], this);
+            rootGraph = Graph(matches[3], this);
             containers.unshift(rootGraph);
             containers[0].strict = ('undefined' !== typeof matches[1]);
             containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
@@ -117,7 +118,7 @@ Canviz.prototype = {
         } else {
           matches = line.match(SUBGRAPH_MATCH_RE);
           if (matches) {
-            containers.unshift(new Graph(matches[1], this, rootGraph, containers[0]));
+            containers.unshift(Graph(matches[1], this, rootGraph, containers[0]));
             containers[1].subgraphs.push(containers[0]);
 //            debug('subgraph: ' + containers[0].name);
           }
@@ -149,7 +150,7 @@ Canviz.prototype = {
                 attrHash = containers[0].edgeAttrs;
                 break;
               default:
-                entity = new Node(entityName, this, rootGraph, containers[0]);
+                entity = Node(entityName, this, rootGraph, containers[0]);
                 attrHash = entity.attrs;
                 drawAttrHash = entity.drawAttrs;
                 containers[0].nodes.push(entity);
@@ -160,7 +161,7 @@ Canviz.prototype = {
             if (matches) {
               entityName = matches[1];
               attrs = matches[8];
-              entity = new Edge(entityName, this, rootGraph, containers[0], matches[2], matches[5]);
+              entity = Edge(entityName, this, rootGraph, containers[0], matches[2], matches[5]);
               attrHash = entity.attrs;
               drawAttrHash = entity.drawAttrs;
               containers[0].edges.push(entity);

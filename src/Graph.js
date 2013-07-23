@@ -1,5 +1,6 @@
 // Constructor
 function Graph(name, canviz, rootGraph, parentGraph) {
+  if (!(this instanceof Graph)) return new Graph(name, canviz, rootGraph, parentGraph);
   this.nodeAttrs = $H();
   this.edgeAttrs = $H();
   this.nodes = $A();
@@ -10,7 +11,7 @@ function Graph(name, canviz, rootGraph, parentGraph) {
 
 // Parent
 var Entity = require('./Entity.js');
-Graph.prototype = new Entity();
+Graph.prototype = Entity();
 
 // Properties
 Graph.escStringMatchRe = /\\([GL])/g;
@@ -19,7 +20,7 @@ Graph.escStringMatchRe = /\\([GL])/g;
 Graph.prototype.constructor = Graph;
 Graph.prototype.initBB = function () {
     var coords = this.getAttr('bb').split(',');
-    this.bbRect = new Rect(coords[0], this.canviz.height - coords[1], coords[2], this.canviz.height - coords[3]);
+    this.bbRect = Rect(coords[0], this.canviz.height - coords[1], coords[2], this.canviz.height - coords[3]);
 };
 Graph.prototype.draw = function (ctx, ctxScale, redrawCanvasOnly) {
   Entity.prototype.draw.call(this, ctx, ctxScale, redrawCanvasOnly);

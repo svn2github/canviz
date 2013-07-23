@@ -5,6 +5,6 @@
 
 contentLoaded(window, function() {
   setTimeout(function() {
-    new Canviz('canviz', 'graph-xdot.gv');
+    Canviz('canviz', 'graph-xdot.gv');
   }, 0);
 });

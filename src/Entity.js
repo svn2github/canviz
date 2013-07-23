@@ -1,5 +1,6 @@
 // Constructor
 function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
+  if (!(this instanceof Entity)) return new Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph);
   this.defaultAttrHashName = defaultAttrHashName;
   this.name = name;
   this.canviz = canviz;
@@ -17,7 +18,7 @@ Entity.prototype = {
     var matches = this.getAttr('pos').match(/([0-9.]+),([0-9.]+)/);
     var x = Math.round(matches[1]);
     var y = Math.round(this.canviz.height - matches[2]);
-    this.bbRect = new Rect(x, y, x, y);
+    this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
     if ('undefined' === typeof escString) escString = false;
@@ -58,7 +59,7 @@ Entity.prototype = {
     this.drawAttrs.each(function (drawAttr) {
       var command = drawAttr.value;
 //      debug(command);
-      var tokenizer = new Tokenizer(command);
+      var tokenizer = Tokenizer(command);
       var token = tokenizer.takeChars();
       if (token) {
         var dashStyle = 'solid';
@@ -73,7 +74,7 @@ Entity.prototype = {
               var cy = this.canviz.height - tokenizer.takeNumber();
               var rx = tokenizer.takeNumber();
               var ry = tokenizer.takeNumber();
-              var path = new Ellipse(cx, cy, rx, ry);
+              var path = Ellipse(cx, cy, rx, ry);
               break;
             case 'P': // filled polygon
             case 'p': // unfilled polygon
@@ -82,17 +83,17 @@ Entity.prototype = {
               var closed = ('L' != token);
               var numPoints = tokenizer.takeNumber();
               tokens = tokenizer.takeNumber(2 * numPoints); // points
-              var path = new Path();
+              var path = Path();
               for (i = 2; i < 2 * numPoints; i += 2) {
                 path.addBezier([
-                  new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
-                  new Point(tokens[i],     this.canviz.height - tokens[i + 1])
+                  Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
+                  Point(tokens[i],     this.canviz.height - tokens[i + 1])
                 ]);
               }
               if (closed) {
                 path.addBezier([
-                  new Point(tokens[2 * numPoints - 2], this.canviz.height - tokens[2 * numPoints - 1]),
-                  new Point(tokens[0],                  this.canviz.height - tokens[1])
+                  Point(tokens[2 * numPoints - 2], this.canviz.height - tokens[2 * numPoints - 1]),
+                  Point(tokens[0],                  this.canviz.height - tokens[1])
                 ]);
               }
               break;
@@ -101,13 +102,13 @@ Entity.prototype = {
               var filled = ('b' == token);
               var numPoints = tokenizer.takeNumber();
               tokens = tokenizer.takeNumber(2 * numPoints); // points
-              var path = new Path();
+              var path = Path();
               for (i = 2; i < 2 * numPoints; i += 6) {
                 path.addBezier([
-                  new Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
-                  new Point(tokens[i],     this.canviz.height - tokens[i + 1]),
-                  new Point(tokens[i + 2], this.canviz.height - tokens[i + 3]),
-                  new Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
+                  Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
+                  Point(tokens[i],     this.canviz.height - tokens[i + 1]),
+                  Point(tokens[i + 2], this.canviz.height - tokens[i + 3]),
+                  Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
                 ]);
               }
               break;
@@ -118,7 +119,7 @@ Entity.prototype = {
               var h = tokenizer.takeNumber();
               var src = tokenizer.takeString();
               if (!this.canviz.images[src]) {
-                this.canviz.images[src] = new CanvizImage(this.canviz, src);
+                this.canviz.images[src] = CanvizImage(this.canviz, src);
               }
               this.canviz.images[src].draw(ctx, l, b - h, w, h);
               break;
