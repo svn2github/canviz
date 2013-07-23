@@ -1,7 +1,7 @@
 // Constructor
 function Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode) {
-		this.tailNode = tailNode;
-		this.headNode = headNode;
+  this.tailNode = tailNode;
+  this.headNode = headNode;
   Entity.call(this, 'edgeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
 }
 

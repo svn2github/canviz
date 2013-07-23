@@ -4,16 +4,16 @@
 #
 
 BEGIN {
-	replacement = ""
+  replacement = ""
 }
 
 NR==FNR {
-	gsub("\&", "\\\\\&", $0)
-	replacement = replacement $0 "\n";
-	next;
+  gsub("\&", "\\\\\&", $0)
+  replacement = replacement $0 "\n";
+  next;
 }
 
 {
-	gsub(placeholder, replacement, $0)
-	print
+  gsub(placeholder, replacement, $0)
+  print
 }
