@@ -3,7 +3,7 @@
  * $Id$
  */
 
-Canviz.prototype.addColors({
+Canviz.addColors({
 x11:{
 aliceblue:'f0f8ff',
 antiquewhite:'faebd7',

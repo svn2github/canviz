@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "jake": "~0.6.1",
-    "minimatch": "~0.1.5",
-    "uglify-js": "~1.2.5"
+    "browserify": "~2.25.0",
+    "jake": "~0.6.4",
+    "uglify-js": "~2.3.6"
   },
   "engines": {
     "node": ">=0.6.5"

@@ -1,3 +1,4 @@
+var browserify = require('browserify');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
@@ -16,30 +17,10 @@ task('examples', ['example-multiple'], function() {});
 desc('makes the build directory');
 directory('build');
 
-function preprocessFile(file) {
-  var includeFiles = [];
-  function _preprocessFile(file) {
-    includeFiles.push(file);
-    var lines = fs.readFileSync(file, 'utf8').split("\n");
-    for (var i = 0; i < lines.length; ++i) {
-      var matches = /^\s*\/\/#include\s*(?:'([^']+)'|"([^"]+)")\s*$/.exec(lines[i]);
-      if (matches) {
-        var includeFile = path.join(path.dirname(file), matches[1]);
-        if (includeFiles.indexOf(includeFile) === -1) {
-          lines[i] = _preprocessFile(includeFile);
-        } else {
-          lines.splice(i--, 1);
-        }
-      }
-    }
-    return lines.join("\n");
-  }
-  return _preprocessFile(file);
-}
-
 desc('builds the concatenated canviz library for development');
 file('build/canviz.js', [
   'build',
+  'index.js',
   'src/Canviz.js',
   'src/debug.js',
   'src/Edge.js',
@@ -49,26 +30,35 @@ file('build/canviz.js', [
   'src/Node.js',
   'src/path/Bezier.js',
   'src/path/Ellipse.js',
+  'src/path/objectKeys.js',
   'src/path/Path.js',
   'src/path/Point.js',
   'src/path/Polygon.js',
   'src/path/Rect.js',
   'src/Tokenizer.js',
 ], function() {
-  var code = preprocessFile('src/all.js');
-  fs.writeFileSync('build/canviz.js', code, 'utf8');
-});
+  var b = browserify('./index.js');
+  b.bundle({standalone: 'Canviz'}, function(err, code) {
+    if (err) console.error(err);
+    else fs.writeFileSync('build/canviz.js', code, 'utf8');
+    complete();
+  });
+}, {async: true});
 
 desc('builds the minified canviz library for production');
 file('build/canviz.min.js', ['build/canviz.js'], function() {
-  var code = fs.readFileSync('build/canviz.js', 'utf8');
-  var uglify_options = {
-    strict_semicolons: true,
-    mangle_options: {except: ['$super']},
-    gen_options: {ascii_only: true},
+  var options = {
+    compress: {
+      unsafe: true
+    },
+    output: {
+      ascii_only: true,
+      semicolons: false
+    },
+    warnings: true
   };
-  var minified_code = uglify(code, uglify_options);
-  fs.writeFileSync('build/canviz.min.js', minified_code, 'utf8');
+  var code = uglify.minify('build/canviz.js', options).code;
+  fs.writeFileSync('build/canviz.min.js', code, 'utf8');
 });
 
 function graphviz(infile, outfile, format, cb) {

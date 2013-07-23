@@ -1,10 +1,17 @@
-//#include 'Entity.js'
+// Constructor
+function Node(name, canviz, rootGraph, parentGraph) {
+  Entity.call(this, 'nodeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
+}
 
-var CanvizNode = exports.CanvizNode = Class.create(CanvizEntity, {
-	initialize: function($super, name, canviz, rootGraph, parentGraph) {
-		$super('nodeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
-	}
-});
-Object.extend(CanvizNode.prototype, {
-	escStringMatchRe: /\\([NGL])/g
-});
+// Parent
+var Entity = require('./Entity.js');
+Node.prototype = new Entity();
+
+// Properties
+Node.escStringMatchRe = /\\([NGL])/g;
+
+// Prototype
+Node.prototype.constructor = Node;
+
+// Exports
+module.exports = Node;

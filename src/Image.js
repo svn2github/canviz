@@ -1,8 +1,7 @@
-//#include 'debug.js'
-//#include 'path/Rect.js'
+// Can't be called "Image" because that would mask the DOM Image class that we want to use
 
-var CanvizImage = exports.CanvizImage = Class.create({
-	initialize: function(canviz, src) {
+// Constructor
+function CanvizImage(canviz, src) {
 		this.canviz = canviz;
 		++this.canviz.numImages;
 		this.finished = this.loaded = false;
@@ -11,7 +10,11 @@ var CanvizImage = exports.CanvizImage = Class.create({
 		this.img.onerror = this.onFinish.bind(this);
 		this.img.onabort = this.onFinish.bind(this);
 		this.img.src = this.canviz.imagePath + src;
-	},
+}
+
+// Prototype
+CanvizImage.prototype = {
+  constructor: CanvizImage,
 	onLoad: function() {
 		this.loaded = true;
 		this.onFinish();
@@ -46,4 +49,11 @@ var CanvizImage = exports.CanvizImage = Class.create({
 		ctx.stroke();
 		ctx.restore();
 	}
-});
+};
+
+// Exports
+module.exports = CanvizImage;
+
+// Dependencies
+var debug = require('./debug.js');
+var Rect = require('./path/Rect.js');

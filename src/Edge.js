@@ -1,12 +1,19 @@
-//#include 'Entity.js'
-
-var CanvizEdge = exports.CanvizEdge = Class.create(CanvizEntity, {
-	initialize: function($super, name, canviz, rootGraph, parentGraph, tailNode, headNode) {
-		$super('edgeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
+// Constructor
+function Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode) {
 		this.tailNode = tailNode;
 		this.headNode = headNode;
-	}
-});
-Object.extend(CanvizEdge.prototype, {
-	escStringMatchRe: /\\([EGTHL])/g
-});
+  Entity.call(this, 'edgeAttrs', name, canviz, rootGraph, parentGraph, parentGraph);
+}
+
+// Parent
+var Entity = require('./Entity.js');
+Edge.prototype = new Entity();
+
+// Properties
+Edge.escStringMatchRe = /\\([EGTHL])/g;
+
+// Prototype
+Edge.prototype.constructor = Edge;
+
+// Exports
+module.exports = Edge;

@@ -1,13 +1,5 @@
-//#include 'debug.js'
-//#include 'Image.js'
-//#include 'path/Ellipse.js'
-//#include 'path/Path.js'
-//#include 'path/Point.js'
-//#include 'path/Rect.js'
-//#include 'Tokenizer.js'
-
-var CanvizEntity = exports.CanvizEntity = Class.create({
-	initialize: function(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
+// Constructor
+function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
 		this.defaultAttrHashName = defaultAttrHashName;
 		this.name = name;
 		this.canviz = canviz;
@@ -16,7 +8,11 @@ var CanvizEntity = exports.CanvizEntity = Class.create({
 		this.immediateGraph = immediateGraph;
 		this.attrs = $H();
 		this.drawAttrs = $H();
-	},
+};
+
+// Prototype
+Entity.prototype = {
+  constructor: Entity,
 	initBB: function() {
 		var matches = this.getAttr('pos').match(/([0-9.]+),([0-9.]+)/);
 		var x = Math.round(matches[1]);
@@ -62,7 +58,7 @@ var CanvizEntity = exports.CanvizEntity = Class.create({
 		this.drawAttrs.each(function(drawAttr) {
 			var command = drawAttr.value;
 //			debug(command);
-			var tokenizer = new CanvizTokenizer(command);
+			var tokenizer = new Tokenizer(command);
 			var token = tokenizer.takeChars();
 			if (token) {
 				var dashStyle = 'solid';
@@ -260,12 +256,12 @@ var CanvizEntity = exports.CanvizEntity = Class.create({
 		var parsedColor = {opacity: 1};
 		// rgb/rgba
 		if (/^#(?:[0-9a-f]{2}\s*){3,4}$/i.test(color)) {
-			return this.canviz.parseHexColor(color);
+			return parseHexColor(color);
 		}
 		// hsv
 		var matches = color.match(/^(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)$/);
 		if (matches) {
-			parsedColor.canvasColor = parsedColor.textColor = this.canviz.hsvToRgbColor(matches[1], matches[2], matches[3]);
+			parsedColor.canvasColor = parsedColor.textColor = hsvToRgbColor(matches[1], matches[2], matches[3]);
 			return parsedColor;
 		}
 		// named color
@@ -286,16 +282,16 @@ var CanvizEntity = exports.CanvizEntity = Class.create({
 		}
 		colorName = colorName.toLowerCase();
 		var colorSchemeName = colorScheme.toLowerCase();
-		var colorSchemeData = Canviz.prototype.colors.get(colorSchemeName);
+		var colorSchemeData = Canviz.colors.get(colorSchemeName);
 		if (colorSchemeData) {
 			var colorData = colorSchemeData[colorName];
 			if (colorData) {
-				return this.canviz.parseHexColor('#' + colorData);
+				return parseHexColor('#' + colorData);
 			}
 		}
-		colorData = Canviz.prototype.colors.get('fallback')[colorName];
+		colorData = Canviz.colors.get('fallback')[colorName];
 		if (colorData) {
-			return this.canviz.parseHexColor('#' + colorData);
+			return parseHexColor('#' + colorData);
 		}
 		if (!colorSchemeData) {
 			debug('unknown color scheme ' + colorScheme);
@@ -305,4 +301,18 @@ var CanvizEntity = exports.CanvizEntity = Class.create({
 		parsedColor.canvasColor = parsedColor.textColor = '#000000';
 		return parsedColor;
 	}
-});
+};
+
+// Exports
+module.exports = Entity;
+
+// Dependencies
+var CanvizImage = require('./Image.js');
+var debug = require('./debug.js');
+var Ellipse = require('./path/Ellipse.js');
+var hsvToRgbColor = require('./hsvToRgbColor.js');
+var parseHexColor = require('./parseHexColor.js');
+var Path = require('./path/Path.js');
+var Point = require('./path/Point.js');
+var Rect = require('./path/Rect.js');
+var Tokenizer = require('./Tokenizer.js');

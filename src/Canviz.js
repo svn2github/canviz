@@ -1,19 +1,5 @@
-//#include 'debug.js'
-//#include 'Edge.js'
-//#include 'Graph.js'
-//#include 'Node.js'
-
-var Canviz = exports.Canviz = Class.create({
-	maxXdotVersion: '1.2',
-	colors: $H({
-		fallback:{
-			black:'000000',
-			lightgrey:'d3d3d3',
-			white:'ffffff'
-		}
-	}),
-	initialize: function(container, url, urlParams) {
-		// excanvas can't init the element if we use new Element()
+// Constructor
+function Canviz(container, url, urlParams) {
 		this.canvas = document.createElement('canvas');
 		Element.setStyle(this.canvas, {
 			position: 'absolute'
@@ -46,7 +32,36 @@ var Canviz = exports.Canviz = Class.create({
 		if (url) {
 			this.load(url, urlParams);
 		}
-	},
+}
+
+// Properties
+Canviz.colors = $H({
+		fallback:{
+			black:'000000',
+			lightgrey:'d3d3d3',
+			white:'ffffff'
+		}
+});
+Canviz.addColors = function(colors) {
+	Canviz.colors.update(colors);
+};
+
+// Constants
+var MAX_XDOT_VERSION = '1.2';
+// An alphanumeric string or a number or a double-quoted string or an HTML string
+var ID_MATCH = '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)';
+// ID or ID:port or ID:compassPoint or ID:port:compassPoint
+var NODE_ID_MATCH = ID_MATCH + '(?::' + ID_MATCH + ')?(?::' + ID_MATCH + ')?';
+// Regular expressions used by the parser
+var GRAPH_MATCH_RE = new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + ID_MATCH + ')?\\s*{$', 'i');
+var SUBGRAPH_MATCH_RE = new RegExp('^(?:subgraph\\s+)?' + ID_MATCH + '?\\s*{$', 'i');
+var NODE_MATCH_RE = new RegExp('^(' + NODE_ID_MATCH + ')\\s+\\[(.+)\\];$');
+var EDGE_MATCH_RE = new RegExp('^(' + NODE_ID_MATCH + '\\s*-[->]\\s*' + NODE_ID_MATCH + ')\\s+\\[(.+)\\];$');
+var ATTR_MATCH_RE = new RegExp('^' + ID_MATCH + '=' + ID_MATCH + '(?:[,\\s]+|$)');
+
+// Prototype
+Canviz.prototype = {
+  constructor: Canviz,
 	setScale: function(scale) {
 		this.scale = scale;
 	},
@@ -89,9 +104,9 @@ var Canviz = exports.Canviz = Class.create({
 				}
 //				debug(line);
 				if (0 == containers.length) {
-					matches = line.match(this.graphMatchRe);
+					matches = line.match(GRAPH_MATCH_RE);
 					if (matches) {
-						rootGraph = new CanvizGraph(matches[3], this);
+						rootGraph = new Graph(matches[3], this);
 						containers.unshift(rootGraph);
 						containers[0].strict = ('undefined' !== typeof matches[1]);
 						containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
@@ -100,9 +115,9 @@ var Canviz = exports.Canviz = Class.create({
 //						debug('graph: ' + containers[0].name);
 					}
 				} else {
-					matches = line.match(this.subgraphMatchRe);
+					matches = line.match(SUBGRAPH_MATCH_RE);
 					if (matches) {
-						containers.unshift(new CanvizGraph(matches[1], this, rootGraph, containers[0]));
+						containers.unshift(new Graph(matches[1], this, rootGraph, containers[0]));
 						containers[1].subgraphs.push(containers[0]);
 //						debug('subgraph: ' + containers[0].name);
 					}
@@ -116,7 +131,7 @@ var Canviz = exports.Canviz = Class.create({
 						break;
 					}
 				} else {
-					matches = line.match(this.nodeMatchRe);
+					matches = line.match(NODE_MATCH_RE);
 					if (matches) {
 						entityName = matches[2];
 						attrs = matches[5];
@@ -134,18 +149,18 @@ var Canviz = exports.Canviz = Class.create({
 								attrHash = containers[0].edgeAttrs;
 								break;
 							default:
-								entity = new CanvizNode(entityName, this, rootGraph, containers[0]);
+								entity = new Node(entityName, this, rootGraph, containers[0]);
 								attrHash = entity.attrs;
 								drawAttrHash = entity.drawAttrs;
 								containers[0].nodes.push(entity);
 						}
 //						debug('node: ' + entityName);
 					} else {
-						matches = line.match(this.edgeMatchRe);
+						matches = line.match(EDGE_MATCH_RE);
 						if (matches) {
 							entityName = matches[1];
 							attrs = matches[8];
-							entity = new CanvizEdge(entityName, this, rootGraph, containers[0], matches[2], matches[5]);
+							entity = new Edge(entityName, this, rootGraph, containers[0], matches[2], matches[5]);
 							attrHash = entity.attrs;
 							drawAttrHash = entity.drawAttrs;
 							containers[0].edges.push(entity);
@@ -157,11 +172,11 @@ var Canviz = exports.Canviz = Class.create({
 							if (0 == attrs.length) {
 								break;
 							}
-							matches = attrs.match(this.attrMatchRe);
+							matches = attrs.match(ATTR_MATCH_RE);
 							if (matches) {
 								attrs = attrs.substr(matches[0].length);
 								attrName = matches[1];
-								attrValue = this.unescape(matches[2]);
+								attrValue = unescapeAttr(matches[2]);
 								if (/^_.*draw_$/.test(attrName)) {
 									drawAttrHash.set(attrName, attrValue);
 								} else {
@@ -192,8 +207,8 @@ var Canviz = exports.Canviz = Class.create({
 											}
 											break;
 										case 'xdotversion':
-											if (0 > this.versionCompare(this.maxXdotVersion, attrHash.get('xdotversion'))) {
-												debug('unsupported xdotversion ' + attrHash.get('xdotversion') + '; this script currently supports up to xdotversion ' + this.maxXdotVersion);
+											if (0 > versionCompare(MAX_XDOT_VERSION, attrHash.get('xdotversion'))) {
+												debug('unsupported xdotversion ' + attrHash.get('xdotversion') + '; this script currently supports up to xdotversion ' + MAX_XDOT_VERSION);
 											}
 											break;
 									}
@@ -275,72 +290,16 @@ var Canviz = exports.Canviz = Class.create({
 			ctx.stroke();
 			if (oldLineWidth) ctx.lineWidth = oldLineWidth;
 		}
-	},
-	unescape: function(str) {
-		var matches = str.match(/^"(.*)"$/);
-		if (matches) {
-			return matches[1].replace(/\\"/g, '"');
-		} else {
-			return str;
-		}
-	},
-	parseHexColor: function(color) {
-		var matches = color.match(/^#([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})\s*([0-9a-f]{2})?$/i);
-		if (matches) {
-			var canvasColor, textColor = '#' + matches[1] + matches[2] + matches[3], opacity = 1;
-			if (matches[4]) { // rgba
-				opacity = parseInt(matches[4], 16) / 255;
-				canvasColor = 'rgba(' + parseInt(matches[1], 16) + ',' + parseInt(matches[2], 16) + ',' + parseInt(matches[3], 16) + ',' + opacity + ')';
-			} else { // rgb
-				canvasColor = textColor;
-			}
-		}
-		return {canvasColor: canvasColor, textColor: textColor, opacity: opacity};
-	},
-	hsvToRgbColor: function(h, s, v) {
-		var i, f, p, q, t, r, g, b;
-		h *= 360;
-		i = Math.floor(h / 60) % 6;
-		f = h / 60 - i;
-		p = v * (1 - s);
-		q = v * (1 - f * s);
-		t = v * (1 - (1 - f) * s);
-		switch (i) {
-			case 0: r = v; g = t; b = p; break;
-			case 1: r = q; g = v; b = p; break;
-			case 2: r = p; g = v; b = t; break;
-			case 3: r = p; g = q; b = v; break;
-			case 4: r = t; g = p; b = v; break;
-			case 5: r = v; g = p; b = q; break;
-		}
-		return 'rgb(' + Math.round(255 * r) + ',' + Math.round(255 * g) + ',' + Math.round(255 * b) + ')';
-	},
-	addColors: function(colors) {
-		Canviz.prototype.colors.update(colors);
-	},
-	versionCompare: function(a, b) {
-		a = a.split('.');
-		b = b.split('.');
-		var a1, b1;
-		while (a.length || b.length) {
-			a1 = a.length ? a.shift() : 0;
-			b1 = b.length ? b.shift() : 0;
-			if (a1 < b1) return -1;
-			if (a1 > b1) return 1;
-		}
-		return 0;
-	},
-	// an alphanumeric string or a number or a double-quoted string or an HTML string
-	idMatch: '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)'
-});
-Object.extend(Canviz.prototype, {
-	// ID or ID:port or ID:compassPoint or ID:port:compassPoint
-	nodeIdMatch: Canviz.prototype.idMatch + '(?::' + Canviz.prototype.idMatch + ')?(?::' + Canviz.prototype.idMatch + ')?'
-});
-Object.extend(Canviz.prototype, {
-	graphMatchRe: new RegExp('^(strict\\s+)?(graph|digraph)(?:\\s+' + Canviz.prototype.idMatch + ')?\\s*{$', 'i'),
-	subgraphMatchRe: new RegExp('^(?:subgraph\\s+)?' + Canviz.prototype.idMatch + '?\\s*{$', 'i'),
-	nodeMatchRe: new RegExp('^(' + Canviz.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
-	edgeMatchRe: new RegExp('^(' + Canviz.prototype.nodeIdMatch + '\\s*-[->]\\s*' + Canviz.prototype.nodeIdMatch + ')\\s+\\[(.+)\\];$'),
-	attrMatchRe: new RegExp('^' + Canviz.prototype.idMatch + '=' + Canviz.prototype.idMatch + '(?:[,\\s]+|$)')
-});
+	}
+};
+
+// Exports
+module.exports = Canviz;
+
+// Dependencies
+var debug = require('./debug.js');
+var Edge = require('./Edge.js');
+var Graph = require('./Graph.js');
+var Node = require('./Node.js');
+var unescapeAttr = require('./unescapeAttr.js');
+var versionCompare = require('./versionCompare.js');

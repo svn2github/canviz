@@ -9,7 +9,7 @@ BEGIN {
 	print " * $I" "d$"
 	print " */"
 	print ""
-	print "Canviz.prototype.addColors({"
+	print "Canviz.addColors({"
 	last_color_scheme = ""
 }
 
