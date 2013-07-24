@@ -7,9 +7,13 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
   this.rootGraph = rootGraph;
   this.parentGraph = parentGraph;
   this.immediateGraph = immediateGraph;
-  this.attrs = $H();
-  this.drawAttrs = $H();
+  this.attrs = {};
+  this.drawAttrs = {};
 }
+
+// Constants
+var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'],
+  EVENT_TYPES_LENGTH = EVENT_TYPES.length;
 
 // Prototype
 Entity.prototype = {
@@ -22,11 +26,11 @@ Entity.prototype = {
   },
   getAttr: function (attrName, escString) {
     if ('undefined' === typeof escString) escString = false;
-    var attrValue = this.attrs.get(attrName);
+    var attrValue = this.attrs[attrName];
     if ('undefined' === typeof attrValue) {
       var graph = this.parentGraph;
       while ('undefined' !== typeof graph) {
-        attrValue = graph[this.defaultAttrHashName].get(attrName);
+        attrValue = graph[this.defaultAttrHashName][attrName];
         if ('undefined' === typeof attrValue) {
           graph = graph.parentGraph;
         } else {
@@ -35,7 +39,7 @@ Entity.prototype = {
       }
     }
     if (attrValue && escString) {
-      attrValue = attrValue.replace(this.escStringMatchRe, function (match, p1) {
+      attrValue = attrValue.replace(this.ESC_STRING_MATCH_RE, function (match, p1) {
         switch (p1) {
           case 'N': // fall through
           case 'E': return this.name;
@@ -53,14 +57,16 @@ Entity.prototype = {
     var i, tokens, fillColor, strokeColor;
     if (!redrawCanvasOnly) {
       this.initBB();
-      var bbDiv = new Element('div');
+      var bbDiv = document.createElement('div');
       this.canviz.elements.appendChild(bbDiv);
     }
-    this.drawAttrs.each(function (drawAttr) {
-      var command = drawAttr.value;
+    var keys = objectKeys(this.drawAttrs),
+      keysLength = keys.length;
+    for (var k = 0; k < keysLength; ++k) {
+      var command = this.drawAttrs[keys[k]],
+        tokenizer = Tokenizer(command),
+        token = tokenizer.takeChars();
 //      debug(command);
-      var tokenizer = Tokenizer(command);
-      var token = tokenizer.takeChars();
       if (token) {
         var dashStyle = 'solid';
         ctx.save();
@@ -148,30 +154,30 @@ Entity.prototype = {
                   var target = this.getAttr('target', true) || '_self';
                   var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
 //                  debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
-                  text = new Element('a', {href: href, target: target, title: tooltip});
-                  ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'].each(function (attrName) {
-                    var attrValue = this.getAttr(attrName, true);
+                  text = document.createElement('a');
+                  text.setAttribute('href', href);
+                  text.setAttribute('target', target);
+                  text.setAttribute('title', tooltip);
+                  for (var e = 0; e < EVENT_TYPES_LENGTH; ++e) {
+                    var attrName = EVENT_TYPES[e],
+                      attrValue = this.getAttr(attrName, true);
                     if (attrValue) {
-                      text.writeAttribute(attrName, attrValue);
+                      text.setAttribute(attrName, attrValue);
                     }
-                  }.bind(this));
-                  text.setStyle({
-                    textDecoration: 'none'
-                  });
+                  }
+                  text.style.textDecoration = 'none';
                 } else {
-                  text = new Element('span');
+                  text = document.createElement('span');
                 }
-                text.update(str);
-                text.setStyle({
-                  fontSize: Math.round(fontSize * ctxScale * this.canviz.bbScale) + 'px',
-                  fontFamily: fontFamily,
-                  color: strokeColor.textColor,
-                  position: 'absolute',
-                  textAlign: (-1 == textAlign) ? 'left' : (1 == textAlign) ? 'right' : 'center',
-                  left: (l - (1 + textAlign) * textWidth) + 'px',
-                  top: t + 'px',
-                  width: (2 * textWidth) + 'px'
-                });
+                text.innerHTML = str;
+                text.style.fontSize = Math.round(fontSize * ctxScale * this.canviz.bbScale) + 'px';
+                text.style.fontFamily = fontFamily;
+                text.style.color = strokeColor.textColor;
+                text.style.position = 'absolute';
+                text.style.textAlign = (-1 == textAlign) ? 'left' : (1 == textAlign) ? 'right' : 'center';
+                text.style.left = (l - (1 + textAlign) * textWidth) + 'px';
+                text.style.top = t + 'px';
+                text.style.width = (2 * textWidth) + 'px';
                 if (1 != strokeColor.opacity) text.setOpacity(strokeColor.opacity);
                 this.canviz.elements.appendChild(text);
               }
@@ -241,17 +247,15 @@ Entity.prototype = {
           token = tokenizer.takeChars();
         }
         if (!redrawCanvasOnly) {
-          bbDiv.setStyle({
-            position: 'absolute',
-            left:   Math.round(ctxScale * this.bbRect.l + this.canviz.padding) + 'px',
-            top:    Math.round(ctxScale * this.bbRect.t + this.canviz.padding) + 'px',
-            width:  Math.round(ctxScale * this.bbRect.getWidth()) + 'px',
-            height: Math.round(ctxScale * this.bbRect.getHeight()) + 'px'
-          });
+          bbDiv.style.position = 'absolute';
+          bbDiv.style.left = Math.round(ctxScale * this.bbRect.l + this.canviz.padding) + 'px';
+          bbDiv.style.top= Math.round(ctxScale * this.bbRect.t + this.canviz.padding) + 'px';
+          bbDiv.style.width = Math.round(ctxScale * this.bbRect.getWidth()) + 'px';
+          bbDiv.style.height = Math.round(ctxScale * this.bbRect.getHeight()) + 'px';
         }
         ctx.restore();
       }
-    }.bind(this));
+    }
   },
   parseColor: function (color) {
     var parsedColor = {opacity: 1};
@@ -283,14 +287,14 @@ Entity.prototype = {
     }
     colorName = colorName.toLowerCase();
     var colorSchemeName = colorScheme.toLowerCase();
-    var colorSchemeData = Canviz.colors.get(colorSchemeName);
+    var colorSchemeData = Canviz.colors[colorSchemeName];
     if (colorSchemeData) {
       var colorData = colorSchemeData[colorName];
       if (colorData) {
         return parseHexColor('#' + colorData);
       }
     }
-    colorData = Canviz.colors.get('fallback')[colorName];
+    colorData = Canviz.colors.fallback[colorName];
     if (colorData) {
       return parseHexColor('#' + colorData);
     }
@@ -312,6 +316,7 @@ var CanvizImage = require('./Image.js');
 var debug = require('./debug.js');
 var Ellipse = require('./path/Ellipse.js');
 var hsvToRgbColor = require('./hsvToRgbColor.js');
+var objectKeys = require('./path/objectKeys.js');
 var parseHexColor = require('./parseHexColor.js');
 var Path = require('./path/Path.js');
 var Point = require('./path/Point.js');

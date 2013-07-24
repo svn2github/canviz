@@ -26,8 +26,11 @@ file('build/canviz.js', [
   'src/Edge.js',
   'src/Entity.js',
   'src/Graph.js',
+  'src/hsvToRgbColor.js',
   'src/Image.js',
+  'src/loadFile.js',
   'src/Node.js',
+  'src/parseHexColor.js',
   'src/path/Bezier.js',
   'src/path/Ellipse.js',
   'src/path/objectKeys.js',
@@ -36,6 +39,8 @@ file('build/canviz.js', [
   'src/path/Polygon.js',
   'src/path/Rect.js',
   'src/Tokenizer.js',
+  'src/unescapeAttr.js',
+  'src/versionCompare.js'
 ], function() {
   var b = browserify('./index.js');
   b.bundle({standalone: 'Canviz'}, function(err, code) {

@@ -10,11 +10,9 @@ function Edge(name, canviz, rootGraph, parentGraph, tailNode, headNode) {
 var Entity = require('./Entity.js');
 Edge.prototype = Entity();
 
-// Properties
-Edge.escStringMatchRe = /\\([EGTHL])/g;
-
 // Prototype
 Edge.prototype.constructor = Edge;
+Edge.prototype.ESC_STRING_MATCH_RE = /\\([EGTHL])/g;
 
 // Exports
 module.exports = Edge;

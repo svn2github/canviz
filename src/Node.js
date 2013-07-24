@@ -8,11 +8,9 @@ function Node(name, canviz, rootGraph, parentGraph) {
 var Entity = require('./Entity.js');
 Node.prototype = Entity();
 
-// Properties
-Node.escStringMatchRe = /\\([NGL])/g;
-
 // Prototype
 Node.prototype.constructor = Node;
+Node.prototype.ESC_STRING_MATCH_RE = /\\([NGL])/g;
 
 // Exports
 module.exports = Node;

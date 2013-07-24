@@ -2,23 +2,17 @@
 function Canviz(container, url, urlParams) {
   if (!(this instanceof Canviz)) return new Canviz(container, url, urlParams);
   this.canvas = document.createElement('canvas');
-  Element.setStyle(this.canvas, {
-    position: 'absolute'
-  });
+  this.canvas.style.position = 'absolute';
   if (!Canviz.canvasCounter) Canviz.canvasCounter = 0;
   this.canvas.id = 'canviz_canvas_' + ++Canviz.canvasCounter;
-  this.elements = new Element('div');
-  this.elements.setStyle({
-    position: 'absolute'
-  });
-  this.container = $(container);
-  this.container.setStyle({
-    position: 'relative'
-  });
+  this.elements = document.createElement('div');
+  this.elements.style.position = 'absolute';
+  this.container = typeof container == 'string' ? document.getElementById(container) : container;
+  this.container.style.position = 'relative';
   this.container.appendChild(this.canvas);
-  if (Prototype.Browser.IE) {
+  if (typeof G_vmlCanvasManager != 'undefined') {
     G_vmlCanvasManager.initElement(this.canvas);
-    this.canvas = $(this.canvas.id);
+    this.canvas = document.getElementById(this.canvas.id);
   }
   this.container.appendChild(this.elements);
   this.ctx = this.canvas.getContext('2d');
@@ -26,8 +20,8 @@ function Canviz(container, url, urlParams) {
   this.padding = 8;
   this.dashLength = 6;
   this.dotSpacing = 4;
-  this.graphs = $A();
-  this.images = new Hash();
+  this.graphs = [];
+  this.images = {};
   this.numImages = 0;
   this.numImagesFinished = 0;
   if (url) {
@@ -36,15 +30,20 @@ function Canviz(container, url, urlParams) {
 }
 
 // Properties
-Canviz.colors = $H({
+Canviz.colors = {
   fallback: {
     black: '000000',
     lightgrey: 'd3d3d3',
     white: 'ffffff'
   }
-});
+};
 Canviz.addColors = function (colors) {
-  Canviz.colors.update(colors);
+  var keys = objectKeys(colors),
+    keysLength = keys.length;
+  for (var i = 0; i < keysLength; ++i) {
+    var key = keys[i];
+    Canviz.colors[key] = colors[key];
+  }
 };
 
 // Constants
@@ -70,17 +69,22 @@ Canviz.prototype = {
     this.imagePath = imagePath;
   },
   load: function (url, urlParams) {
-    $('debug_output').innerHTML = '';
-    new Ajax.Request(url, {
-      method: 'get',
-      parameters: urlParams,
-      onComplete: function (response) {
-        this.parse(response.responseText);
-      }.bind(this)
+    if (urlParams) return console.log('urlParams not supported');
+
+    var self = this;
+
+    loadFile(url, function (err, text) {
+      if (err) {
+        console.log(err.message);
+      } else {
+        self.parse(text);
+      }
     });
   },
   parse: function (xdot) {
-    this.graphs = $A();
+    document.getElementById('debug_output').innerHTML = '';
+
+    this.graphs = [];
     this.width = 0;
     this.height = 0;
     this.maxWidth = false;
@@ -90,14 +94,15 @@ Canviz.prototype = {
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
     this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
-    var lines = xdot.split(/\r?\n/);
-    var i = 0;
-    var line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash;
-    var containers = $A();
-    while (i < lines.length) {
+    var lines = xdot.split(/\r?\n/),
+      linesLength = lines.length,
+      i = 0,
+      line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash,
+      containers = [];
+    while (i < linesLength) {
       line = lines[i++].replace(/^\s+/, '');
       if ('' != line && '#' != line.substr(0, 1)) {
-        while (i < lines.length && ';' != (lastChar = line.substr(line.length - 1, line.length)) && '{' != lastChar && '}' != lastChar) {
+        while (i < linesLength && ';' != (lastChar = line.substr(line.length - 1, line.length)) && '{' != lastChar && '}' != lastChar) {
           if ('\\' == lastChar) {
             line = line.substr(0, line.length - 1);
           }
@@ -111,7 +116,7 @@ Canviz.prototype = {
             containers.unshift(rootGraph);
             containers[0].strict = ('undefined' !== typeof matches[1]);
             containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
-            containers[0].attrs.set('xdotversion', '1.0');
+            containers[0].attrs.xdotversion = '1.0';
             this.graphs.push(containers[0]);
 //            debug('graph: ' + containers[0].name);
           }
@@ -179,9 +184,9 @@ Canviz.prototype = {
                 attrName = matches[1];
                 attrValue = unescapeAttr(matches[2]);
                 if (/^_.*draw_$/.test(attrName)) {
-                  drawAttrHash.set(attrName, attrValue);
+                  drawAttrHash[attrName] = attrValue;
                 } else {
-                  attrHash.set(attrName, attrValue);
+                  attrHash[attrName] = attrValue;
                 }
 //                debug(attrName + ' ' + attrValue);
                 if (isGraph && 1 == containers.length) {
@@ -208,8 +213,8 @@ Canviz.prototype = {
                       }
                       break;
                     case 'xdotversion':
-                      if (0 > versionCompare(MAX_XDOT_VERSION, attrHash.get('xdotversion'))) {
-                        debug('unsupported xdotversion ' + attrHash.get('xdotversion') + '; this script currently supports up to xdotversion ' + MAX_XDOT_VERSION);
+                      if (0 > versionCompare(MAX_XDOT_VERSION, attrHash.xdotversion)) {
+                        debug('unsupported xdotversion ' + attrHash.xdotversion + '; this script currently supports up to xdotversion ' + MAX_XDOT_VERSION);
                       }
                       break;
                   }
@@ -242,14 +247,8 @@ Canviz.prototype = {
     if (!redrawCanvasOnly) {
       this.canvas.width  = width;
       this.canvas.height = height;
-      this.canvas.setStyle({
-        width:  width  + 'px',
-        height: height + 'px'
-      });
-      this.container.setStyle({
-        width:  width  + 'px',
-        height: height + 'px'
-      });
+      this.canvas.style.width = this.container.style.width = width + 'px';
+      this.canvas.style.height = this.container.style.height = height + 'px';
       while (this.elements.firstChild) {
         this.elements.removeChild(this.elements.firstChild);
       }
@@ -301,6 +300,8 @@ module.exports = Canviz;
 var debug = require('./debug.js');
 var Edge = require('./Edge.js');
 var Graph = require('./Graph.js');
+var loadFile = require('./loadFile.js');
 var Node = require('./Node.js');
+var objectKeys = require('./path/objectKeys.js');
 var unescapeAttr = require('./unescapeAttr.js');
 var versionCompare = require('./versionCompare.js');
