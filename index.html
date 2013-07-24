@@ -21,24 +21,29 @@ $Id$
 var canviz;
 contentLoaded(window, function() {
   setTimeout(function() {
-  var list = document.getElementById('graph_name');
   graphs.sort(function(a, b) {
     a = a.replace(/.*\//, '').toLowerCase();
     b = b.replace(/.*\//, '').toLowerCase();
     return (a > b) ? 1 : (a < b) ? -1 : 0;
-  }).each(function(graph, index) {
-    list.options[list.options.length] = new Option(graph.replace(/^.*\/(.*)$/, '$1').replace(/^(.*)\.txt$/, '$1'), graph, false, 0 == index);
   });
+  var i, list = document.getElementById('graph_name');
+  for (i = 0; i < graphs.length; ++i) {
+    var graph = graphs[i];
+    list.options[list.options.length] = new Option(graph.replace(/^.*\/(.*)$/, '$1').replace(/^(.*)\.txt$/, '$1'), graph, false, i == 0);
+  }
   
   list = document.getElementById('graph_engine');
-  layouts.each(function(layout) {
+  for (i = 0; i < layouts.length; ++i) {
+    var layout = layouts[i];
     list.options[list.options.length] = new Option(layout, layout, false, 'dot' == layout);
-  });
+  }
   
   list = document.getElementById('graph_scale');
-  [4, 2, 1.5, 1, 0.75, 0.5].each(function(scale) {
+  var scales = [4, 2, 1.5, 1, 0.75, 0.5];
+  for (i = 0; i < scales.length; ++i) {
+    var scale = scales[i];
     list.options[list.options.length] = new Option(100 * scale + '%', scale, false, 1 == scale);
-  });
+  }
   
   canviz = Canviz('graph_container');
   canviz.setImagePath('graphs/images/');
