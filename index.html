@@ -17,20 +17,9 @@ $Id$
     <script type="text/javascript" src="graphs/graphlist.js"></script>
     <script type="text/javascript" src="graphs/layoutlist.js"></script>
     <script type="text/javascript"><!--
-Ajax.Responders.register({
-  onCreate: function() {
-    $('busy').show();
-  },
-  onComplete: function() {
-    if (0 == Ajax.activeRequestCount) {
-      $('busy').hide();
-    }
-  }
-});
-
 var canviz;
 document.observe('dom:loaded', function() {
-  var list = $('graph_name');
+  var list = document.getElementById('graph_name');
   graphs.sort(function(a, b) {
     a = a.replace(/.*\//, '').toLowerCase();
     b = b.replace(/.*\//, '').toLowerCase();
@@ -39,12 +28,12 @@ document.observe('dom:loaded', function() {
     list.options[list.options.length] = new Option(graph.replace(/^.*\/(.*)$/, '$1').replace(/^(.*)\.txt$/, '$1'), graph, false, 0 == index);
   });
   
-  list = $('graph_engine');
+  list = document.getElementById('graph_engine');
   layouts.each(function(layout) {
     list.options[list.options.length] = new Option(layout, layout, false, 'dot' == layout);
   });
   
-  list = $('graph_scale');
+  list = document.getElementById('graph_scale');
   [4, 2, 1.5, 1, 0.75, 0.5].each(function(scale) {
     list.options[list.options.length] = new Option(100 * scale + '%', scale, false, 1 == scale);
   });
@@ -62,19 +51,22 @@ function set_graph_scale() {
   canviz.draw();
 }
 function change_graph(inc) {
-  $('graph_name').selectedIndex = (($('graph_name').selectedIndex + inc) + $('graph_name').options.length) % $('graph_name').options.length;
+  var graphName = document.getElementById('graph_name');
+  graphName.selectedIndex = ((graphName.selectedIndex + inc) + graphName.options.length) % graphName.options.length;
   load_graph();
 }
 function change_engine(inc) {
-  $('graph_engine').selectedIndex = (($('graph_engine').selectedIndex + inc) + $('graph_engine').options.length) % $('graph_engine').options.length;
+  var graphEngine = document.getElementById('graph_engine');
+  graphEngine.selectedIndex = ((graphEngine.selectedIndex + inc) + graphEngine.options.length) % graphEngine.options.length;
   load_graph();
 }
 function change_scale(inc) {
-  var new_scale = $('graph_scale').selectedIndex + inc;
-  if (new_scale < 0 || new_scale >= $('graph_scale').options.length) {
+  var graphScale = document.getElementById('graph_scale');
+  var new_scale = graphScale.selectedIndex + inc;
+  if (new_scale < 0 || new_scale >= graphScale.options.length) {
     return;
   }
-  $('graph_scale').selectedIndex = new_scale;
+  graphScale.selectedIndex = new_scale;
   set_graph_scale();
 }
 function view_source() {
@@ -86,7 +78,6 @@ function graph_url() {
 // --></script>
   </head>
   <body>
-    <div id="busy" style="display:none">Loading...</div>
       <form action="javascript:void(0)" id="graph_form">
         <fieldset>
           <legend>Graph file</legend>

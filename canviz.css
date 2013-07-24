@@ -8,20 +8,6 @@ body {
 	margin: 0;
 	padding: 0;
 }
-#busy {
-	position: fixed;
-	z-index: 1;
-	left: 50%;
-	top: 50%;
-	width: 10em;
-	height: 2em;
-	margin: -1em 0 0 -5em;
-	line-height: 2em;
-	text-align: center;
-	background: #333;
-	color: #fff;
-	opacity: 0.95;
-}
 #graph_form {
 	position: fixed;
 	z-index: 2;
