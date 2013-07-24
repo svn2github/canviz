@@ -1,7 +1,7 @@
 // Constructor
 function Tokenizer(str) {
   if (!(this instanceof Tokenizer)) return new Tokenizer(str);
-  this.str = str;
+  this.str = String(str);
 }
 
 // Prototype
@@ -11,7 +11,7 @@ Tokenizer.prototype = {
     if (!num) {
       num = 1;
     }
-    var tokens = new Array();
+    var tokens = [];
     while (num--) {
       var matches = this.str.match(/^(\S+)\s*/);
       if (matches) {
