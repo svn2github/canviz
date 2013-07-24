@@ -137,7 +137,7 @@ Entity.prototype = {
               var str = tokenizer.takeString();
               if (!redrawCanvasOnly && !/^\s*$/.test(str)) {
 //                debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + textAlign + ' ' + textWidth);
-                str = str.escapeHTML();
+                str = escapeHtml(str);
                 do {
                   matches = str.match(/ ( +)/);
                   if (matches) {
@@ -315,6 +315,7 @@ module.exports = Entity;
 var CanvizImage = require('./Image.js');
 var debug = require('./debug.js');
 var Ellipse = require('./path/Ellipse.js');
+var escapeHtml = require('escape-html');
 var hsvToRgbColor = require('./hsvToRgbColor.js');
 var objectKeys = require('./path/objectKeys.js');
 var parseHexColor = require('./parseHexColor.js');
