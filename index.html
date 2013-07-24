@@ -11,7 +11,6 @@ $Id$
     <link rel="stylesheet" type="text/css" href="canviz.css" />
     <!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="canviz-ie6.css" /><![endif]-->
     <!--[if lt IE 9]><script type="text/javascript" src="excanvas/excanvas.js"></script><![endif]-->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
     <script type="text/javascript" src="build/canviz.js"></script>
     <script type="text/javascript" src="examples/contentloaded/contentloaded.js"></script>
     <script type="text/javascript" src="x11colors.js"></script>
@@ -47,7 +46,7 @@ contentLoaded(window, function() {
   
   canviz = Canviz('graph_container');
   canviz.setImagePath('graphs/images/');
-  canviz.setScale($F('graph_scale'));
+  canviz.setScale(list.options[list.selectedIndex].value);
   load_graph();
   }, 0);
 });
@@ -55,7 +54,8 @@ function load_graph() {
   canviz.load(graph_url());
 }
 function set_graph_scale() {
-  canviz.setScale($F('graph_scale'));
+  var graphScale = document.getElementById('graph_scale');
+  canviz.setScale(graphScale.options[graphScale.selectedIndex].value);
   canviz.draw();
 }
 function change_graph(inc) {
@@ -81,7 +81,9 @@ function view_source() {
   window.open(graph_url());
 }
 function graph_url() {
-  return 'graphs/' + $F('graph_engine') + '/' + $F('graph_name');
+  var graphEngine = document.getElementById('graph_engine'),
+    graphName = document.getElementById('graph_name');
+  return 'graphs/' + graphEngine.options[graphEngine.selectedIndex].value + '/' + graphName.options[graphName.selectedIndex].value;
 }
 // --></script>
   </head>
