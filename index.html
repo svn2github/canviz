@@ -13,12 +13,14 @@ $Id$
     <!--[if lt IE 9]><script type="text/javascript" src="excanvas/excanvas.js"></script><![endif]-->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.6.0.3/prototype.js"></script>
     <script type="text/javascript" src="build/canviz.js"></script>
+    <script type="text/javascript" src="examples/contentloaded/contentloaded.js"></script>
     <script type="text/javascript" src="x11colors.js"></script>
     <script type="text/javascript" src="graphs/graphlist.js"></script>
     <script type="text/javascript" src="graphs/layoutlist.js"></script>
     <script type="text/javascript"><!--
 var canviz;
-document.observe('dom:loaded', function() {
+contentLoaded(window, function() {
+  setTimeout(function() {
   var list = document.getElementById('graph_name');
   graphs.sort(function(a, b) {
     a = a.replace(/.*\//, '').toLowerCase();
@@ -42,6 +44,7 @@ document.observe('dom:loaded', function() {
   canviz.setImagePath('graphs/images/');
   canviz.setScale($F('graph_scale'));
   load_graph();
+  }, 0);
 });
 function load_graph() {
   canviz.load(graph_url());
