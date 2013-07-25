@@ -25,6 +25,7 @@ Entity.prototype = {
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
+    var self = this;
     if ('undefined' === typeof escString) escString = false;
     var attrValue = this.attrs[attrName];
     if ('undefined' === typeof attrValue) {
@@ -42,14 +43,14 @@ Entity.prototype = {
       attrValue = attrValue.replace(this.ESC_STRING_MATCH_RE, function (match, p1) {
         switch (p1) {
           case 'N': // fall through
-          case 'E': return this.name;
-          case 'T': return this.tailNode;
-          case 'H': return this.headNode;
-          case 'G': return this.immediateGraph.name;
-          case 'L': return this.getAttr('label', true);
+          case 'E': return self.name;
+          case 'T': return self.tailNode;
+          case 'H': return self.headNode;
+          case 'G': return self.immediateGraph.name;
+          case 'L': return self.getAttr('label', true);
         }
         return match;
-      }.bind(this));
+      });
     }
     return attrValue;
   },
