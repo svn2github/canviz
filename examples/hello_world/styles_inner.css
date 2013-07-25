@@ -4,16 +4,16 @@
  */
 
 body {
-	padding: 1em;
+  padding: 1em;
 }
 
 pre {
-	border: 1px solid black;
-	padding: 1em;
-	background: #eeeeee;
+  border: 1px solid black;
+  padding: 1em;
+  background: #eeeeee;
 }
 
 .graph {
-	border: 1px solid black;
-	padding: 1em;
+  border: 1px solid black;
+  padding: 1em;
 }

@@ -4,37 +4,35 @@ This file is part of Canviz. See http://www.canviz.org/
 $Id$
 -->
 <html>
-<head>
+  <head>
     <meta charset="utf-8">
-	<title>Canviz demo: Hello world: The new way</title>
+    <title>Canviz demo: Hello world: The new way</title>
     <link rel="stylesheet" type="text/css" href="styles_inner.css">
-	<!--[if lt IE 9]><script type="text/javascript" src="../../excanvas/excanvas.js"></script><![endif]-->
-	<script type="text/javascript" src="../contentloaded/contentloaded.js"></script>
-	<script type="text/javascript" src="../../build/canviz.js"></script>
-	<script type="text/javascript" src="scripts_common.js"></script>
-	<script type="text/javascript" src="scripts_new.js"></script>
-</head>
-<body>
+    <!--[if lt IE 9]><script type="text/javascript" src="../../excanvas/excanvas.js"></script><![endif]-->
+    <script type="text/javascript" src="../contentloaded/contentloaded.js"></script>
+    <script type="text/javascript" src="../../build/canviz.js"></script>
+    <script type="text/javascript" src="scripts_common.js"></script>
+    <script type="text/javascript" src="scripts_new.js"></script>
+  </head>
+  <body>
+    <h2>The new way</h2>
 
-<h2>The new way</h2>
+    <p>1. Write a Graphviz file:</p>
 
-<p>1. Write a Graphviz file:</p>
+    <p><pre>@GRAPH@</pre></p>
 
-<p><pre>@GRAPH@</pre></p>
+    <p>2. Have Graphviz render it to an xdot file:</p>
 
-<p>2. Have Graphviz render it to an xdot file:</p>
+    <p><pre>dot graph.gv -Txdot -ograph-xdot.gv</pre></p>
 
-<p><pre>dot graph.gv -Txdot -ograph-xdot.gv</pre></p>
+    <p>3. Write an HTML page containing an empty div and create a new Canviz object with the div's id and the xdot file's name:</p>
 
-<p>3. Write an HTML page containing an empty div and create a new Canviz object with the div's id and the xdot file's name:</p>
+    <div class="graph">
+      <div id="canviz"></div>
+    </div>
 
-<div class="graph">
-	<div id="canviz"></div>
-</div>
+    <p id="click_output"></p>
 
-<p id="click_output"></p>
-
-<div id="debug_output"></div>
-
-</body>
+    <div id="debug_output"></div>
+  </body>
 </html>
