@@ -10,6 +10,7 @@ body {
 
 iframe.two_column {
   position: absolute;
+  _position: static; /* IE <= 6 */
   border: 0;
   top: 0;
   width: 50%;
