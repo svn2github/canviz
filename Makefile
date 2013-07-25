@@ -35,16 +35,16 @@ hello-world-example: $(EXAMPLES_DIR)/hello_world/new.html $(EXAMPLES_DIR)/hello_
 $(EXAMPLES_DIR)/hello_world/new.html: $(EXAMPLES_DIR)/hello_world/new.html.in $(EXAMPLES_DIR)/hello_world/graph.gv $(EXAMPLES_DIR)/hello_world/graph-xdot.gv insert_file.awk
 	$(AWK) -f insert_file.awk -v placeholder=@GRAPH@ $(EXAMPLES_DIR)/hello_world/graph.gv $< > $@
 
-$(EXAMPLES_DIR)/hello_world/old.html: $(EXAMPLES_DIR)/hello_world/old.html.in $(EXAMPLES_DIR)/hello_world/graph.gv $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $(EXAMPLES_DIR)/hello_world/graph.png insert_file.awk
+$(EXAMPLES_DIR)/hello_world/old.html: $(EXAMPLES_DIR)/hello_world/old.html.in $(EXAMPLES_DIR)/hello_world/graph.gv $(EXAMPLES_DIR)/hello_world/graph-cmap.html $(EXAMPLES_DIR)/hello_world/graph.png insert_file.awk
 	$(AWK) -f insert_file.awk -v placeholder=@GRAPH@ $(EXAMPLES_DIR)/hello_world/graph.gv $< > $@.tmp
-	$(AWK) -f insert_file.awk -v placeholder=@CMAPX@ $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $@.tmp > $@
+	$(AWK) -f insert_file.awk -v placeholder=@CMAP@ $(EXAMPLES_DIR)/hello_world/graph-cmap.html $@.tmp > $@
 	rm -f $@.tmp
 
 $(EXAMPLES_DIR)/hello_world/graph-xdot.gv: $(EXAMPLES_DIR)/hello_world/graph.gv
 	$(DOT) $< -Txdot -o$@
 
-$(EXAMPLES_DIR)/hello_world/graph-cmapx.html: $(EXAMPLES_DIR)/hello_world/graph.gv
-	$(DOT) $< -Tcmapx -o$@
+$(EXAMPLES_DIR)/hello_world/graph-cmap.html: $(EXAMPLES_DIR)/hello_world/graph.gv
+	$(DOT) $< -Tcmap -o$@
 
 $(EXAMPLES_DIR)/hello_world/graph.png: $(EXAMPLES_DIR)/hello_world/graph.gv
 	$(DOT) $< -Tpng -o$@
@@ -89,4 +89,4 @@ brewercolors.js: gvcolors.awk $(GRAPHVIZ_SRC)/lib/common/brewer_lib
 	@exit 1
 
 clean:
-	-rm -rf $(EXAMPLES_DIR)/hello_world/graph-xdot.gv $(EXAMPLES_DIR)/hello_world/graph-cmapx.html $(EXAMPLES_DIR)/hello_world/graph.png $(EXAMPLES_DIR)/hello_world/new.html $(EXAMPLES_DIR)/hello_world/old.html $(EXAMPLES_DIR)/hello_world/old.html.tmp $(EXAMPLE_GRAPHS_DIR)
+	-rm -rf $(EXAMPLES_DIR)/hello_world/graph-xdot.gv $(EXAMPLES_DIR)/hello_world/graph-cmap.html $(EXAMPLES_DIR)/hello_world/graph.png $(EXAMPLES_DIR)/hello_world/new.html $(EXAMPLES_DIR)/hello_world/old.html $(EXAMPLES_DIR)/hello_world/old.html.tmp $(EXAMPLE_GRAPHS_DIR)
