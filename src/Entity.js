@@ -13,7 +13,8 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
 
 // Constants
 var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'],
-  EVENT_TYPES_LENGTH = EVENT_TYPES.length;
+  EVENT_TYPES_LENGTH = EVENT_TYPES.length,
+  IS_BROWSER = typeof document != 'undefined';
 
 // Prototype
 Entity.prototype = {
@@ -58,8 +59,10 @@ Entity.prototype = {
     var i, tokens, fillColor, strokeColor;
     if (!redrawCanvasOnly) {
       this.initBB();
-      var bbDiv = document.createElement('div');
-      this.canviz.elements.appendChild(bbDiv);
+      if (IS_BROWSER) {
+        var bbDiv = document.createElement('div');
+        this.canviz.elements.appendChild(bbDiv);
+      }
     }
     var keys = objectKeys(this.drawAttrs),
       keysLength = keys.length;
@@ -136,7 +139,7 @@ Entity.prototype = {
               var textAlign = tokenizer.takeNumber();
               var textWidth = Math.round(ctxScale * tokenizer.takeNumber());
               var str = tokenizer.takeString();
-              if (!redrawCanvasOnly && !/^\s*$/.test(str)) {
+              if (IS_BROWSER && !redrawCanvasOnly && !/^\s*$/.test(str)) {
 //                debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + textAlign + ' ' + textWidth);
                 str = escapeHtml(str);
                 do {
@@ -247,7 +250,7 @@ Entity.prototype = {
           }
           token = tokenizer.takeChars();
         }
-        if (!redrawCanvasOnly) {
+        if (IS_BROWSER && !redrawCanvasOnly) {
           bbDiv.style.position = 'absolute';
           bbDiv.style.left = Math.round(ctxScale * this.bbRect.l + this.canviz.padding) + 'px';
           bbDiv.style.top= Math.round(ctxScale * this.bbRect.t + this.canviz.padding) + 'px';

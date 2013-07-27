@@ -14,7 +14,8 @@
     "uglify-js": "~2.3.6"
   },
   "dependencies": {
-    "escape-html": "~1.0.0"
+    "escape-html": "~1.0.0",
+    "canvas-browserify": "~1.0.3"
   },
   "engines": {
     "node": ">=0.6.5"

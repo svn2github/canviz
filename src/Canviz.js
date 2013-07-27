@@ -1,20 +1,25 @@
+// Require Path first to load the circular dependencies in the right order
+var Path = require('./path/Path.js');
+
 // Constructor
 function Canviz(container, url, urlParams) {
   if (!(this instanceof Canviz)) return new Canviz(container, url, urlParams);
-  this.canvas = document.createElement('canvas');
-  this.canvas.style.position = 'absolute';
+  this.canvas = new Canvas(0, 0);
   if (!Canviz.canvasCounter) Canviz.canvasCounter = 0;
   this.canvas.id = 'canviz_canvas_' + ++Canviz.canvasCounter;
-  this.elements = document.createElement('div');
-  this.elements.style.position = 'absolute';
-  this.container = typeof container == 'string' ? document.getElementById(container) : container;
-  this.container.style.position = 'relative';
-  this.container.appendChild(this.canvas);
-  if (typeof G_vmlCanvasManager != 'undefined') {
-    G_vmlCanvasManager.initElement(this.canvas);
-    this.canvas = document.getElementById(this.canvas.id);
+  if (IS_BROWSER) {
+    this.canvas.style.position = 'absolute';
+    this.elements = document.createElement('div');
+    this.elements.style.position = 'absolute';
+    this.container = typeof container == 'string' ? document.getElementById(container) : container;
+    this.container.style.position = 'relative';
+    this.container.appendChild(this.canvas);
+    if (typeof G_vmlCanvasManager != 'undefined') {
+      G_vmlCanvasManager.initElement(this.canvas);
+      this.canvas = document.getElementById(this.canvas.id);
+    }
+    this.container.appendChild(this.elements);
   }
-  this.container.appendChild(this.elements);
   this.ctx = this.canvas.getContext('2d');
   this.scale = 1;
   this.padding = 8;
@@ -29,7 +34,11 @@ function Canviz(container, url, urlParams) {
   }
 }
 
+// Constants
+var IS_BROWSER = typeof document != 'undefined';
+
 // Properties
+Canviz.Path = Path;
 Canviz.colors = {
   fallback: {
     black: '000000',
@@ -82,7 +91,7 @@ Canviz.prototype = {
     });
   },
   parse: function (xdot) {
-    document.getElementById('debug_output').innerHTML = '';
+    if (IS_BROWSER) document.getElementById('debug_output').innerHTML = '';
 
     this.graphs = [];
     this.width = 0;
@@ -247,10 +256,12 @@ Canviz.prototype = {
     if (!redrawCanvasOnly) {
       this.canvas.width  = width;
       this.canvas.height = height;
-      this.canvas.style.width = this.container.style.width = width + 'px';
-      this.canvas.style.height = this.container.style.height = height + 'px';
-      while (this.elements.firstChild) {
-        this.elements.removeChild(this.elements.firstChild);
+      if (IS_BROWSER) {
+        this.canvas.style.width = this.container.style.width = width + 'px';
+        this.canvas.style.height = this.container.style.height = height + 'px';
+        while (this.elements.firstChild) {
+          this.elements.removeChild(this.elements.firstChild);
+        }
       }
     }
     this.ctx.save();
@@ -297,6 +308,7 @@ Canviz.prototype = {
 module.exports = Canviz;
 
 // Dependencies
+var Canvas = require('canvas-browserify');
 var debug = require('./debug.js');
 var Edge = require('./Edge.js');
 var Graph = require('./Graph.js');

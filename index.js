@@ -1,6 +1,3 @@
-// Require Path first to load the circular dependencies in the right order
-require('./src/path/Path.js');
-
 var Canviz = module.exports = require('./src/Canviz.js');
 
 Canviz.Edge = require('./src/Edge.js');
