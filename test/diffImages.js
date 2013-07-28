@@ -53,7 +53,7 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
       inImage2Pointer = 0,
       outImagePointer = 0,
       total = maxWidth * maxHeight * 3 * 255,
-      correct = total,
+      correct = minWidth * minHeight * 3 * 255,
       difference;
 
     ctx.fillStyle = '#fff';
