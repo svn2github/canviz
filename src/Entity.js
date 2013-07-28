@@ -64,6 +64,7 @@ Entity.prototype = {
         this.canviz.elements.appendChild(bbDiv);
       }
     }
+    ctx.lineWidth = 1;
     var keys = objectKeys(this.drawAttrs),
       keysLength = keys.length;
     for (var k = 0; k < keysLength; ++k) {
