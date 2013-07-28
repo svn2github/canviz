@@ -134,8 +134,8 @@ Entity.prototype = {
               this.canviz.images[src].draw(ctx, l, b - h, w, h);
               break;
             case 'T': // text
-              var l = Math.round(ctxScale * tokenizer.takeNumber() + this.canviz.padding);
-              var t = Math.round(ctxScale * this.canviz.height + 2 * this.canviz.padding - (ctxScale * (tokenizer.takeNumber() + this.canviz.bbScale * fontSize) + this.canviz.padding));
+              var l = Math.round(ctxScale * (this.canviz.paddingX + tokenizer.takeNumber()));
+              var t = Math.round(ctxScale * (this.canviz.paddingY + this.canviz.height - tokenizer.takeNumber() - this.canviz.bbScale * fontSize));
               var textAlign = tokenizer.takeNumber();
               var textWidth = Math.round(ctxScale * tokenizer.takeNumber());
               var str = tokenizer.takeString();
@@ -252,8 +252,8 @@ Entity.prototype = {
         }
         if (IS_BROWSER && !redrawCanvasOnly) {
           bbDiv.style.position = 'absolute';
-          bbDiv.style.left = Math.round(ctxScale * this.bbRect.l + this.canviz.padding) + 'px';
-          bbDiv.style.top= Math.round(ctxScale * this.bbRect.t + this.canviz.padding) + 'px';
+          bbDiv.style.left = Math.round(ctxScale * (this.canviz.paddingX + this.bbRect.l)) + 'px';
+          bbDiv.style.top = Math.round(ctxScale * (this.canviz.paddingY + this.bbRect.t)) + 'px';
           bbDiv.style.width = Math.round(ctxScale * this.bbRect.getWidth()) + 'px';
           bbDiv.style.height = Math.round(ctxScale * this.bbRect.getHeight()) + 'px';
         }
