@@ -8,13 +8,13 @@ var uglify = require('uglify-js');
 
 
 desc('builds everything');
-task('default', ['canviz', 'examples'], function() {});
+task('default', ['canviz', 'examples'], function () {});
 
 desc('builds canviz');
-task('canviz', ['build/canviz.min.js'], function() {});
+task('canviz', ['build/canviz.min.js'], function () {});
 
 desc('builds the examples');
-task('examples', ['example-multiple'], function() {});
+task('examples', ['example-multiple'], function () {});
 
 desc('makes the build directory');
 directory('build');
@@ -43,9 +43,9 @@ file('build/canviz.js', [
   'src/Tokenizer.js',
   'src/unescapeAttr.js',
   'src/versionCompare.js'
-], function() {
+], function () {
   var b = browserify('./index.js');
-  b.bundle({standalone: 'Canviz'}, function(err, code) {
+  b.bundle({standalone: 'Canviz'}, function (err, code) {
     if (err) console.error(err);
     else fs.writeFileSync('build/canviz.js', code, 'utf8');
     complete();
@@ -53,7 +53,7 @@ file('build/canviz.js', [
 }, {async: true});
 
 desc('builds the minified canviz library for production');
-file('build/canviz.min.js', ['build/canviz.js'], function() {
+file('build/canviz.min.js', ['build/canviz.js'], function () {
   var options = {
     compress: {
       unsafe: true
@@ -73,27 +73,27 @@ function graphviz(infile, formats, outfiles, callback) {
   if (typeof formats == 'string') formats = [formats];
 
   var cmd = 'dot \'' + infile + '\'';
-  formats.forEach(function(format) {
+  formats.forEach(function (format) {
     cmd += ' -T\'' + format + '\'';
   });
-  outfiles.forEach(function(outfile) {
+  outfiles.forEach(function (outfile) {
     cmd += ' -o\'' + outfile + '\'';
   });
 
-  exec(cmd, function(error, stdout, stderr) {
+  exec(cmd, function (error, stdout, stderr) {
     if (error) jake.logger.error(stderr);
     callback();
   });
 }
 
 desc('builds the "multiple graphs" example');
-task('example-multiple', function() {
+task('example-multiple', function () {
   var graphs = new jake.FileList();
   graphs.include('examples/multiple/*.gv');
   graphs.exclude('examples/multiple/*-xdot.gv');
   var remaining = graphs.length();
-  graphs.forEach(function(graph) {
-    graphviz(graph, 'xdot', path.join(path.dirname(graph), path.basename(graph, '.gv') + '-xdot.gv'), function() {
+  graphs.forEach(function (graph) {
+    graphviz(graph, 'xdot', path.join(path.dirname(graph), path.basename(graph, '.gv') + '-xdot.gv'), function () {
       if (!--remaining) complete();
     });
   });
@@ -148,18 +148,18 @@ task('test', testGraphs.toArray().map(function (graph) {
         outfile.end(function () {
           diffImages(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function (err, info) {
             if (err) jake.logger.error(err);
-                    graph = graph.replace(/^[^/]+\//, '');
-                    results.push('<tr>',
+            graph = graph.replace(/^[^/]+\//, '');
+            results.push('<tr>',
               '<td>' + path.basename(graph) + '<br>' + Math.round(10000 * info.similarity) / 100 + '%</td>',
               '<td><img src="' + graph + '.png" width="' + info.inImage1.width +  '" height="' + info.inImage1.height +  '"></td>',
               '<td><img src="' + graph + '.xdot.png" width="' + info.inImage2.width +  '" height="' + info.inImage2.height +  '"></td>',
               '<td><img src="' + graph + '.diff.png" width="' + info.outImage.width +  '" height="' + info.outImage.height +  '"></td>',
-                      '</tr>'
-                    );
-                    if (!--remaining) {
-                      results.push('</table>', '</body>', '</html>', '');
-                      fs.writeFile('test/results.html', results.join("\n"), complete);
-                    }
+              '</tr>'
+            );
+            if (!--remaining) {
+              results.push('</table>', '</body>', '</html>', '');
+              fs.writeFile('test/results.html', results.join("\n"), complete);
+            }
           });
         });
       });
@@ -173,7 +173,7 @@ rule('.gv.png', '.gv', {async: true}, function () {
 });
 
 desc('removes everything that was built');
-task('clean', function() {
+task('clean', function () {
   jake.rmRf('build');
   var files = new jake.FileList();
   files.include('examples/multiple/*-xdot.gv');
