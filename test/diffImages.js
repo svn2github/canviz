@@ -51,7 +51,10 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
       ctx = canvas.getContext('2d'),
       inImage1Pointer = 0,
       inImage2Pointer = 0,
-      outImagePointer = 0;
+      outImagePointer = 0,
+      total = maxWidth * maxHeight * 3 * 255,
+      correct = total,
+      difference;
 
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, maxWidth, maxHeight);
@@ -61,7 +64,9 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
     for (var x = 0; x < minWidth; ++x) {
       for (var y = 0; y < minHeight; ++y) {
         for (var i = 0; i < 3; ++i) {
-          outImagePixels[outImagePointer++] = Math.abs(inImage1Pixels[inImage1Pointer++] - inImage2Pixels[inImage2Pointer++]);
+          difference = Math.abs(inImage1Pixels[inImage1Pointer++] - inImage2Pixels[inImage2Pointer++]);
+          correct -= difference;
+          outImagePixels[outImagePointer++] = difference;
         }
         outImagePointer++;
         inImage1Pointer++;
@@ -78,7 +83,23 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
         outfile.write(chunk);
       });
       stream.on('end', function () {
-        outfile.end(callback);
+        outfile.end(function () {
+          callback(null, {
+            inImage1: {
+              width: inImage1Width,
+              height: inImage1Height
+            },
+            inImage2: {
+              width: inImage2Width,
+              height: inImage2Height
+            },
+            outImage: {
+              width: maxWidth,
+              height: maxHeight
+            },
+            similarity: correct / total
+          });
+        });
       });
     });
   }

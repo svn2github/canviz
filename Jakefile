@@ -1,12 +1,9 @@
 var browserify = require('browserify');
-var Canvas = require('canvas');
 var Canviz = require('./src/Canviz.js');
 var diffImages = require('./test/diffImages.js');
 var exec = require('child_process').exec;
 var fs = require('fs');
-var Image = Canvas.Image;
 var path = require('path');
-var pngSize = require('pngsize');
 var uglify = require('uglify-js');
 
 
@@ -149,47 +146,20 @@ task('test', testGraphs.toArray().map(function (graph) {
       });
       stream.on('end', function () {
         outfile.end(function () {
-          diffImages(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function (err) {
+          diffImages(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function (err, info) {
             if (err) jake.logger.error(err);
-            pngSize(graph + '.png', function (err, graphvizPngSize) {
-              if (err) jake.logger.error(err);
-              pngSize(graph + '.xdot.png', function (err, canvizPngSize) {
-                if (err) jake.logger.error(err);
-                pngSize(graph + '.diff.png', function (err, diffPngSize) {
-                  if (err) jake.logger.error(err);
-
-                  var canvas = new Canvas(diffPngSize.width, diffPngSize.height),
-                    ctx = canvas.getContext('2d');
-                  fs.readFile(graph + '.diff.png', function (err, diffPng) {
-                    if (err) jake.logger.error(err);
-                    var img = new Image();
-                    img.src = diffPng;
-                    ctx.drawImage(img, 0, 0, img.width, img.height);
-                    var image = ctx.getImageData(0, 0, img.width, img.height),
-                      imageData = image.data,
-                      imageDataLength = imageData.length,
-                      correctPixels = 0,
-                      totalPixels = img.width * img.height;
-                    for (var i = 0; i < imageDataLength; i += 4) {
-                      if (!imageData[i]) ++correctPixels;
-                    }
-
                     graph = graph.replace(/^[^/]+\//, '');
                     results.push('<tr>',
-                      '<td>' + path.basename(graph) + '<br>' + Math.round(10000 * correctPixels / totalPixels) / 100 + '%</td>',
-                      '<td><img src="' + graph + '.png" width="' + graphvizPngSize.width +  '" height="' + graphvizPngSize.height +  '"></td>',
-                      '<td><img src="' + graph + '.xdot.png" width="' + canvizPngSize.width +  '" height="' + canvizPngSize.height +  '"></td>',
-                      '<td><img src="' + graph + '.diff.png" width="' + diffPngSize.width +  '" height="' + diffPngSize.height +  '"></td>',
+              '<td>' + path.basename(graph) + '<br>' + Math.round(10000 * info.similarity) / 100 + '%</td>',
+              '<td><img src="' + graph + '.png" width="' + info.inImage1.width +  '" height="' + info.inImage1.height +  '"></td>',
+              '<td><img src="' + graph + '.xdot.png" width="' + info.inImage2.width +  '" height="' + info.inImage2.height +  '"></td>',
+              '<td><img src="' + graph + '.diff.png" width="' + info.outImage.width +  '" height="' + info.outImage.height +  '"></td>',
                       '</tr>'
                     );
                     if (!--remaining) {
                       results.push('</table>', '</body>', '</html>', '');
                       fs.writeFile('test/results.html', results.join("\n"), complete);
                     }
-                  });
-                });
-              });
-            });
           });
         });
       });
