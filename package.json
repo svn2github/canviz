@@ -11,11 +11,15 @@
   "devDependencies": {
     "browserify": "~2.25.0",
     "jake": "~0.6.7",
+    "pngsize": "~0.1.1",
     "uglify-js": "~2.3.6"
   },
   "dependencies": {
     "escape-html": "~1.0.0",
     "canvas-browserify": "~1.0.3"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/jake test"
   },
   "engines": {
     "node": ">=0.6.5"

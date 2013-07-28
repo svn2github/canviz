@@ -1,7 +1,11 @@
 var browserify = require('browserify');
+var Canvas = require('canvas');
+var Canviz = require('./src/Canviz.js');
 var exec = require('child_process').exec;
 var fs = require('fs');
+var Image = Canvas.Image;
 var path = require('path');
+var pngSize = require('pngsize');
 var uglify = require('uglify-js');
 
 
@@ -66,13 +70,29 @@ file('build/canviz.min.js', ['build/canviz.js'], function() {
   fs.writeFileSync('build/canviz.min.js', code, 'utf8');
 });
 
-function graphviz(infile, outfile, format, cb) {
-  var cmd = 'dot -T\'' + format + '\' -o\'' + outfile + '\' \'' + infile + '\'';
+function graphviz(infile, formats, outfiles, callback) {
+  if (typeof outfiles == 'string') outfiles = [outfiles];
+  if (typeof formats == 'string') formats = [formats];
+
+  var cmd = 'dot \'' + infile + '\'';
+  formats.forEach(function(format) {
+    cmd += ' -T\'' + format + '\'';
+  });
+  outfiles.forEach(function(outfile) {
+    cmd += ' -o\'' + outfile + '\'';
+  });
+
   exec(cmd, function(error, stdout, stderr) {
-    if (error !== null) {
-      console.log(stderr);
-    }
-    cb();
+    if (error) jake.logger.error(stderr);
+    callback();
+  });
+}
+
+function diffImg(inImage1, inImage2, outImage, callback) {
+  var cmd = 'diffimg \'' + inImage1 + '\' \'' + inImage2 + '\' \'' + outImage + '\'';
+  exec(cmd, function(error, stdout, stderr) {
+    if (error) jake.logger.error(stderr);
+    callback();
   });
 }
 
@@ -83,15 +103,126 @@ task('example-multiple', function() {
   graphs.exclude('examples/multiple/*-xdot.gv');
   var remaining = graphs.length();
   graphs.forEach(function(graph) {
-    graphviz(graph, path.join(path.dirname(graph), path.basename(graph, '.gv') + '-xdot.gv'), 'xdot', function() {
-      if (0 == --remaining) {
-        complete();
-      }
+    graphviz(graph, 'xdot', path.join(path.dirname(graph), path.basename(graph, '.gv') + '-xdot.gv'), function() {
+      if (!--remaining) complete();
     });
   });
 }, {async: true});
 
+var testGraphs = new jake.FileList();
+testGraphs.include('test/graphs/*.gv');
+
+desc('runs tests');
+task('test', testGraphs.toArray().map(function (graph) {
+  return graph + '.png';
+}), {async: true}, function () {
+  var remaining = testGraphs.length();
+  var results = [
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<title>Canviz test results</title>',
+    '<style>',
+    'body {',
+    'background: #eee;',
+    'color: #000;',
+    '}',
+    'table {',
+    'width: 100%;',
+    '}',
+    'td {',
+    'text-align: center;',
+    '}',
+    '</style>',
+    '</head>',
+    '<body>',
+    '<table>',
+    '<tr>',
+    '<th width="10%">File</th>',
+    '<th width="30%">Graphviz PNG</th>',
+    '<th width="30%">Graphviz XDOT → Canviz PNG</th>',
+    '<th width="30%">Difference</th>',
+    '</tr>'
+  ];
+  testGraphs.forEach(function (graph) {
+    var canviz = Canviz();
+    canviz.parse(fs.readFileSync(graph + '.xdot', {encoding: 'utf8'}));
+    var outfile = fs.createWriteStream(graph + '.xdot.png');
+    outfile.on('open', function () {
+      var stream = canviz.canvas.pngStream();
+      stream.on('data', function (chunk) {
+        outfile.write(chunk);
+      });
+      stream.on('end', function () {
+        outfile.end(function () {
+          diffImg(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function () {
+            pngSize(graph + '.png', function (err, graphvizPngSize) {
+              if (err) jake.logger.error(err);
+              pngSize(graph + '.xdot.png', function (err, canvizPngSize) {
+                if (err) jake.logger.error(err);
+                pngSize(graph + '.diff.png', function (err, diffPngSize) {
+                  if (err) jake.logger.error(err);
+
+                  var canvas = new Canvas(diffPngSize.width, diffPngSize.height),
+                    ctx = canvas.getContext('2d');
+                  fs.readFile(graph + '.diff.png', function (err, diffPng) {
+                    if (err) jake.logger.error(err);
+                    var img = new Image();
+                    img.src = diffPng;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    var image = ctx.getImageData(0, 0, img.width, img.height),
+                      imageData = image.data,
+                      imageDataLength = imageData.length,
+                      correctPixels = 0,
+                      totalPixels = img.width * img.height;
+                    for (var i = 0; i < imageDataLength; i += 4) {
+                      if (!imageData[i]) ++correctPixels;
+                    }
+
+                    graph = graph.replace(/^[^/]+\//, '');
+                    results.push('<tr>',
+                      '<td>' + path.basename(graph) + '<br>' + Math.round(10000 * correctPixels / totalPixels) / 100 + '%</td>',
+                      '<td><img src="' + graph + '.png" width="' + graphvizPngSize.width +  '" height="' + graphvizPngSize.height +  '"></td>',
+                      '<td><img src="' + graph + '.xdot.png" width="' + canvizPngSize.width +  '" height="' + canvizPngSize.height +  '"></td>',
+                      '<td><img src="' + graph + '.diff.png" width="' + diffPngSize.width +  '" height="' + diffPngSize.height +  '"></td>',
+                      '</tr>'
+                    );
+                    if (!--remaining) {
+                      results.push('</table>', '</body>', '</html>', '');
+                      fs.writeFile('test/results.html', results.join("\n"), complete);
+                    }
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+rule('.gv.png', '.gv', {async: true}, function () {
+  // This generates both the png and xdot representation, since it's more efficient to do both at once.
+  graphviz(this.source, ['png', 'xdot'], [this.source + '.png', this.source + '.xdot'], complete);
+});
+
 desc('removes everything that was built');
 task('clean', function() {
   jake.rmRf('build');
+  var files = new jake.FileList();
+  files.include('examples/multiple/*-xdot.gv');
+  files.include('test/graphs/*.gv.diff.png');
+  files.include('test/graphs/*.gv.png');
+  files.include('test/graphs/*.gv.xdot');
+  files.include('test/graphs/*.gv.xdot.png');
+  files.include('test/results.html');
+  var remaining = files.length();
+  files.forEach(function (file) {
+    fs.unlink(file, function () {
+      jake.logger.log('rm -f ' + file);
+      if (!--remaining) complete();
+    });
+  });
 });

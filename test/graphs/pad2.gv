@@ -1,0 +1,5 @@
+graph {
+  pad=".125,.25"
+  node [label=""]
+  a
+}
