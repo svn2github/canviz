@@ -1,0 +1,4 @@
+graph {
+  node [label=""]
+  a [penwidth=3]
+}
