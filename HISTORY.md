@@ -11,6 +11,8 @@
 * Build a minified path.min.js using UglifyJS
 * Update included excanvas to version 0003
 * Convert documentation files to Markdown format
+* Add a test suite
+* Handle the graph "pad" attribute correctly
 
 0.1 / - 2011-12-10
 ==================
