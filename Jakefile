@@ -1,6 +1,7 @@
 var browserify = require('browserify');
 var Canvas = require('canvas');
 var Canviz = require('./src/Canviz.js');
+var diffImages = require('./test/diffImages.js');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var Image = Canvas.Image;
@@ -88,14 +89,6 @@ function graphviz(infile, formats, outfiles, callback) {
   });
 }
 
-function diffImg(inImage1, inImage2, outImage, callback) {
-  var cmd = 'diffimg \'' + inImage1 + '\' \'' + inImage2 + '\' \'' + outImage + '\'';
-  exec(cmd, function(error, stdout, stderr) {
-    if (error) jake.logger.error(stderr);
-    callback();
-  });
-}
-
 desc('builds the "multiple graphs" example');
 task('example-multiple', function() {
   var graphs = new jake.FileList();
@@ -156,7 +149,8 @@ task('test', testGraphs.toArray().map(function (graph) {
       });
       stream.on('end', function () {
         outfile.end(function () {
-          diffImg(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function () {
+          diffImages(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function (err) {
+            if (err) jake.logger.error(err);
             pngSize(graph + '.png', function (err, graphvizPngSize) {
               if (err) jake.logger.error(err);
               pngSize(graph + '.xdot.png', function (err, canvizPngSize) {
