@@ -1,0 +1,8 @@
+graph {
+  bgcolor="#ffffff00"
+  node [label="", style="filled"]
+  a [fillcolor="#00000000"]
+  b [fillcolor="#00000055"]
+  c [fillcolor="#000000aa"]
+  d [fillcolor="#000000ff"]
+}
