@@ -222,6 +222,7 @@ Entity.prototype = {
               switch (style) {
                 case 'solid':
                 case 'filled':
+                case 'tapered':
                   // nothing
                   break;
                 case 'dashed':
@@ -317,6 +318,7 @@ Entity.prototype = {
 module.exports = Entity;
 
 // Dependencies
+var Canviz = require('./Canviz.js');
 var CanvizImage = require('./Image.js');
 var debug = require('./debug.js');
 var Ellipse = require('./path/Ellipse.js');
