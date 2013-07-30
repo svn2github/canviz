@@ -183,7 +183,7 @@ Entity.prototype = {
                 text.style.left = (l - (1 + textAlign) * textWidth) + 'px';
                 text.style.top = t + 'px';
                 text.style.width = (2 * textWidth) + 'px';
-                if (1 != strokeColor.opacity) text.setOpacity(strokeColor.opacity);
+                if (1 != strokeColor.opacity) setOpacity(text, strokeColor.opacity);
                 this.canviz.elements.appendChild(text);
               }
               break;
@@ -329,4 +329,5 @@ var parseHexColor = require('./parseHexColor.js');
 var Path = require('./path/Path.js');
 var Point = require('./path/Point.js');
 var Rect = require('./path/Rect.js');
+var setOpacity = require('./setOpacity.js');
 var Tokenizer = require('./Tokenizer.js');
