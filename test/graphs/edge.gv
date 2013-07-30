@@ -1,4 +1,5 @@
 digraph {
   node [label=""]
   a:e->b:w
+  a:s->b:n [constraint=false, dir=back]
 }
