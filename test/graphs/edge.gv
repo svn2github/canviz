@@ -1,0 +1,4 @@
+digraph {
+  node [label=""]
+  a:e->b:w
+}

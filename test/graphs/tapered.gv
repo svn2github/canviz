@@ -1,0 +1,8 @@
+# Tapered edges are ugly because they're drawn as polygons not bezier curves
+# http://www.graphviz.org/mantisbt/view.php?id=2317
+digraph {
+  pad=.1
+  node [label=""]
+  a [penwidth=10]
+  a:e->b:w [arrowhead=none, penwidth=10, style=tapered]
+}
