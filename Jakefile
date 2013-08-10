@@ -137,6 +137,7 @@ task('test', testGraphs.toArray().map(function (graph) {
   ];
   testGraphs.forEach(function (graph) {
     var canviz = Canviz();
+    canviz.setTextMode('canvas');
     canviz.parse(fs.readFileSync(graph + '.xdot', {encoding: 'utf8'}));
     var outfile = fs.createWriteStream(graph + '.xdot.png');
     outfile.on('open', function () {

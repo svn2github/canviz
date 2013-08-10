@@ -4,6 +4,7 @@ var Path = require('./path/Path.js');
 // Constructor
 function Canviz(container, url, urlParams) {
   if (!(this instanceof Canviz)) return new Canviz(container, url, urlParams);
+  var textModes = this._textModes = [];
   this.canvas = new Canvas(0, 0);
   if (!Canviz.canvasCounter) Canviz.canvasCounter = 0;
   this.canvas.id = 'canviz_canvas_' + ++Canviz.canvasCounter;
@@ -19,9 +20,12 @@ function Canviz(container, url, urlParams) {
       this.canvas = document.getElementById(this.canvas.id);
     }
     this.container.appendChild(this.elements);
+    textModes.push('dom');
   }
   this.ctx = this.canvas.getContext('2d');
-  this.scale = 1;
+  if (this.ctx.fillText) textModes.push('canvas');
+  this.setTextMode(textModes[0]);
+  this.setScale(1);
   this.paddingX = this.paddingY = 72 * 0.0555;
   this.dashLength = 6;
   this.dotSpacing = 4;
@@ -75,6 +79,10 @@ Canviz.prototype = {
   },
   setImagePath: function (imagePath) {
     this.imagePath = imagePath;
+  },
+  setTextMode: function (textMode) {
+    if (~this._textModes.indexOf(textMode)) this.textMode = textMode;
+    else debug('unsupported text mode ' + textMode);
   },
   load: function (url, urlParams) {
     if (urlParams) return console.log('urlParams not supported');

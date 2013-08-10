@@ -135,13 +135,28 @@ Entity.prototype = {
               this.canviz.images[src].draw(ctx, l, b - h, w, h);
               break;
             case 'T': // text
-              var l = Math.round(ctxScale * (this.canviz.paddingX + tokenizer.takeNumber()));
-              var t = Math.round(ctxScale * (this.canviz.paddingY + this.canviz.height - tokenizer.takeNumber() - this.canviz.bbScale * fontSize));
-              var textAlign = tokenizer.takeNumber();
-              var textWidth = Math.round(ctxScale * tokenizer.takeNumber());
-              var str = tokenizer.takeString();
-              if (IS_BROWSER && !redrawCanvasOnly && !/^\s*$/.test(str)) {
-//                debug('draw text ' + str + ' ' + l + ' ' + t + ' ' + textAlign + ' ' + textWidth);
+              var left = tokenizer.takeNumber(),
+                bottom = this.canviz.height - tokenizer.takeNumber(),
+                top = bottom - this.canviz.bbScale * fontSize,
+                textAlignIndex = 1 + tokenizer.takeNumber(),
+                textAlign = ['left', 'center', 'right'][textAlignIndex],
+                textWidth = tokenizer.takeNumber(),
+                str = tokenizer.takeString();
+              
+              if (!/^\s*$/.test(str)) {
+                switch (this.canviz.textMode) {
+                  case 'canvas':
+                    ctx.save();
+                    ctx.font = fontSize + 'px ' + fontFamily;
+                    // xdot uses pen color for text, but canvas uses fill color
+                    ctx.fillStyle = ctx.strokeStyle;
+                    ctx.fillText(str, left - textAlignIndex * textWidth / 2, bottom - 1); // why do we need - 1?
+                    ctx.restore();
+                    break;
+                  case 'dom':
+                    if (!redrawCanvasOnly) {
+                      left = ctxScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
+                      top = ctxScale * (this.canviz.paddingY + top);
                 str = escapeHtml(str);
                 do {
                   matches = str.match(/ ( +)/);
@@ -175,16 +190,19 @@ Entity.prototype = {
                   text = document.createElement('span');
                 }
                 text.innerHTML = str;
-                text.style.fontSize = Math.round(fontSize * ctxScale * this.canviz.bbScale) + 'px';
+                      text.style.fontSize = (fontSize * ctxScale * this.canviz.bbScale) + 'px';
                 text.style.fontFamily = fontFamily;
                 text.style.color = strokeColor.textColor;
                 text.style.position = 'absolute';
-                text.style.textAlign = (-1 == textAlign) ? 'left' : (1 == textAlign) ? 'right' : 'center';
-                text.style.left = (l - (1 + textAlign) * textWidth) + 'px';
-                text.style.top = t + 'px';
-                text.style.width = (2 * textWidth) + 'px';
-                if (1 != strokeColor.opacity) setOpacity(text, strokeColor.opacity);
+                      text.style.textAlign = textAlign;
+                      text.style.left = left + 'px';
+                      text.style.top = top + 'px';
+                      text.style.width = (ctxScale * 2 * textWidth) + 'px';
+                      if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                 this.canviz.elements.appendChild(text);
+                    }
+                    break;
+                }
               }
               break;
             case 'C': // set fill color
@@ -202,19 +220,7 @@ Entity.prototype = {
             case 'F': // set font
               fontSize = tokenizer.takeNumber();
               fontFamily = tokenizer.takeString();
-              switch (fontFamily) {
-                case 'Times-Roman':
-                  fontFamily = 'Times New Roman';
-                  break;
-                case 'Courier':
-                  fontFamily = 'Courier New';
-                  break;
-                case 'Helvetica':
-                  fontFamily = 'Arial';
-                  break;
-                default:
-                  // nothing
-              }
+              if (fontFamily == 'Times-Roman') fontFamily = 'Times';
 //              debug('set font ' + fontSize + 'pt ' + fontFamily);
               break;
             case 'S': // set style
