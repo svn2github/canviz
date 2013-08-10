@@ -158,38 +158,38 @@ Entity.prototype = {
                       left = ctxScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
                       top = ctxScale * (this.canviz.paddingY + top);
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
-                var text;
-                var href = this.getAttr('URL', true) || this.getAttr('href', true);
-                if (href) {
-                  var target = this.getAttr('target', true) || '_self';
-                  var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
-//                  debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
-                  text = document.createElement('a');
-                  text.setAttribute('href', href);
-                  text.setAttribute('target', target);
-                  text.setAttribute('title', tooltip);
-                  for (var e = 0; e < EVENT_TYPES_LENGTH; ++e) {
-                    var attrName = EVENT_TYPES[e],
-                      attrValue = this.getAttr(attrName, true);
-                    if (attrValue) {
-                      text.setAttribute(attrName, attrValue);
-                    }
-                  }
-                  text.style.textDecoration = 'none';
-                } else {
-                  text = document.createElement('span');
-                }
-                text.innerHTML = str;
+                      var text;
+                      var href = this.getAttr('URL', true) || this.getAttr('href', true);
+                      if (href) {
+                        var target = this.getAttr('target', true) || '_self';
+                        var tooltip = this.getAttr('tooltip', true) || this.getAttr('label', true);
+//                        debug(this.name + ', href ' + href + ', target ' + target + ', tooltip ' + tooltip);
+                        text = document.createElement('a');
+                        text.setAttribute('href', href);
+                        text.setAttribute('target', target);
+                        text.setAttribute('title', tooltip);
+                        for (var e = 0; e < EVENT_TYPES_LENGTH; ++e) {
+                          var attrName = EVENT_TYPES[e],
+                            attrValue = this.getAttr(attrName, true);
+                          if (attrValue) {
+                            text.setAttribute(attrName, attrValue);
+                          }
+                        }
+                        text.style.textDecoration = 'none';
+                      } else {
+                        text = document.createElement('span');
+                      }
+                      text.innerHTML = str;
                       text.style.fontSize = (fontSize * ctxScale * this.canviz.bbScale) + 'px';
-                text.style.fontFamily = fontFamily;
-                text.style.color = strokeColor.textColor;
-                text.style.position = 'absolute';
+                      text.style.fontFamily = fontFamily;
+                      text.style.color = strokeColor.textColor;
+                      text.style.position = 'absolute';
                       text.style.textAlign = textAlign;
                       text.style.left = left + 'px';
                       text.style.top = top + 'px';
                       text.style.width = (ctxScale * 2 * textWidth) + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
-                this.canviz.elements.appendChild(text);
+                      this.canviz.elements.appendChild(text);
                     }
                     break;
                 }
