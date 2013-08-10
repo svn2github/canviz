@@ -271,6 +271,13 @@ Entity.prototype = {
       parsedColor.canvasColor = parsedColor.textColor = hsvToRgbColor(matches[1], matches[2], matches[3]);
       return parsedColor;
     }
+    // gradient
+    matches = color.match(/^(?:\[([^\]]+)\]|\(([^)]+)\))$/);
+    if (matches) {
+      // TODO
+      parsedColor.canvasColor = parsedColor.textColor = '#000000';
+      return parsedColor;
+    }
     // named color
     var colorScheme = this.getAttr('colorscheme') || 'X11';
     var colorName = color;

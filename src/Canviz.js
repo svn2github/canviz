@@ -59,7 +59,7 @@ Canviz.addColors = function (colors) {
 };
 
 // Constants
-var MAX_XDOT_VERSION = '1.2';
+var MAX_XDOT_VERSION = '1.4';
 // An alphanumeric string or a number or a double-quoted string or an HTML string
 var ID_MATCH = '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)';
 // ID or ID:port or ID:compassPoint or ID:port:compassPoint
