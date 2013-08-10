@@ -1,0 +1,3 @@
+graph {
+  a [label="multiple     embedded    spaces\n           centered with leading spaces\ncentered with trailing spaces                 \n      left with leading spaces\lright with trailing spaces       \r", shape=box]
+}

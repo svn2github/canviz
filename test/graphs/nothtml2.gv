@@ -1,0 +1,9 @@
+digraph <foo
+bar> {
+rank=same {
+<a
+b> -> <c<d
+>e<
+>>
+}
+}

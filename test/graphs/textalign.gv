@@ -1,0 +1,3 @@
+graph {
+  a [label="left\lcenter\nright\r", shape=box, width=2]
+}

@@ -1,6 +1,5 @@
 graph {
-  node [label=""]
-  a [style=bold]
-  b [style="setlinewidth(3)"]
-  c [penwidth=4]
+  bold [style=bold]
+  setlinewidth [style="setlinewidth(3)"]
+  penwidth [penwidth=4]
 }

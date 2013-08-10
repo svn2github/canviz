@@ -1,0 +1,5 @@
+graph {
+  a [label="not<br/>html"]
+  b [label="<table><tr><td>not html</td></tr></table>"]
+  a--b
+}

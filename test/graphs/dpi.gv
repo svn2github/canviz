@@ -1,5 +1,4 @@
 digraph {
   dpi=360
-  node [label=""]
   a
 }

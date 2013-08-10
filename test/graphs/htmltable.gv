@@ -1,0 +1,14 @@
+graph {
+  a [label=<
+    <table>
+      <tr>
+        <td colspan="2">one</td>
+        <td rowspan="2">two</td>
+      </tr>
+      <tr>
+        <td>three</td>
+        <td>four</td>
+      </tr>
+    </table>
+  >, shape=none]
+}

@@ -1,9 +1,13 @@
-# Not yet supported by xdot
-# http://www.graphviz.org/mantisbt/view.php?id=2315
 graph {
   node [label=""]
-  linear [fillcolor="white:black" style=filled]
-  linear2 [fillcolor="white:black", style=filled, gradientangle=120]
-  radial [fillcolor="white:black", style=radial]
-  radial2 [fillcolor="white:black", style=radial, gradientangle=120]
+  linear [fillcolor="lightblue:blue4", style=filled]
+  linear2 [fillcolor="lightblue:blue4", style=filled, gradientangle=120]
+  twotone [fillcolor="crimson;0.3:cyan", style=filled]
+  twotone2 [fillcolor="crimson;0.3:cyan", style=filled, gradientangle=120]
+  radial [fillcolor="yellow:lightblue2", style=radial]
+  radial2 [fillcolor="yellow:lightblue2", style=radial, gradientangle=120]
+  edge [style=invis]
+  linear--linear2
+  twotone--twotone2
+  radial--radial2
 }

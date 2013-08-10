@@ -1,0 +1,45 @@
+graph {
+dpi=150
+a [label=<
+<font face="Courier">Courier
+<font point-size="9">9</font>
+<font point-size="10">10</font>
+<font point-size="12">12</font>
+<font point-size="14">14</font>
+<font point-size="18">18</font>
+<font point-size="24">24</font>
+</font><br/>
+<font face="Geneva">Geneva
+<font point-size="9">9</font>
+<font point-size="10">10</font>
+<font point-size="12">12</font>
+<font point-size="14">14</font>
+<font point-size="18">18</font>
+<font point-size="24">24</font>
+</font><br/>
+<font face="Helvetica">Helvetica
+<font point-size="9">9</font>
+<font point-size="10">10</font>
+<font point-size="12">12</font>
+<font point-size="14">14</font>
+<font point-size="18">18</font>
+<font point-size="24">24</font>
+</font><br/>
+<font face="Monaco">Monaco
+<font point-size="9">9</font>
+<font point-size="10">10</font>
+<font point-size="12">12</font>
+<font point-size="14">14</font>
+<font point-size="18">18</font>
+<font point-size="24">24</font>
+</font><br/>
+<font face="Times">Times
+<font point-size="9">9</font>
+<font point-size="10">10</font>
+<font point-size="12">12</font>
+<font point-size="14">14</font>
+<font point-size="18">18</font>
+<font point-size="24">24</font>
+</font><br/>
+>, shape=box]
+}
