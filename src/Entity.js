@@ -157,17 +157,7 @@ Entity.prototype = {
                     if (!redrawCanvasOnly) {
                       left = ctxScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
                       top = ctxScale * (this.canviz.paddingY + top);
-                str = escapeHtml(str);
-                do {
-                  matches = str.match(/ ( +)/);
-                  if (matches) {
-                    var spaces = ' ';
-                    matches[1].length.times(function () {
-                      spaces += '&nbsp;';
-                    });
-                    str = str.replace(/  +/, spaces);
-                  }
-                } while (matches);
+                      str = escapeHtml(str).replace(/ /g, '&nbsp;');
                 var text;
                 var href = this.getAttr('URL', true) || this.getAttr('href', true);
                 if (href) {
