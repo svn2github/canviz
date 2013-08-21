@@ -72,7 +72,16 @@ function graphviz(infile, formats, outfiles, callback) {
   if (typeof outfiles == 'string') outfiles = [outfiles];
   if (typeof formats == 'string') formats = [formats];
 
-  var cmd = 'dot \'' + infile + '\'';
+  var cmd = 'dot',
+    lines = fs.readFileSync(infile, {encoding: 'utf8'}).split('\n');
+  lines.forEach(function (line) {
+    var matches = /^#args(\s.+)$/.exec(line);
+    if (matches) {
+      cmd += matches[1];
+    }
+  });
+
+  cmd += ' \'' + infile + '\'';
   formats.forEach(function (format) {
     cmd += ' -T\'' + format + '\'';
   });
