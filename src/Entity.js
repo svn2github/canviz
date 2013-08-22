@@ -1,9 +1,9 @@
 // Constants
+var undefined;
 var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'];
 var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
 var IS_BROWSER = typeof document != 'undefined';
 var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
-var UNDEFINED;
 
 // Constructor
 function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
@@ -28,14 +28,14 @@ Entity.prototype = {
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
-    if (escString === UNDEFINED) escString = false;
+    if (escString === undefined) escString = false;
     var self = this;
     var attrValue = this.attrs[attrName];
-    if (attrValue === UNDEFINED) {
+    if (attrValue === undefined) {
       var graph = this.parentGraph;
-      while (graph !== UNDEFINED) {
+      while (graph !== undefined) {
         attrValue = graph[this.defaultAttrHashName][attrName];
-        if (attrValue === UNDEFINED) {
+        if (attrValue === undefined) {
           graph = graph.parentGraph;
         } else {
           break;
@@ -250,7 +250,7 @@ Entity.prototype = {
           if (path) {
             this.canviz.drawPath(ctx, path, filled, dashStyle);
             if (!redrawCanvasOnly) this.bbRect.expandToInclude(path.getBB());
-            path = UNDEFINED;
+            path = undefined;
           }
           token = tokenizer.takeChars();
         }
