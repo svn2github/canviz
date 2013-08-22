@@ -234,7 +234,7 @@ Entity.prototype = {
                   ctx.lineWidth = 2;
                   break;
                 default:
-                  matches = style.match(/^setlinewidth\((.*)\)$/);
+                  var matches = style.match(/^setlinewidth\((.*)\)$/);
                   if (matches) {
                     ctx.lineWidth = Number(matches[1]);
                   } else {
