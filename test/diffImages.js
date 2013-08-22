@@ -63,12 +63,13 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
 
     for (var x = 0; x < minWidth; ++x) {
       for (var y = 0; y < minHeight; ++y) {
-        for (var i = 0; i < 3; ++i) {
+        for (var i = 0, rgbDifference = 0; i < 3; ++i) {
           difference = Math.abs(inImage1Pixels[inImage1Pointer++] - inImage2Pixels[inImage2Pointer++]);
-          correct -= difference;
-          outImagePixels[outImagePointer++] = difference;
+          rgbDifference += difference;
+          outImagePixels[outImagePointer++] = 255 - difference;
         }
-        outImagePointer++;
+        correct -= rgbDifference;
+        outImagePixels[outImagePointer++] = Math.min(rgbDifference, 255);
         inImage1Pointer++;
         inImage2Pointer++;
       }
