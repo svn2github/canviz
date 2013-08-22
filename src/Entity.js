@@ -1,3 +1,10 @@
+// Constants
+var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'];
+var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
+var IS_BROWSER = typeof document != 'undefined';
+var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
+var UNDEFINED;
+
 // Constructor
 function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
   if (!(this instanceof Entity)) return new Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph);
@@ -11,12 +18,6 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
   this.drawAttrs = {};
 }
 
-// Constants
-var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'];
-var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
-var IS_BROWSER = typeof document != 'undefined';
-var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
-
 // Prototype
 Entity.prototype = {
   constructor: Entity,
@@ -27,14 +28,14 @@ Entity.prototype = {
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
+    if (escString === UNDEFINED) escString = false;
     var self = this;
-    if ('undefined' === typeof escString) escString = false;
     var attrValue = this.attrs[attrName];
-    if ('undefined' === typeof attrValue) {
+    if (attrValue === UNDEFINED) {
       var graph = this.parentGraph;
-      while ('undefined' !== typeof graph) {
+      while (graph !== UNDEFINED) {
         attrValue = graph[this.defaultAttrHashName][attrName];
-        if ('undefined' === typeof attrValue) {
+        if (attrValue === UNDEFINED) {
           graph = graph.parentGraph;
         } else {
           break;
@@ -249,7 +250,7 @@ Entity.prototype = {
           if (path) {
             this.canviz.drawPath(ctx, path, filled, dashStyle);
             if (!redrawCanvasOnly) this.bbRect.expandToInclude(path.getBB());
-            path = undefined;
+            path = UNDEFINED;
           }
           token = tokenizer.takeChars();
         }

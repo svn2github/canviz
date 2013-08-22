@@ -1,6 +1,10 @@
 // Require Path first to load the circular dependencies in the right order
 var Path = require('./path/Path.js');
 
+// Constants
+var IS_BROWSER = typeof document != 'undefined';
+var UNDEFINED;
+
 // Constructor
 function Canviz(container, url, urlParams) {
   if (!(this instanceof Canviz)) return new Canviz(container, url, urlParams);
@@ -36,9 +40,6 @@ function Canviz(container, url, urlParams) {
     this.load(url, urlParams);
   }
 }
-
-// Constants
-var IS_BROWSER = typeof document != 'undefined';
 
 // Properties
 Canviz.Path = Path;
@@ -130,7 +131,7 @@ Canviz.prototype = {
           if (matches) {
             rootGraph = Graph(matches[3], this);
             containers.unshift(rootGraph);
-            containers[0].strict = ('undefined' !== typeof matches[1]);
+            containers[0].strict = matches[1] === UNDEFINED;
             containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
             containers[0].attrs.xdotversion = '1.0';
             this.graphs.push(containers[0]);
@@ -263,7 +264,7 @@ Canviz.prototype = {
     this.draw();
   },
   draw: function (redrawCanvasOnly) {
-    if ('undefined' === typeof redrawCanvasOnly) redrawCanvasOnly = false;
+    if (redrawCanvasOnly === UNDEFINED) redrawCanvasOnly = false;
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / 72;
     var width = Math.round(ctxScale * (this.width + 2 * this.paddingX));
