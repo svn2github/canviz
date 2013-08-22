@@ -213,8 +213,8 @@ Entity.prototype = {
               }
               break;
             case 'F': // set font
-              fontSize = tokenizer.takeNumber();
-              fontFamily = tokenizer.takeString();
+              var fontSize = tokenizer.takeNumber();
+              var fontFamily = tokenizer.takeString();
               if (fontFamily == 'Times-Roman') fontFamily = 'Times';
 //              debug('set font ' + fontSize + 'pt ' + fontFamily);
               break;
