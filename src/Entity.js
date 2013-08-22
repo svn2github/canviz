@@ -12,17 +12,18 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
 }
 
 // Constants
-var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'],
-  EVENT_TYPES_LENGTH = EVENT_TYPES.length,
-  IS_BROWSER = typeof document != 'undefined';
+var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'];
+var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
+var IS_BROWSER = typeof document != 'undefined';
+var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
 
 // Prototype
 Entity.prototype = {
   constructor: Entity,
   initBB: function () {
     var matches = this.getAttr('pos').match(/([0-9.]+),([0-9.]+)/);
-    var x = Math.round(matches[1]);
-    var y = Math.round(this.canviz.height - matches[2]);
+    var x = Number(matches[1]);
+    var y = Number(matches[2]);
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
@@ -82,7 +83,7 @@ Entity.prototype = {
             case 'e': // unfilled ellipse
               var filled = ('E' == token);
               var cx = tokenizer.takeNumber();
-              var cy = this.canviz.height - tokenizer.takeNumber();
+              var cy = tokenizer.takeNumber();
               var rx = tokenizer.takeNumber();
               var ry = tokenizer.takeNumber();
               var path = Ellipse(cx, cy, rx, ry);
@@ -97,14 +98,14 @@ Entity.prototype = {
               var path = Path();
               for (i = 2; i < 2 * numPoints; i += 2) {
                 path.addBezier([
-                  Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
-                  Point(tokens[i],     this.canviz.height - tokens[i + 1])
+                  Point(tokens[i - 2], tokens[i - 1]),
+                  Point(tokens[i], tokens[i + 1])
                 ]);
               }
               if (closed) {
                 path.addBezier([
-                  Point(tokens[2 * numPoints - 2], this.canviz.height - tokens[2 * numPoints - 1]),
-                  Point(tokens[0],                  this.canviz.height - tokens[1])
+                  Point(tokens[2 * numPoints - 2], tokens[2 * numPoints - 1]),
+                  Point(tokens[0], tokens[1])
                 ]);
               }
               break;
@@ -116,16 +117,16 @@ Entity.prototype = {
               var path = Path();
               for (i = 2; i < 2 * numPoints; i += 6) {
                 path.addBezier([
-                  Point(tokens[i - 2], this.canviz.height - tokens[i - 1]),
-                  Point(tokens[i],     this.canviz.height - tokens[i + 1]),
-                  Point(tokens[i + 2], this.canviz.height - tokens[i + 3]),
-                  Point(tokens[i + 4], this.canviz.height - tokens[i + 5])
+                  Point(tokens[i - 2], tokens[i - 1]),
+                  Point(tokens[i], tokens[i + 1]),
+                  Point(tokens[i + 2], tokens[i + 3]),
+                  Point(tokens[i + 4], tokens[i + 5])
                 ]);
               }
               break;
             case 'I': // image
               var l = tokenizer.takeNumber();
-              var b = this.canviz.height - tokenizer.takeNumber();
+              var b = tokenizer.takeNumber();
               var w = tokenizer.takeNumber();
               var h = tokenizer.takeNumber();
               var src = tokenizer.takeString();
@@ -136,10 +137,9 @@ Entity.prototype = {
               break;
             case 'T': // text
               var left = tokenizer.takeNumber(),
-                bottom = this.canviz.height - tokenizer.takeNumber(),
-                top = bottom - this.canviz.bbScale * fontSize,
+                bottom = tokenizer.takeNumber(),
                 textAlignIndex = 1 + tokenizer.takeNumber(),
-                textAlign = ['left', 'center', 'right'][textAlignIndex],
+                textAlign = TEXT_ALIGNMENTS[textAlignIndex],
                 textWidth = tokenizer.takeNumber(),
                 str = tokenizer.takeString();
               
@@ -147,17 +147,22 @@ Entity.prototype = {
                 switch (this.canviz.textMode) {
                   case 'canvas':
                     ctx.save();
+                    ctx.translate(left - textAlignIndex * textWidth / 2, bottom);
+                    // Uninvert the coordinate system so text isn't drawn upside down.
+                    if (this.canviz.invertY) ctx.scale(1, -1);
                     ctx.font = fontSize + 'px ' + fontFamily;
                     // xdot uses pen color for text, but canvas uses fill color
                     ctx.fillStyle = ctx.strokeStyle;
-                    ctx.fillText(str, left - textAlignIndex * textWidth / 2, bottom - 1); // why do we need - 1?
+                    //var metrics = ctx.measureText(str);
+                    //console.log(str, metrics);
+                    ctx.fillText(str, 0, 0); // TODO: the Y-coordinate is even less correct than when using the DOM
                     ctx.restore();
                     break;
                   case 'dom':
                     if (!redrawCanvasOnly) {
-                      left = ctxScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
-                      top = ctxScale * (this.canviz.paddingY + top);
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
+                      left = this.canviz.paddingX + left - textAlignIndex * textWidth;
+                      var top = this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - this.canviz.bbScale * fontSize;
                       var text;
                       var href = this.getAttr('URL', true) || this.getAttr('href', true);
                       if (href) {
@@ -169,8 +174,8 @@ Entity.prototype = {
                         text.setAttribute('target', target);
                         text.setAttribute('title', tooltip);
                         for (var e = 0; e < EVENT_TYPES_LENGTH; ++e) {
-                          var attrName = EVENT_TYPES[e],
-                            attrValue = this.getAttr(attrName, true);
+                          var attrName = EVENT_TYPES[e];
+                          var attrValue = this.getAttr(attrName, true);
                           if (attrValue) {
                             text.setAttribute(attrName, attrValue);
                           }
@@ -185,8 +190,8 @@ Entity.prototype = {
                       text.style.color = strokeColor.textColor;
                       text.style.position = 'absolute';
                       text.style.textAlign = textAlign;
-                      text.style.left = left + 'px';
-                      text.style.top = top + 'px';
+                      text.style.left = ctxScale * left + 'px';
+                      text.style.top = ctxScale * top + 'px';
                       text.style.width = (ctxScale * 2 * textWidth) + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                       this.canviz.elements.appendChild(text);

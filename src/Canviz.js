@@ -210,7 +210,9 @@ Canviz.prototype = {
                     case 'bb':
                       var bb = attrValue.split(',');
                       this.width  = Number(bb[2]);
-                      this.height = Number(bb[3]);
+                      this.height = Math.abs(bb[3] - bb[1]);
+                      // This is the opposite of the dot "-y" flag because canvas Y-coordinates are already inverted from Graphviz coordinates.
+                      this.invertY = (bb[3] > 0);
                       break;
                     case 'bgcolor':
                       this.bgcolor = rootGraph.parseColor(attrValue);
@@ -221,7 +223,7 @@ Canviz.prototype = {
                     case 'pad':
                       var pad = attrValue.split(',');
                       this.paddingX = 72 * pad[0];
-                      this.paddingY = 72 * pad[(pad.length == 1) ? 0 : 1];
+                      this.paddingY = 72 * pad[pad.length - 1];
                       break;
                     case 'size':
                       var size = attrValue.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
@@ -262,9 +264,10 @@ Canviz.prototype = {
   },
   draw: function (redrawCanvasOnly) {
     if ('undefined' === typeof redrawCanvasOnly) redrawCanvasOnly = false;
-    var ctxScale = this.scale * this.dpi / 72,
-      width = Math.round(ctxScale * (this.width + 2 * this.paddingX)),
-      height = Math.round(ctxScale * (this.height + 2 * this.paddingY));
+    var ctx = this.ctx;
+    var ctxScale = this.scale * this.dpi / 72;
+    var width = Math.round(ctxScale * (this.width + 2 * this.paddingX));
+    var height = Math.round(ctxScale * (this.height + 2 * this.paddingY));
     if (!redrawCanvasOnly) {
       this.canvas.width  = width;
       this.canvas.height = height;
@@ -276,14 +279,14 @@ Canviz.prototype = {
         }
       }
     }
-    this.ctx.save();
-    this.ctx.lineCap = 'round';
-    this.ctx.fillStyle = this.bgcolor.canvasColor;
-    this.ctx.fillRect(0, 0, width, height);
-    this.ctx.scale(ctxScale, ctxScale);
-    this.ctx.translate(this.paddingX, this.paddingY);
-    this.graphs[0].draw(this.ctx, ctxScale, redrawCanvasOnly);
-    this.ctx.restore();
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.fillStyle = this.bgcolor.canvasColor;
+    ctx.fillRect(0, 0, width, height);
+    ctx.scale(ctxScale, this.invertY ? -ctxScale : ctxScale);
+    ctx.translate(this.paddingX, this.invertY ? -this.paddingY - this.height : this.paddingY);
+    this.graphs[0].draw(ctx, ctxScale, redrawCanvasOnly);
+    ctx.restore();
   },
   drawPath: function (ctx, path, filled, dashStyle) {
     if (filled) {

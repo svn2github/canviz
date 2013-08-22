@@ -17,7 +17,7 @@ Graph.prototype = Entity();
 Graph.prototype.constructor = Graph;
 Graph.prototype.initBB = function () {
   var coords = this.getAttr('bb').split(',');
-  this.bbRect = Rect(coords[0], this.canviz.height - coords[3], coords[2], this.canviz.height - coords[1]);
+  this.bbRect = Rect(coords[0], coords[1], coords[2], coords[3]);
 };
 Graph.prototype.draw = function (ctx, ctxScale, redrawCanvasOnly) {
   Entity.prototype.draw.call(this, ctx, ctxScale, redrawCanvasOnly);
