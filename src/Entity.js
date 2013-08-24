@@ -221,11 +221,6 @@ Entity.prototype = {
             case 'S': // set style
               var style = tokenizer.takeString();
               switch (style) {
-                case 'solid':
-                case 'filled':
-                case 'tapered':
-                  // nothing
-                  break;
                 case 'dashed':
                 case 'dotted':
                   dashStyle = style;
@@ -237,8 +232,6 @@ Entity.prototype = {
                   var matches = style.match(/^setlinewidth\((.*)\)$/);
                   if (matches) {
                     ctx.lineWidth = Number(matches[1]);
-                  } else {
-                    debug('unknown style ' + style);
                   }
               }
               break;
