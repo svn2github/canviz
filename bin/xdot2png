@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+var Canviz = require('../src/Canviz.js');
+var fs = require('fs');
+
+if (process.argv.length != 4) {
+  process.stderr.write('usage: xdot2png infile.xdot outfile.png\n');
+  process.exit(1);
+}
+
+var inFileName = process.argv[2], outFileName = process.argv[3];
+
+var canviz = Canviz();
+canviz.setTextMode('canvas');
+canviz.parse(fs.readFileSync(inFileName, {encoding: 'utf8'}));
+
+var outfile = fs.createWriteStream(outFileName);
+outfile.on('open', function () {
+  var stream = canviz.canvas.pngStream();
+  stream.on('data', function (chunk) {
+    outfile.write(chunk);
+  });
+  stream.on('end', function () {});
+});
