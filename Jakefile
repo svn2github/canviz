@@ -187,6 +187,7 @@ desc('removes everything that was built');
 task('clean', function () {
   jake.rmRf('build');
   var files = new jake.FileList();
+  files.include('examples/images/temp.png');
   files.include('examples/multiple/*-xdot.gv');
   files.include('test/graphs/*.gv.diff.png');
   files.include('test/graphs/*.gv.png');
