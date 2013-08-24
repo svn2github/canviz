@@ -2,7 +2,6 @@
 var Path = require('./path/Path.js');
 
 // Constants
-var undefined;
 var IS_BROWSER = typeof document != 'undefined';
 
 // Constructor
@@ -131,7 +130,7 @@ Canviz.prototype = {
           if (matches) {
             rootGraph = Graph(matches[3], this);
             containers.unshift(rootGraph);
-            containers[0].strict = matches[1] === undefined;
+            containers[0].strict = (typeof matches[1] != 'undefined');
             containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
             containers[0].attrs.xdotversion = '1.0';
             this.graphs.push(containers[0]);
@@ -264,7 +263,7 @@ Canviz.prototype = {
     this.draw();
   },
   draw: function (redrawCanvasOnly) {
-    if (redrawCanvasOnly === undefined) redrawCanvasOnly = false;
+    if (typeof redrawCanvasOnly == 'undefined') redrawCanvasOnly = false;
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / 72;
     var width = Math.round(ctxScale * (this.width + 2 * this.paddingX));

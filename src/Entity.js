@@ -1,5 +1,4 @@
 // Constants
-var undefined;
 var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout'];
 var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
 var IS_BROWSER = typeof document != 'undefined';
@@ -28,14 +27,14 @@ Entity.prototype = {
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
-    if (escString === undefined) escString = false;
+    if (typeof escString == 'undefined') escString = false;
     var self = this;
     var attrValue = this.attrs[attrName];
-    if (attrValue === undefined) {
+    if (typeof attrValue == 'undefined') {
       var graph = this.parentGraph;
-      while (graph !== undefined) {
+      while (typeof graph == 'undefined') {
         attrValue = graph[this.defaultAttrHashName][attrName];
-        if (attrValue === undefined) {
+        if (typeof attrValue == 'undefined') {
           graph = graph.parentGraph;
         } else {
           break;
