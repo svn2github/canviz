@@ -23,9 +23,7 @@ CanvizImage.prototype = {
   onFinish: function () {
     this.finished = true;
     ++this.canviz.numImagesFinished;
-    if (this.canviz.numImages == this.canviz.numImagesFinished) {
-      this.canviz.draw(true);
-    }
+    this.canviz.draw(true);
   },
   draw: function (ctx, l, t, w, h) {
     if (this.finished) {
