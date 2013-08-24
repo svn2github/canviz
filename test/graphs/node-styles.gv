@@ -1,0 +1,11 @@
+graph {
+  ranksep=0.2
+  node [fillcolor="#ffcccc:#ccffcc:#ccccff"]
+  wedged [style=wedged]
+  node [shape=box]
+  striped [style=striped]
+  filled [style=filled]
+  rounded [style=rounded]
+  diagonals [style=diagonals]
+  {wedged striped filled}--{rounded diagonals} [style=invis]
+}
