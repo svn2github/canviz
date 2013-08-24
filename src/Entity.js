@@ -32,7 +32,7 @@ Entity.prototype = {
     var attrValue = this.attrs[attrName];
     if (typeof attrValue == 'undefined') {
       var graph = this.parentGraph;
-      while (typeof graph == 'undefined') {
+      while (typeof graph != 'undefined') {
         attrValue = graph[this.defaultAttrHashName][attrName];
         if (typeof attrValue == 'undefined') {
           graph = graph.parentGraph;
