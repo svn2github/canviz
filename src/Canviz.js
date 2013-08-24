@@ -34,6 +34,7 @@ function Canviz(container, url, urlParams) {
   this.dotSpacing = 4;
   this.graphs = [];
   this.images = {};
+  this.imagePath = '';
   this.numImages = this.numImagesFinished = 0;
   if (url) {
     this.load(url, urlParams);
