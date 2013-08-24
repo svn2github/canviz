@@ -277,10 +277,41 @@ Entity.prototype = {
       return parsedColor;
     }
     // gradient
-    matches = color.match(/^(?:\[([^\]]+)\]|\(([^)]+)\))$/);
+    matches = color.match(/^(\[[^\]]+\]|\(([^)]+)\))$/);
     if (matches) {
-      // TODO
-      parsedColor.canvasColor = parsedColor.textColor = '#000000';
+      var ctx = this.canviz.ctx;
+      var match = matches[1];
+      var radial = matches[2];
+      var tokenizer = Tokenizer(match.substr(1, match.length - 2));
+      var x0 = tokenizer.takeNumber();
+      var y0 = tokenizer.takeNumber();
+      var r0, x1, y1, r1, colorStops, gradient;
+      if (radial) r0 = tokenizer.takeNumber();
+      x1 = tokenizer.takeNumber();
+      y1 = tokenizer.takeNumber();
+      if (1) { // http://www.graphviz.org/mantisbt/view.php?id=2336
+        if (this.canviz.invertY) {
+          y0 *= -1;
+          y1 *= -1;
+        } else {
+          y0 -= this.canviz.height;
+          y1 -= this.canviz.height;
+          r1 = y1;
+          y1 = y0;
+          y0 = r1;
+        }
+      }
+      if (radial) {
+        r1 = tokenizer.takeNumber();
+        gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+      } else {
+        gradient = ctx.createLinearGradient(x0, y0, x1, y1);
+      }
+      colorStops = tokenizer.takeNumber();
+      while (colorStops--) {
+        gradient.addColorStop(tokenizer.takeNumber(), tokenizer.takeString());
+      }
+      parsedColor.canvasColor = gradient;
       return parsedColor;
     }
     // named color
