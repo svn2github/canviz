@@ -1,0 +1,5 @@
+graph {
+  margin=".125,.25"
+  node [label=""]
+  a
+}
