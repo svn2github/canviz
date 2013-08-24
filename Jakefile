@@ -23,6 +23,7 @@ desc('builds the concatenated canviz library for development');
 file('build/canviz.js', [
   'build',
   'index.js',
+  'Jakefile',
   'src/Canviz.js',
   'src/debug.js',
   'src/Edge.js',
