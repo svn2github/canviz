@@ -133,7 +133,13 @@ Entity.prototype = {
               if (!this.canviz.images[src]) {
                 this.canviz.images[src] = CanvizImage(this.canviz, src);
               }
-              this.canviz.images[src].draw(ctx, l, b - h, w, h);
+
+              ctx.save();
+              ctx.translate(l, b);
+              // Uninvert the coordinate system so the image isn't drawn upside down.
+              if (this.canviz.invertY) ctx.scale(1, -1);
+              this.canviz.images[src].draw(ctx, 0, -h, w, h);
+              ctx.restore();
               break;
             case 'T': // text
               var left = tokenizer.takeNumber(),
@@ -148,7 +154,7 @@ Entity.prototype = {
                   case 'canvas':
                     ctx.save();
                     ctx.translate(left - textAlignIndex * textWidth / 2, bottom);
-                    // Uninvert the coordinate system so text isn't drawn upside down.
+                    // Uninvert the coordinate system so the text isn't drawn upside down.
                     if (this.canviz.invertY) ctx.scale(1, -1);
                     ctx.font = fontSize + 'px ' + fontFamily;
                     // xdot uses pen color for text, but canvas uses fill color
