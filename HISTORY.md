@@ -13,6 +13,11 @@
 * Convert documentation files to Markdown format
 * Add a test suite
 * Handle the graph "pad" attribute correctly
+* Implement alternate text rendering using the canvas (instead of overlay spans)
+* Handle graphs rendered with the Graphviz "-y" switch
+* Handle xdotversion up to 1.4
+* Handle gradients
+* Create xdot2png command-line script
 
 0.1 / - 2011-12-10
 ==================
