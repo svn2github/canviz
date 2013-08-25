@@ -52,9 +52,8 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
       inImage1Pointer = 0,
       inImage2Pointer = 0,
       outImagePointer = 0,
-      total = maxWidth * maxHeight * 3 * 255,
-      correct = minWidth * minHeight * 3 * 255,
-      difference;
+      total = 255 * 4 * maxWidth * maxHeight,
+      correct = 255 * 4 * minWidth * minHeight;
 
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, maxWidth, maxHeight);
@@ -63,15 +62,12 @@ function diffImages(inImage1File, inImage2File, outImageFile, callback) {
 
     for (var x = 0; x < minWidth; ++x) {
       for (var y = 0; y < minHeight; ++y) {
-        for (var i = 0, rgbDifference = 0; i < 3; ++i) {
-          difference = Math.abs(inImage1Pixels[inImage1Pointer++] - inImage2Pixels[inImage2Pointer++]);
-          rgbDifference += difference;
-          outImagePixels[outImagePointer++] = 255 - difference;
+        for (var i = 3, rgbaDifference = 0; i >= 0; --i) {
+          var difference = Math.abs(inImage1Pixels[inImage1Pointer++] - inImage2Pixels[inImage2Pointer++]);
+          rgbaDifference += difference;
+          outImagePixels[outImagePointer++] = i ? 255 - difference : Math.min(rgbaDifference, 255);
         }
-        correct -= rgbDifference;
-        outImagePixels[outImagePointer++] = Math.min(rgbDifference, 255);
-        inImage1Pointer++;
-        inImage2Pointer++;
+        correct -= rgbaDifference;
       }
     }
 
