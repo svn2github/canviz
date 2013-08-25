@@ -134,11 +134,11 @@ Canviz.prototype = {
           matches = line.match(GRAPH_MATCH_RE);
           if (matches) {
             rootGraph = Graph(matches[3], this);
+            rootGraph.strict = !!matches[1];
+            rootGraph.type = 'graph' == matches[2] ? 'undirected' : 'directed';
+            rootGraph.attrs.xdotversion = '1.0';
             containers.unshift(rootGraph);
-            containers[0].strict = typeof matches[1] != 'undefined';
-            containers[0].type = 'graph' == matches[2] ? 'undirected' : 'directed';
-            containers[0].attrs.xdotversion = '1.0';
-            this.graphs.push(containers[0]);
+            this.graphs.push(rootGraph);
 //            debug('graph: ' + containers[0].name);
           }
         }
