@@ -21,9 +21,9 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
 Entity.prototype = {
   constructor: Entity,
   initBB: function () {
-    var matches = this.getAttr('pos').match(/([0-9.]+),([0-9.]+)/);
-    var x = Number(matches[1]);
-    var y = Number(matches[2]);
+    var xy = this.getAttr('pos').split(',');
+    var x = Number(xy[0]);
+    var y = Number(xy[1]);
     this.bbRect = Rect(x, y, x, y);
   },
   getAttr: function (attrName, escString) {
@@ -34,11 +34,8 @@ Entity.prototype = {
       var graph = this.parentGraph;
       while (typeof graph != 'undefined') {
         attrValue = graph[this.defaultAttrHashName][attrName];
-        if (typeof attrValue == 'undefined') {
-          graph = graph.parentGraph;
-        } else {
-          break;
-        }
+        if (typeof attrValue != 'undefined') break;
+        graph = graph.parentGraph;
       }
     }
     if (attrValue && escString) {
