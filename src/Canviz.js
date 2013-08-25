@@ -30,14 +30,13 @@ function Canviz(container, url, urlParams) {
   if (this.ctx.fillText) textModes.push('canvas');
   this.setTextMode(textModes[0]);
   this.setScale(1);
-  this.marginX = this.marginY = 0;
+  this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
   this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
   this.dashLength = 6;
   this.dotSpacing = 4;
   this.graphs = [];
   this.images = {};
   this.imagePath = '';
-  this.numImages = this.numImagesFinished = 0;
   if (url) {
     this.load(url, urlParams);
   }
@@ -104,11 +103,7 @@ Canviz.prototype = {
     if (IS_BROWSER) document.getElementById('debug_output').innerHTML = '';
 
     this.graphs = [];
-    this.width = 0;
-    this.height = 0;
-    this.maxWidth = false;
-    this.maxHeight = false;
-    this.bbEnlarge = false;
+    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = 0;
     this.bbScale = 1;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
@@ -128,23 +123,23 @@ Canviz.prototype = {
           line += lines[i++];
         }
 //        debug(line);
-        if (0 == containers.length) {
-          matches = line.match(GRAPH_MATCH_RE);
-          if (matches) {
-            rootGraph = Graph(matches[3], this);
-            containers.unshift(rootGraph);
-            containers[0].strict = (typeof matches[1] != 'undefined');
-            containers[0].type = ('graph' == matches[2]) ? 'undirected' : 'directed';
-            containers[0].attrs.xdotversion = '1.0';
-            this.graphs.push(containers[0]);
-//            debug('graph: ' + containers[0].name);
-          }
-        } else {
+        if (containers.length) {
           matches = line.match(SUBGRAPH_MATCH_RE);
           if (matches) {
             containers.unshift(Graph(matches[1], this, rootGraph, containers[0]));
             containers[1].subgraphs.push(containers[0]);
 //            debug('subgraph: ' + containers[0].name);
+          }
+        } else {
+          matches = line.match(GRAPH_MATCH_RE);
+          if (matches) {
+            rootGraph = Graph(matches[3], this);
+            containers.unshift(rootGraph);
+            containers[0].strict = typeof matches[1] != 'undefined';
+            containers[0].type = 'graph' == matches[2] ? 'undirected' : 'directed';
+            containers[0].attrs.xdotversion = '1.0';
+            this.graphs.push(containers[0]);
+//            debug('graph: ' + containers[0].name);
           }
         }
         if (matches) {
@@ -152,7 +147,7 @@ Canviz.prototype = {
         } else if ('}' == line) {
 //          debug('end container ' + containers[0].name);
           containers.shift();
-          if (0 == containers.length) {
+          if (!containers.length) {
             break;
           }
         } else {
@@ -194,7 +189,7 @@ Canviz.prototype = {
           }
           if (matches) {
             do {
-              if (0 == attrs.length) {
+              if (!attrs.length) {
                 break;
               }
               matches = attrs.match(ATTR_MATCH_RE);
@@ -208,14 +203,14 @@ Canviz.prototype = {
                   attrHash[attrName] = attrValue;
                 }
 //                debug(attrName + ' ' + attrValue);
-                if (isGraph && 1 == containers.length) {
+                if (isGraph && containers.length < 2) {
                   switch (attrName) {
                     case 'bb':
-                      var bb = attrValue.split(',');
-                      this.width  = Number(bb[2]);
-                      this.height = Math.abs(bb[3] - bb[1]);
+                      attrValue = attrValue.split(',');
+                      this.width = Number(attrValue[2]);
+                      this.height = Math.abs(attrValue[3] - attrValue[1]);
                       // This is the opposite of the dot "-y" flag because canvas Y-coordinates are already inverted from Graphviz coordinates.
-                      this.invertY = (bb[3] > 0);
+                      this.invertY = attrValue[3] > 0;
                       break;
                     case 'bgcolor':
                       this.bgcolor = rootGraph.parseColor(attrValue);
@@ -319,7 +314,7 @@ Canviz.prototype = {
           ctx.beginPath();
           path.makeDottedPath(ctx, this.dotSpacing);
           break;
-        case 'solid':
+        //case 'solid':
         default:
           if (!filled) {
             ctx.beginPath();
