@@ -234,14 +234,13 @@ Canviz.prototype = {
                       this.paddingY = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
                     case 'size':
-                      attrValue = attrValue.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
-                      if (attrValue) {
-                        this.maxWidth = XDOT_DPI * attrValue[1];
-                        this.maxHeight = XDOT_DPI * attrValue[2];
-                        this.bbEnlarge = '!' == attrValue[3];
-                      } else {
-                        debug('can\'t parse size');
+                      if (attrValue.substr(attrValue.length - 1) == '!') {
+                        this.bbEnlarge = true;
+                        attrValue = attrValue.substr(0, attrValue.length - 1);
                       }
+                      attrValue = attrValue.split(',');
+                      this.maxWidth = XDOT_DPI * attrValue[0];
+                      this.maxHeight = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
                     case 'xdotversion':
                       if (0 > versionCompare(MAX_XDOT_VERSION, attrHash.xdotversion)) {
