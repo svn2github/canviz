@@ -117,34 +117,7 @@ task('test', testGraphs.toArray().map(function (graph) {
   return graph + '.png';
 }), {async: true}, function () {
   var remaining = testGraphs.length();
-  var results = [
-    '<!DOCTYPE html>',
-    '<html>',
-    '<head>',
-    '<meta charset="utf-8">',
-    '<title>Canviz test results</title>',
-    '<style>',
-    'body {',
-    'background: #eee;',
-    'color: #000;',
-    '}',
-    'table {',
-    'width: 100%;',
-    '}',
-    'td {',
-    'text-align: center;',
-    '}',
-    '</style>',
-    '</head>',
-    '<body>',
-    '<table>',
-    '<tr>',
-    '<th width="10%">File</th>',
-    '<th width="30%">Graphviz PNG</th>',
-    '<th width="30%">Graphviz XDOT → Canviz PNG</th>',
-    '<th width="30%">Difference</th>',
-    '</tr>'
-  ];
+  var results = [];
   testGraphs.forEach(function (graph) {
     var canviz = Canviz();
     canviz.setTextMode('canvas');
@@ -159,17 +132,51 @@ task('test', testGraphs.toArray().map(function (graph) {
         outfile.end(function () {
           diffImages(graph + '.png', graph + '.xdot.png', graph + '.diff.png', function (err, info) {
             if (err) jake.logger.error(err);
-            graph = graph.replace(/^[^/]+\//, '');
-            results.push('<tr>',
-              '<td>' + path.basename(graph) + '<br>' + Math.round(10000 * info.similarity) / 100 + '%</td>',
-              '<td><img src="' + graph + '.png" width="' + info.inImage1.width +  '" height="' + info.inImage1.height +  '"></td>',
-              '<td><img src="' + graph + '.xdot.png" width="' + info.inImage2.width +  '" height="' + info.inImage2.height +  '"></td>',
-              '<td><img src="' + graph + '.diff.png" width="' + info.outImage.width +  '" height="' + info.outImage.height +  '"></td>',
-              '</tr>'
-            );
+            info.graph = graph.replace(/^[^/]+\//, '');
+            results.push(info);
             if (!--remaining) {
-              results.push('</table>', '</body>', '</html>', '');
-              fs.writeFile('test/results.html', results.join("\n"), complete);
+              var html = [
+                '<!DOCTYPE html>',
+                '<html>',
+                '<head>',
+                '<meta charset="utf-8">',
+                '<title>Canviz test results</title>',
+                '<style>',
+                'body {',
+                'background: #eee;',
+                'color: #000;',
+                '}',
+                'table {',
+                'width: 100%;',
+                '}',
+                'td {',
+                'text-align: center;',
+                '}',
+                '</style>',
+                '</head>',
+                '<body>',
+                '<table>',
+                '<tr>',
+                '<th width="10%">File</th>',
+                '<th width="30%">Graphviz PNG</th>',
+                '<th width="30%">Graphviz XDOT → Canviz PNG</th>',
+                '<th width="30%">Difference</th>',
+                '</tr>'
+              ];
+              results.sort(function (a, b) {
+                return a.similarity - b.similarity;
+              });
+              results.forEach(function (result) {
+                html.push('<tr>',
+                  '<td>' + path.basename(result.graph) + '<br>' + Math.round(10000 * result.similarity) / 100 + '%</td>',
+                  '<td><img src="' + result.graph + '.png" width="' + result.inImage1.width +  '" height="' + result.inImage1.height +  '"></td>',
+                  '<td><img src="' + result.graph + '.xdot.png" width="' + result.inImage2.width +  '" height="' + result.inImage2.height +  '"></td>',
+                  '<td><img src="' + result.graph + '.diff.png" width="' + result.outImage.width +  '" height="' + result.outImage.height +  '"></td>',
+                  '</tr>'
+                );
+              });
+              html.push('</table>', '</body>', '</html>', '');
+              fs.writeFile('test/results.html', html.join("\n"), complete);
             }
           });
         });
