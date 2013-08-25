@@ -12,7 +12,7 @@
 * Update included excanvas to version 0003
 * Convert documentation files to Markdown format
 * Add a test suite
-* Handle the graph "pad" attribute correctly
+* Handle the graph "margin" and "pad" attributes correctly
 * Implement alternate text rendering using the canvas (instead of overlay spans)
 * Handle graphs rendered with the Graphviz "-y" switch
 * Handle xdotversion up to 1.4

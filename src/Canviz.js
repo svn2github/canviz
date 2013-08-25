@@ -3,6 +3,7 @@ var Path = require('./path/Path.js');
 
 // Constants
 var IS_BROWSER = typeof document != 'undefined';
+var XDOT_DPI = 72;
 
 // Constructor
 function Canviz(container, url, urlParams) {
@@ -29,7 +30,8 @@ function Canviz(container, url, urlParams) {
   if (this.ctx.fillText) textModes.push('canvas');
   this.setTextMode(textModes[0]);
   this.setScale(1);
-  this.paddingX = this.paddingY = 72 * 0.0555;
+  this.marginX = this.marginY = 0;
+  this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
   this.dashLength = 6;
   this.dotSpacing = 4;
   this.graphs = [];
@@ -221,17 +223,22 @@ Canviz.prototype = {
                     case 'dpi':
                       this.dpi = attrValue;
                       break;
+                    case 'margin':
+                      attrValue = attrValue.split(',');
+                      this.marginX = XDOT_DPI * attrValue[0];
+                      this.marginY = XDOT_DPI * attrValue[attrValue.length - 1];
+                      break;
                     case 'pad':
-                      var pad = attrValue.split(',');
-                      this.paddingX = 72 * pad[0];
-                      this.paddingY = 72 * pad[pad.length - 1];
+                      attrValue = attrValue.split(',');
+                      this.paddingX = XDOT_DPI * attrValue[0];
+                      this.paddingY = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
                     case 'size':
-                      var size = attrValue.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
-                      if (size) {
-                        this.maxWidth = 72 * size[1];
-                        this.maxHeight = 72 * size[2];
-                        this.bbEnlarge = ('!' == size[3]);
+                      attrValue = attrValue.match(/^(\d+|\d*(?:\.\d+)),\s*(\d+|\d*(?:\.\d+))(!?)$/);
+                      if (attrValue) {
+                        this.maxWidth = XDOT_DPI * attrValue[1];
+                        this.maxHeight = XDOT_DPI * attrValue[2];
+                        this.bbEnlarge = '!' == attrValue[3];
                       } else {
                         debug('can\'t parse size');
                       }
@@ -266,15 +273,15 @@ Canviz.prototype = {
   draw: function (redrawCanvasOnly) {
     if (typeof redrawCanvasOnly == 'undefined') redrawCanvasOnly = false;
     var ctx = this.ctx;
-    var ctxScale = this.scale * this.dpi / 72;
-    var width = Math.round(ctxScale * (this.width + 2 * this.paddingX));
-    var height = Math.round(ctxScale * (this.height + 2 * this.paddingY));
+    var ctxScale = this.scale * this.dpi / XDOT_DPI;
+    var pixelWidth = Math.round(ctxScale * (this.width + 2 * (this.marginX + this.paddingX)));
+    var pixelHeight = Math.round(ctxScale * (this.height + 2 * (this.marginY + this.paddingY)));
     if (!redrawCanvasOnly) {
-      this.canvas.width  = width;
-      this.canvas.height = height;
+      this.canvas.width = pixelWidth;
+      this.canvas.height = pixelHeight;
       if (IS_BROWSER) {
-        this.canvas.style.width = this.container.style.width = width + 'px';
-        this.canvas.style.height = this.container.style.height = height + 'px';
+        this.canvas.style.width = this.container.style.width = pixelWidth + 'px';
+        this.canvas.style.height = this.container.style.height = pixelHeight + 'px';
         while (this.elements.firstChild) {
           this.elements.removeChild(this.elements.firstChild);
         }
@@ -282,10 +289,16 @@ Canviz.prototype = {
     }
     ctx.save();
     ctx.lineCap = 'round';
+    ctx.fillStyle = 'rgba(0,0,0,0)';
+    ctx.fillRect(0, 0, pixelWidth, pixelHeight);
     ctx.fillStyle = this.bgcolor.canvasColor;
-    ctx.fillRect(0, 0, width, height);
-    ctx.scale(ctxScale, this.invertY ? -ctxScale : ctxScale);
-    ctx.translate(this.paddingX, this.invertY ? -this.paddingY - this.height : this.paddingY);
+    ctx.fillRect(Math.round(ctxScale * this.marginX), Math.round(ctxScale * this.marginY), Math.round(ctxScale * (this.width + 2 * this.paddingX)), Math.round(ctxScale * (this.height + 2 * this.paddingY)));
+    ctx.scale(ctxScale, ctxScale);
+    ctx.translate(this.marginX + this.paddingX, this.marginY + this.paddingY);
+    if (this.invertY) {
+      ctx.translate(0, this.height);
+      ctx.scale(1, -1);
+    }
     this.graphs[0].draw(ctx, ctxScale, redrawCanvasOnly);
     ctx.restore();
   },

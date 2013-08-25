@@ -167,8 +167,8 @@ Entity.prototype = {
                   case 'dom':
                     if (!redrawCanvasOnly) {
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
-                      left = this.canviz.paddingX + left - textAlignIndex * textWidth;
-                      var top = this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - this.canviz.bbScale * fontSize;
+                      left = this.canviz.marginX + this.canviz.paddingX + left - textAlignIndex * textWidth;
+                      var top = this.canviz.marginY + this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - this.canviz.bbScale * fontSize;
                       var text;
                       var href = this.getAttr('URL', true) || this.getAttr('href', true);
                       if (href) {
@@ -254,8 +254,8 @@ Entity.prototype = {
         }
         if (IS_BROWSER && !redrawCanvasOnly) {
           bbDiv.style.position = 'absolute';
-          bbDiv.style.left = Math.round(ctxScale * (this.canviz.paddingX + this.bbRect.l)) + 'px';
-          bbDiv.style.top = Math.round(ctxScale * (this.canviz.paddingY + this.bbRect.t)) + 'px';
+          bbDiv.style.left = Math.round(ctxScale * (this.canviz.marginX + this.canviz.paddingX + this.bbRect.l)) + 'px';
+          bbDiv.style.top = Math.round(ctxScale * (this.canviz.marginY + this.canviz.paddingY + this.bbRect.t)) + 'px';
           bbDiv.style.width = Math.round(ctxScale * this.bbRect.getWidth()) + 'px';
           bbDiv.style.height = Math.round(ctxScale * this.bbRect.getHeight()) + 'px';
         }

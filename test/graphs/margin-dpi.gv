@@ -1,0 +1,6 @@
+graph {
+  dpi=200
+  margin=0.4
+  node [label=""]
+  a
+}
