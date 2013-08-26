@@ -1,0 +1,6 @@
+digraph {
+  size=1
+  a->{b c}
+  b->{d e}
+  c->{e f}
+}

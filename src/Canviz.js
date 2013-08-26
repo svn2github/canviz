@@ -104,7 +104,6 @@ Canviz.prototype = {
 
     this.graphs = [];
     this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = 0;
-    this.bbScale = 1;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
     this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
@@ -252,24 +251,21 @@ Canviz.prototype = {
         }
       }
     }
-/*
-    if (this.maxWidth && this.maxHeight) {
-      if (this.width > this.maxWidth || this.height > this.maxHeight || this.bbEnlarge) {
-        this.bbScale = Math.min(this.maxWidth / this.width, this.maxHeight / this.height);
-        this.width  = Math.round(this.width  * this.bbScale);
-        this.height = Math.round(this.height * this.bbScale);
-      }
-    }
-*/
-//    debug('done');
+    var drawingWidth = this.width + 2 * this.paddingX;
+    var drawingHeight = this.height + 2 * this.paddingY;
+    this.bbScale = (this.maxWidth && this.maxHeight && (drawingWidth > this.maxWidth || drawingHeight > this.maxHeight || this.bbEnlarge))
+      ? Math.min(this.maxWidth / drawingWidth, this.maxHeight / drawingHeight)
+      : 1;
     this.draw();
   },
   draw: function (redrawCanvasOnly) {
     if (typeof redrawCanvasOnly == 'undefined') redrawCanvasOnly = false;
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / XDOT_DPI;
-    var pixelWidth = Math.round(ctxScale * (this.width + 2 * (this.marginX + this.paddingX)));
-    var pixelHeight = Math.round(ctxScale * (this.height + 2 * (this.marginY + this.paddingY)));
+    var bbScaledDrawingWidth = this.bbScale * (this.width + 2 * this.paddingX);
+    var bbScaledDrawingHeight = this.bbScale * (this.height + 2 * this.paddingY);
+    var pixelWidth = Math.round(ctxScale * (2 * this.marginX + bbScaledDrawingWidth));
+    var pixelHeight = Math.round(ctxScale * (2 * this.marginY + bbScaledDrawingHeight));
     if (!redrawCanvasOnly) {
       this.canvas.width = pixelWidth;
       this.canvas.height = pixelHeight;
@@ -286,13 +282,15 @@ Canviz.prototype = {
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.fillRect(0, 0, pixelWidth, pixelHeight);
     ctx.fillStyle = this.bgcolor.canvasColor;
-    ctx.fillRect(Math.round(ctxScale * this.marginX), Math.round(ctxScale * this.marginY), Math.round(ctxScale * (this.width + 2 * this.paddingX)), Math.round(ctxScale * (this.height + 2 * this.paddingY)));
+    ctx.fillRect(Math.round(ctxScale * this.marginX), Math.round(ctxScale * this.marginY), Math.round(ctxScale * bbScaledDrawingWidth), Math.round(ctxScale * bbScaledDrawingHeight));
     ctx.scale(ctxScale, ctxScale);
-    ctx.translate(this.marginX + this.paddingX, this.marginY + this.paddingY);
+    ctx.translate(this.marginX, this.marginY);
     if (this.invertY) {
-      ctx.translate(0, this.height);
+      ctx.translate(0, bbScaledDrawingHeight);
       ctx.scale(1, -1);
     }
+    ctx.scale(this.bbScale, this.bbScale);
+    ctx.translate(this.paddingX, this.paddingY);
     this.graphs[0].draw(ctx, ctxScale, redrawCanvasOnly);
     ctx.restore();
   },

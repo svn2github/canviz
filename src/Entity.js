@@ -59,6 +59,7 @@ Entity.prototype = {
       this.initBB();
       if (IS_BROWSER) {
         var bbDiv = document.createElement('div');
+        var bbScale = this.canviz.bbScale;
         this.canviz.elements.appendChild(bbDiv);
       }
     }
@@ -164,8 +165,8 @@ Entity.prototype = {
                   case 'dom':
                     if (!redrawCanvasOnly) {
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
-                      left = this.canviz.marginX + this.canviz.paddingX + left - textAlignIndex * textWidth;
-                      var top = this.canviz.marginY + this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - this.canviz.bbScale * fontSize;
+                      left = this.canviz.marginX + bbScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
+                      var top = this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - fontSize);
                       var text;
                       var href = this.getAttr('URL', true) || this.getAttr('href', true);
                       if (href) {
@@ -188,14 +189,14 @@ Entity.prototype = {
                         text = document.createElement('span');
                       }
                       text.innerHTML = str;
-                      text.style.fontSize = (fontSize * ctxScale * this.canviz.bbScale) + 'px';
+                      text.style.fontSize = ctxScale * bbScale * fontSize + 'px';
                       text.style.fontFamily = fontFamily;
                       text.style.color = strokeColor.textColor;
                       text.style.position = 'absolute';
                       text.style.textAlign = textAlign;
                       text.style.left = ctxScale * left + 'px';
                       text.style.top = ctxScale * top + 'px';
-                      text.style.width = (ctxScale * 2 * textWidth) + 'px';
+                      text.style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                       this.canviz.elements.appendChild(text);
                     }
@@ -251,10 +252,12 @@ Entity.prototype = {
         }
         if (IS_BROWSER && !redrawCanvasOnly) {
           bbDiv.style.position = 'absolute';
-          bbDiv.style.left = Math.round(ctxScale * (this.canviz.marginX + this.canviz.paddingX + this.bbRect.l)) + 'px';
-          bbDiv.style.top = Math.round(ctxScale * (this.canviz.marginY + this.canviz.paddingY + this.bbRect.t)) + 'px';
-          bbDiv.style.width = Math.round(ctxScale * this.bbRect.getWidth()) + 'px';
-          bbDiv.style.height = Math.round(ctxScale * this.bbRect.getHeight()) + 'px';
+          bbDiv.style.left = Math.round(ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + this.bbRect.l))) + 'px';
+          var y = Math.round(ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + this.bbRect.t)));
+          var h = Math.round(ctxScale * bbScale * this.bbRect.getHeight());
+          bbDiv.style.top = (this.canviz.invertY ? this.canviz.canvas.height - y - h : y) + 'px';
+          bbDiv.style.width = Math.round(ctxScale * bbScale * this.bbRect.getWidth()) + 'px';
+          bbDiv.style.height = h + 'px';
         }
         ctx.restore();
       }
