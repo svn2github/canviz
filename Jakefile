@@ -24,6 +24,7 @@ file('build/canviz.js', [
   'build',
   'index.js',
   'Jakefile',
+  'package.json',
   'src/Canviz.js',
   'src/debug.js',
   'src/Edge.js',

@@ -9,7 +9,7 @@
   },
   "bugs": "https://code.google.com/p/canviz/issues/list",
   "devDependencies": {
-    "browserify": "~2.28.0",
+    "browserify": "~2.29.0",
     "express": "~3.3.5",
     "jake": "~0.6.10",
     "uglify-js": "~2.4.0"
