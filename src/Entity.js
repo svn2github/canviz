@@ -148,6 +148,14 @@ Entity.prototype = {
                 str = tokenizer.takeString();
               
               if (!/^\s*$/.test(str)) {
+                // The Y-coordinate of text operations in xdot neglects to take
+                // into account the yoffset_centerline. The error for "simple"
+                // strings is -0.2 * fontSize and -1 for complex ones;
+                // unfortunately xdot does not tell us whether a string is
+                // simple or complex. We adjust for the more common simple
+                // case, though this causes complex strings to look worse.
+                // http://www.graphviz.org/mantisbt/view.php?id=2333
+                var yError = -0.2 * fontSize;
                 switch (this.canviz.textMode) {
                   case 'canvas':
                     ctx.save();
@@ -157,9 +165,7 @@ Entity.prototype = {
                     ctx.font = fontSize + 'px ' + fontFamily;
                     // xdot uses pen color for text, but canvas uses fill color
                     ctx.fillStyle = ctx.strokeStyle;
-                    //var metrics = ctx.measureText(str);
-                    //console.log(str, metrics);
-                    ctx.fillText(str, 0, 0); // TODO: the Y-coordinate is even less correct than when using the DOM
+                    ctx.fillText(str, 0, yError);
                     ctx.restore();
                     break;
                   case 'dom':
