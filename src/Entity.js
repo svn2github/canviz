@@ -212,6 +212,9 @@ Entity.prototype = {
                 }
               }
               break;
+            case 't': // set text style
+              var textStyle = tokenizer.takeNumber();
+              break;
             case 'C': // set fill color
             case 'c': // set pen color
               var fill = ('C' == token);
