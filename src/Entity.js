@@ -297,10 +297,10 @@ Entity.prototype = {
       x1 = tokenizer.takeNumber();
       y1 = tokenizer.takeNumber();
       if (this.canviz.bugs.gradY) {
-        // Prior to xdotversion 1.5 (Graphviz version 2.33.20130907.0446, git
-        // commit 7baedbfdd2607942bd74cc22fe6130aceb5dc0fc) the gradient
-        // Y-coordinate is inadvertently mirrored across the bottom edge of the
-        // graph. http://graphviz.org/mantisbt/view.php?id=2336
+        // Prior to xdotversion 1.5 (Graphviz version 2.34.0, git commit
+        // 7baedbfdd2607942bd74cc22fe6130aceb5dc0fc) the gradient Y-coordinate
+        // is inadvertently mirrored across the bottom edge of the graph.
+        // http://graphviz.org/mantisbt/view.php?id=2336
         if (this.canviz.invertY) {
           y0 *= -1;
           y1 *= -1;
