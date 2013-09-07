@@ -30,8 +30,6 @@ function Canviz(container, url, urlParams) {
   if (this.ctx.fillText) textModes.push('canvas');
   this.setTextMode(textModes[0]);
   this.setScale(1);
-  this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
-  this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
   this.dashLength = 6;
   this.dotSpacing = 4;
   this.graphs = [];
@@ -103,7 +101,9 @@ Canviz.prototype = {
     if (IS_BROWSER) document.getElementById('debug_output').innerHTML = '';
 
     this.graphs = [];
-    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = 0;
+    this.images = {};
+    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
+    this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
     this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
