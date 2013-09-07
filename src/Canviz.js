@@ -61,7 +61,7 @@ Canviz.addColors = function (colors) {
 };
 
 // Constants
-var MAX_XDOT_VERSION = '1.4';
+var MAX_XDOT_VERSION = '1.5';
 // An alphanumeric string or a number or a double-quoted string or an HTML string
 var ID_MATCH = '([a-zA-Z\u0080-\uFFFF_][0-9a-zA-Z\u0080-\uFFFF_]*|-?(?:\\.\\d+|\\d+(?:\\.\\d*)?)|"(?:\\\\"|[^"])*"|<(?:<[^>]*>|[^<>]+?)+>)';
 // ID or ID:port or ID:compassPoint or ID:port:compassPoint
@@ -229,7 +229,7 @@ Canviz.prototype = {
                       break;
                     case 'size':
                       if (attrValue.substr(attrValue.length - 1) == '!') {
-                        this.bbEnlarge = true;
+                        this.bbEnlarge = 1; // true
                         attrValue = attrValue.substr(0, attrValue.length - 1);
                       }
                       attrValue = attrValue.split(',');
@@ -237,8 +237,8 @@ Canviz.prototype = {
                       this.maxHeight = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
                     case 'xdotversion':
-                      if (0 > versionCompare(MAX_XDOT_VERSION, attrHash.xdotversion)) {
-                        debug('unsupported xdotversion ' + attrHash.xdotversion + '; this script currently supports up to xdotversion ' + MAX_XDOT_VERSION);
+                      if (versionCompare(attrValue, MAX_XDOT_VERSION) > 0) {
+                        debug('unsupported xdotversion ' + attrValue + '; this script currently supports up to xdotversion ' + MAX_XDOT_VERSION);
                       }
                       break;
                   }
@@ -260,6 +260,9 @@ Canviz.prototype = {
   },
   draw: function (redrawCanvasOnly) {
     if (typeof redrawCanvasOnly == 'undefined') redrawCanvasOnly = false;
+    var bugs = this.bugs = {};
+    var xdotVersion = this.graphs[0].attrs.xdotversion;
+    bugs.gradY = bugs.textY = versionCompare(xdotVersion, '1.5') < 0;
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / XDOT_DPI;
     var bbScaledDrawingWidth = this.bbScale * (this.width + 2 * this.paddingX);

@@ -140,39 +140,41 @@ Entity.prototype = {
               ctx.restore();
               break;
             case 'T': // text
-              var left = tokenizer.takeNumber(),
-                bottom = tokenizer.takeNumber(),
+              var x = tokenizer.takeNumber(),
+                baseline = tokenizer.takeNumber(),
                 textAlignIndex = 1 + tokenizer.takeNumber(),
                 textAlign = TEXT_ALIGNMENTS[textAlignIndex],
                 textWidth = tokenizer.takeNumber(),
                 str = tokenizer.takeString();
               
               if (!/^\s*$/.test(str)) {
-                // The Y-coordinate of text operations in xdot neglects to take
+                // Prior to xdotversion 1.5 (Graphviz version 2.33.20130906.0446,
+                // git commit 5059989a0e35c3423da5b870480748569c61fb4a) the
+                // Y-coordinate of text operations in xdot neglects to take
                 // into account the yoffset_centerline. The error for "simple"
-                // strings is -0.2 * fontSize and -1 for complex ones;
+                // strings is 0.2 * fontSize and 1 for complex ones;
                 // unfortunately xdot does not tell us whether a string is
                 // simple or complex. We adjust for the more common simple
                 // case, though this causes complex strings to look worse.
                 // http://www.graphviz.org/mantisbt/view.php?id=2333
-                var yError = -0.2 * fontSize;
+                var yError = this.canviz.bugs.textY * 0.2 * fontSize;
                 switch (this.canviz.textMode) {
                   case 'canvas':
                     ctx.save();
-                    ctx.translate(left - textAlignIndex * textWidth / 2, bottom);
+                    ctx.translate(x - textAlignIndex * textWidth / 2, baseline);
                     // Uninvert the coordinate system so the text isn't drawn upside down.
                     if (this.canviz.invertY) ctx.scale(1, -1);
                     ctx.font = fontSize + 'px ' + fontFamily;
                     // xdot uses pen color for text, but canvas uses fill color
                     ctx.fillStyle = ctx.strokeStyle;
-                    ctx.fillText(str, 0, yError);
+                    ctx.fillText(str, 0, -yError);
                     ctx.restore();
                     break;
                   case 'dom':
                     if (!redrawCanvasOnly) {
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
-                      left = this.canviz.marginX + bbScale * (this.canviz.paddingX + left - textAlignIndex * textWidth);
-                      var top = this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - bottom : bottom) - fontSize);
+                      var left = this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth);
+                      var top = this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - fontSize);
                       var text;
                       var href = this.getAttr('URL', true) || this.getAttr('href', true);
                       if (href) {
@@ -294,7 +296,11 @@ Entity.prototype = {
       if (radial) r0 = tokenizer.takeNumber();
       x1 = tokenizer.takeNumber();
       y1 = tokenizer.takeNumber();
-      if (1) { // http://www.graphviz.org/mantisbt/view.php?id=2336
+      if (this.canviz.bugs.gradY) {
+        // Prior to xdotversion 1.5 (Graphviz version 2.33.20130907.0446, git
+        // commit 7baedbfdd2607942bd74cc22fe6130aceb5dc0fc) the gradient
+        // Y-coordinate is inadvertently mirrored across the bottom edge of the
+        // graph. http://graphviz.org/mantisbt/view.php?id=2336
         if (this.canviz.invertY) {
           y0 *= -1;
           y1 *= -1;
