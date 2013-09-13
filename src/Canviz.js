@@ -303,7 +303,6 @@ Canviz.prototype = {
       path.makePath(ctx);
       ctx.fill();
     }
-    if (ctx.fillStyle != ctx.strokeStyle || !filled) {
       switch (dashStyle) {
         case 'dashed':
           ctx.beginPath();
@@ -324,7 +323,6 @@ Canviz.prototype = {
       }
       ctx.stroke();
       if (oldLineWidth) ctx.lineWidth = oldLineWidth;
-    }
   }
 };
 
