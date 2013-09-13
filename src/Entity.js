@@ -3,6 +3,11 @@ var EVENT_TYPES = ['onclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmous
 var EVENT_TYPES_LENGTH = EVENT_TYPES.length;
 var IS_BROWSER = typeof document != 'undefined';
 var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
+var TEXT_BOLD = 1;
+var TEXT_ITALIC = 2;
+var TEXT_SUBSCRIPT = 16;
+var TEXT_SUPERSCRIPT = 8;
+var TEXT_UNDERLINE = 4;
 
 // Constructor
 function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
@@ -161,13 +166,66 @@ Entity.prototype = {
                 switch (this.canviz.textMode) {
                   case 'canvas':
                     ctx.save();
+                    var font = '';
+                    if (textStyle & TEXT_BOLD) font += 'bold ';
+                    if (textStyle & TEXT_ITALIC) font += 'italic ';
+                    ctx.font = font + fontSize + 'px ' + fontFamily;
+                    var metrics = ctx.measureText ? ctx.measureText(str) : {};
+                    textWidth = metrics.width || textWidth;
                     ctx.translate(x - textAlignIndex * textWidth / 2, baseline);
                     // Uninvert the coordinate system so the text isn't drawn upside down.
                     if (this.canviz.invertY) ctx.scale(1, -1);
-                    ctx.font = fontSize + 'px ' + fontFamily;
+                    // Correct the pre-xdotversion-1.5 Y-coordinate error.
+                    ctx.translate(0, -yError);
                     // xdot uses pen color for text, but canvas uses fill color
                     ctx.fillStyle = ctx.strokeStyle;
-                    ctx.fillText(str, 0, -yError);
+                    ctx.fillText(str, 0, 0);
+                    if (textStyle & TEXT_UNDERLINE) {
+                      var emHeightAscent =  metrics.emHeightAscent || fontSize;
+                      var emHeightDescent = metrics.emHeightDescent || fontSize / 4; // wild approximation
+                      var emHeight = emHeightAscent + emHeightDescent;
+                      var underlinePosition = emHeightDescent / 2; // wild approximation
+                      ctx.lineWidth = emHeight / 18; // wild approximation
+                      ctx.lineCap = 'butt';
+                      ctx.beginPath();
+                      ctx.moveTo(0, underlinePosition);
+                      ctx.lineTo(textWidth, underlinePosition);
+                      ctx.stroke();
+                    }
+
+                    if (0) {
+                      // "actualBoundingBox"
+                      ctx.lineCap = 'butt';
+                      ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
+                      ctx.lineWidth = 1.5;
+                      ctx.beginPath();
+                      ctx.moveTo(-metrics.actualBoundingBoxLeft, -metrics.actualBoundingBoxAscent);
+                      ctx.lineTo(metrics.actualBoundingBoxRight, -metrics.actualBoundingBoxAscent);
+                      ctx.lineTo(metrics.actualBoundingBoxRight, metrics.actualBoundingBoxDescent);
+                      ctx.lineTo(-metrics.actualBoundingBoxLeft, metrics.actualBoundingBoxDescent);
+                      ctx.closePath();
+                      ctx.stroke();
+                      // "emHeight"
+                      ctx.strokeStyle = 'rgba(0, 255, 0, 0.4)';
+                      ctx.beginPath();
+                      ctx.moveTo(fontSize / 4, -metrics.emHeightAscent);
+                      ctx.lineTo(0, -metrics.emHeightAscent);
+                      ctx.lineTo(0, metrics.emHeightDescent);
+                      ctx.lineTo(fontSize / 4, metrics.emHeightDescent);
+                      ctx.moveTo(metrics.width - fontSize / 4, -metrics.emHeightAscent);
+                      ctx.lineTo(metrics.width, -metrics.emHeightAscent);
+                      ctx.lineTo(metrics.width, metrics.emHeightDescent);
+                      ctx.lineTo(metrics.width - fontSize / 4, metrics.emHeightDescent);
+                      ctx.stroke();
+                      // "alphabeticBaseline"
+                      ctx.strokeStyle = 'rgba(0, 0, 255, 0.4)';
+                      ctx.lineWidth = 1;
+                      ctx.beginPath();
+                      ctx.moveTo(0, metrics.alphabeticBaseline);
+                      ctx.lineTo(metrics.width, metrics.alphabeticBaseline);
+                      ctx.stroke();
+                    }
+
                     ctx.restore();
                     break;
                   case 'dom':
@@ -192,19 +250,22 @@ Entity.prototype = {
                             text.setAttribute(attrName, attrValue);
                           }
                         }
-                        text.style.textDecoration = 'none';
                       } else {
                         text = document.createElement('span');
                       }
                       text.innerHTML = str;
-                      text.style.fontSize = ctxScale * bbScale * fontSize + 'px';
-                      text.style.fontFamily = fontFamily;
-                      text.style.color = strokeColor.textColor;
-                      text.style.position = 'absolute';
-                      text.style.textAlign = textAlign;
-                      text.style.left = ctxScale * left + 'px';
-                      text.style.top = ctxScale * top + 'px';
-                      text.style.width = ctxScale * bbScale * 2 * textWidth + 'px';
+                      var style = text.style;
+                      style.color = strokeColor.textColor;
+                      style.fontFamily = fontFamily;
+                      style.fontSize = ctxScale * bbScale * fontSize + 'px';
+                      style.fontStyle = textStyle & TEXT_ITALIC ? 'italic' : 'normal';
+                      style.fontWeight = textStyle & TEXT_BOLD ? 'bold' : 'normal';
+                      style.left = ctxScale * left + 'px';
+                      style.position = 'absolute';
+                      style.textAlign = textAlign;
+                      style.textDecoration = textStyle & TEXT_UNDERLINE ? 'underline' : 'none';
+                      style.top = ctxScale * top + 'px';
+                      style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                       this.canviz.elements.appendChild(text);
                     }
