@@ -1,0 +1,6 @@
+graph {
+  pad="0.08"
+  node [label="", style=filled, penwidth=10]
+  a [color="#ff00007f", fillcolor="#00ff007f"]
+  b [color="#0000ff7f"]
+}

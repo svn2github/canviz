@@ -1,0 +1,13 @@
+graph {
+  a [label=<
+    <table>
+      <tr>
+        <td><b>&lt;b&gt;</b></td>
+        <td><i>&lt;i&gt;</i></td>
+        <td><u>&lt;u&gt;</u></td>
+        <td><sub>&lt;sub&gt;</sub></td>
+        <td><sup>&lt;sup&gt;</sup></td>
+      </tr>
+    </table>
+  >, shape=none]
+}

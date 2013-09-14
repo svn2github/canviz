@@ -1,0 +1,57 @@
+graph {
+  graph [nodesep="0.1", ranksep=0]
+  node [fillcolor="#eeeeee:#ffffff", gradientangle=90, labelloc=b, margin="0.05", shape=none, style=filled, width=0, height="0.5"]
+  edge [len=0, style=invis]
+
+  node [fontname="Courier"]
+  courier [label="Courier\l", style=solid, width=1]
+  courier9 [fontsize="9", label="9"]
+  courier10 [fontsize="10", label="10"]
+  courier12 [fontsize="12", label="12"]
+  courier14 [fontsize="14", label="14"]
+  courier18 [fontsize="18", label="18"]
+  courier24 [fontsize="24", label="24"]
+  rank=same {courier--courier9--courier10--courier12--courier14--courier18--courier24}
+
+  node [fontname="Geneva"]
+  geneva [label="Geneva\l", style=solid, width=1]
+  geneva9 [fontsize="9", label="9"]
+  geneva10 [fontsize="10", label="10"]
+  geneva12 [fontsize="12", label="12"]
+  geneva14 [fontsize="14", label="14"]
+  geneva18 [fontsize="18", label="18"]
+  geneva24 [fontsize="24", label="24"]
+  rank=same {geneva--geneva9--geneva10--geneva12--geneva14--geneva18--geneva24}
+
+  node [fontname="Helvetica"]
+  helvetica [label="Helvetica\l", style=solid, width=1]
+  helvetica9 [fontsize="9", label="9"]
+  helvetica10 [fontsize="10", label="10"]
+  helvetica12 [fontsize="12", label="12"]
+  helvetica14 [fontsize="14", label="14"]
+  helvetica18 [fontsize="18", label="18"]
+  helvetica24 [fontsize="24", label="24"]
+  rank=same {helvetica--helvetica9--helvetica10--helvetica12--helvetica14--helvetica18--helvetica24}
+
+  node [fontname="Monaco"]
+  monaco [label="Monaco\l", style=solid, width=1]
+  monaco9 [fontsize="9", label="9"]
+  monaco10 [fontsize="10", label="10"]
+  monaco12 [fontsize="12", label="12"]
+  monaco14 [fontsize="14", label="14"]
+  monaco18 [fontsize="18", label="18"]
+  monaco24 [fontsize="24", label="24"]
+  rank=same {monaco--monaco9--monaco10--monaco12--monaco14--monaco18--monaco24}
+
+  node [fontname="Times"]
+  times [label="Times\l", style=solid, width=1]
+  times9 [fontsize="9", label="9"]
+  times10 [fontsize="10", label="10"]
+  times12 [fontsize="12", label="12"]
+  times14 [fontsize="14", label="14"]
+  times18 [fontsize="18", label="18"]
+  times24 [fontsize="24", label="24"]
+  rank=same {times--times9--times10--times12--times14--times18--times24}
+
+  courier--geneva--helvetica--monaco--times
+}

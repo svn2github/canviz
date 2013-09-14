@@ -1,0 +1,57 @@
+graph {
+  pad=0
+  a [label=<
+    <table border="0">
+      <tr>
+        <td align="left" valign="bottom" width="90"><u><font face="Courier">Courier</font></u></td>
+        <vr/>
+        <td valign="bottom"><u><font face="Courier" point-size="9">9</font></u></td>
+        <td valign="bottom"><u><font face="Courier" point-size="10">10</font></u></td>
+        <td valign="bottom"><u><font face="Courier" point-size="12">12</font></u></td>
+        <td valign="bottom"><u><font face="Courier" point-size="14">14</font></u></td>
+        <td valign="bottom"><u><font face="Courier" point-size="18">18</font></u></td>
+        <td valign="bottom"><u><font face="Courier" point-size="24">24</font></u></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom"><u><font face="Geneva">Geneva</font></u></td>
+        <vr/>
+        <td valign="bottom"><u><font face="Geneva" point-size="9">9</font></u></td>
+        <td valign="bottom"><u><font face="Geneva" point-size="10">10</font></u></td>
+        <td valign="bottom"><u><font face="Geneva" point-size="12">12</font></u></td>
+        <td valign="bottom"><u><font face="Geneva" point-size="14">14</font></u></td>
+        <td valign="bottom"><u><font face="Geneva" point-size="18">18</font></u></td>
+        <td valign="bottom"><u><font face="Geneva" point-size="24">24</font></u></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom"><u><font face="Helvetica">Helvetica</font></u></td>
+        <vr/>
+        <td valign="bottom"><u><font face="Helvetica" point-size="9">9</font></u></td>
+        <td valign="bottom"><u><font face="Helvetica" point-size="10">10</font></u></td>
+        <td valign="bottom"><u><font face="Helvetica" point-size="12">12</font></u></td>
+        <td valign="bottom"><u><font face="Helvetica" point-size="14">14</font></u></td>
+        <td valign="bottom"><u><font face="Helvetica" point-size="18">18</font></u></td>
+        <td valign="bottom"><u><font face="Helvetica" point-size="24">24</font></u></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom"><u><font face="Monaco">Monaco</font></u></td>
+        <vr/>
+        <td valign="bottom"><u><font face="Monaco" point-size="9">9</font></u></td>
+        <td valign="bottom"><u><font face="Monaco" point-size="10">10</font></u></td>
+        <td valign="bottom"><u><font face="Monaco" point-size="12">12</font></u></td>
+        <td valign="bottom"><u><font face="Monaco" point-size="14">14</font></u></td>
+        <td valign="bottom"><u><font face="Monaco" point-size="18">18</font></u></td>
+        <td valign="bottom"><u><font face="Monaco" point-size="24">24</font></u></td>
+      </tr>
+      <tr>
+        <td align="left" valign="bottom"><u><font face="Times">Times</font></u></td>
+        <vr/>
+        <td valign="bottom"><u><font face="Times" point-size="9">9</font></u></td>
+        <td valign="bottom"><u><font face="Times" point-size="10">10</font></u></td>
+        <td valign="bottom"><u><font face="Times" point-size="12">12</font></u></td>
+        <td valign="bottom"><u><font face="Times" point-size="14">14</font></u></td>
+        <td valign="bottom"><u><font face="Times" point-size="18">18</font></u></td>
+        <td valign="bottom"><u><font face="Times" point-size="24">24</font></u></td>
+      </tr>
+    </table>
+  >, shape=none]
+}

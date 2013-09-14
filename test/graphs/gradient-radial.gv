@@ -1,0 +1,26 @@
+graph {
+a [label=<
+<table bgcolor="white:black" border="0" cellpadding="10" cellspacing="10" gradientangle="0" style="radial">
+<tr>
+<td bgcolor="white:black" gradientangle="30" style="radial" width="54">30</td>
+<td bgcolor="white:black" gradientangle="60" style="radial" width="54">60</td>
+<td bgcolor="white:black" gradientangle="90" style="radial" width="54">90</td>
+</tr>
+<tr>
+<td bgcolor="white:black" gradientangle="120" style="radial">120</td>
+<td bgcolor="white:black" gradientangle="150" style="radial">150</td>
+<td bgcolor="white:black" gradientangle="180" style="radial">180</td>
+</tr>
+<tr>
+<td bgcolor="white:black" gradientangle="210" style="radial">210</td>
+<td bgcolor="white:black" gradientangle="240" style="radial">240</td>
+<td bgcolor="white:black" gradientangle="270" style="radial">270</td>
+</tr>
+<tr>
+<td bgcolor="white:black" gradientangle="300" style="radial">300</td>
+<td bgcolor="white:black" gradientangle="330" style="radial">330</td>
+<td bgcolor="white:black" gradientangle="360" style="radial">360</td>
+</tr>
+</table>
+>, shape=none]
+}

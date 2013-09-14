@@ -1,6 +1,7 @@
 graph {
 dpi=150
 a [label=<
+<u>
 <font face="Courier">Courier
 <font point-size="9">9</font>
 <font point-size="10">10</font>
@@ -41,5 +42,6 @@ a [label=<
 <font point-size="18">18</font>
 <font point-size="24">24</font>
 </font><br/>
+</u>
 >, shape=box]
 }
