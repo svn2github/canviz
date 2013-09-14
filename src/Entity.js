@@ -378,6 +378,14 @@ Entity.prototype = {
       }
       if (radial) {
         r1 = tokenizer.takeNumber();
+        if (this.canviz.bugs.gradAngle) {
+          // In xdotversion 1.5 (Graphviz version 2.34.0 to 2.35.20130913.0446
+          // inclusive, fixed in git commit 99a0ab64cba065db6ba14e167f9a05481c227e9c)
+          // the radial gradient angle is inverted. (x1, y1) happens to be the
+          // center, so we can reflect y0 across the line y=y1.
+          // http://www.graphviz.org/mantisbt/view.php?id=2367
+          y0 += 2 * (y1 - y0);
+        }
         gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
       } else {
         gradient = ctx.createLinearGradient(x0, y0, x1, y1);

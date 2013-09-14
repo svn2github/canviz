@@ -260,8 +260,8 @@ Canviz.prototype = {
   },
   draw: function (redrawCanvasOnly) {
     if (typeof redrawCanvasOnly == 'undefined') redrawCanvasOnly = false;
-    var bugs = this.bugs = {};
     var xdotVersion = this.graphs[0].attrs.xdotversion;
+    var bugs = this.bugs = {gradAngle: !versionCompare(xdotVersion, '1.5')};
     bugs.gradY = bugs.textY = versionCompare(xdotVersion, '1.5') < 0;
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / XDOT_DPI;
