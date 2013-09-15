@@ -163,6 +163,16 @@ Entity.prototype = {
                 // case, though this causes complex strings to look worse.
                 // http://www.graphviz.org/mantisbt/view.php?id=2333
                 var yError = this.canviz.bugs.textY * 0.2 * fontSize;
+                if (textStyle & TEXT_SUBSCRIPT || textStyle & TEXT_SUPERSCRIPT) {
+                  // The offset is not based on the font size. This looks bad
+                  // at larger or smaller font sizes but it's what Pango does.
+                  // https://bugzilla.gnome.org/show_bug.cgi?id=519146
+                  var yOffset = 5000 / 1024; // from pango
+                  if (textStyle & TEXT_SUPERSCRIPT) yOffset = -yOffset;
+                  if (this.canviz.invertY) yOffset = -yOffset;
+                  baseline += yOffset;
+                  fontSize /= 1.2; // from pango
+                }
                 switch (this.canviz.textMode) {
                   case 'canvas':
                     ctx.save();
