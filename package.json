@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "escape-html": "~1.0.0",
+    "indexof": "0.0.1",
     "canvas-browserify": "~1.0.4"
   },
   "scripts": {

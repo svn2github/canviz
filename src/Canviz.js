@@ -81,7 +81,7 @@ Canviz.prototype = {
     this.imagePath = imagePath;
   },
   setTextMode: function (textMode) {
-    if (~this._textModes.indexOf(textMode)) this.textMode = textMode;
+    if (~indexOf(this._textModes, textMode)) this.textMode = textMode;
     else debug('unsupported text mode ' + textMode);
   },
   load: function (url, urlParams) {
@@ -334,6 +334,7 @@ var Canvas = require('canvas-browserify');
 var debug = require('./debug.js');
 var Edge = require('./Edge.js');
 var Graph = require('./Graph.js');
+var indexOf = require('indexof');
 var loadFile = require('./loadFile.js');
 var Node = require('./Node.js');
 var objectKeys = require('./path/objectKeys.js');
