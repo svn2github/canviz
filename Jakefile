@@ -29,6 +29,7 @@ file('build/canviz.js', [
   'src/debug.js',
   'src/Edge.js',
   'src/Entity.js',
+  'src/getBaseline.js',
   'src/Graph.js',
   'src/hsvToRgbColor.js',
   'src/Image.js',

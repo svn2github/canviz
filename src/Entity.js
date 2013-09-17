@@ -241,8 +241,6 @@ Entity.prototype = {
                   case 'dom':
                     if (!redrawCanvasOnly) {
                       str = escapeHtml(str).replace(/ /g, '&nbsp;');
-                      var left = this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth);
-                      var top = this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - fontSize);
                       var text;
                       var href = this.getAttr('URL', true) || this.getAttr('href', true);
                       if (href) {
@@ -270,11 +268,11 @@ Entity.prototype = {
                       style.fontSize = ctxScale * bbScale * fontSize + 'px';
                       style.fontStyle = textStyle & TEXT_ITALIC ? 'italic' : 'normal';
                       style.fontWeight = textStyle & TEXT_BOLD ? 'bold' : 'normal';
-                      style.left = ctxScale * left + 'px';
+                      style.left = ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth)) + 'px';
                       style.position = 'absolute';
                       style.textAlign = textAlign;
                       style.textDecoration = textStyle & TEXT_UNDERLINE ? 'underline' : 'none';
-                      style.top = ctxScale * top + 'px';
+                      style.top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle))) + 'px';
                       style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                       this.canviz.elements.appendChild(text);
@@ -455,6 +453,7 @@ var CanvizImage = require('./Image.js');
 var debug = require('./debug.js');
 var Ellipse = require('./path/Ellipse.js');
 var escapeHtml = require('escape-html');
+var getBaseline = require('./getBaseline.js');
 var hsvToRgbColor = require('./hsvToRgbColor.js');
 var objectKeys = require('./path/objectKeys.js');
 var parseHexColor = require('./parseHexColor.js');
