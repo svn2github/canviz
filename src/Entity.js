@@ -26,7 +26,7 @@ function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immed
 Entity.prototype = {
   constructor: Entity,
   initBB: function () {
-    var xy = this.getAttr('pos').split(',');
+    var xy = this.getAttr('pos').split(' ').pop().split(',');
     var x = Number(xy[0]);
     var y = Number(xy[1]);
     this.bbRect = Rect(x, y, x, y);
