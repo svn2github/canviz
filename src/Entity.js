@@ -5,6 +5,7 @@ var IS_BROWSER = typeof document != 'undefined';
 var TEXT_ALIGNMENTS = ['left', 'center', 'right'];
 var TEXT_BOLD = 1;
 var TEXT_ITALIC = 2;
+var TEXT_STRIKETHROUGH = 32;
 var TEXT_SUBSCRIPT = 16;
 var TEXT_SUPERSCRIPT = 8;
 var TEXT_UNDERLINE = 4;
@@ -263,6 +264,9 @@ Entity.prototype = {
                       }
                       text.innerHTML = str;
                       var style = text.style;
+                      var decorations = [];
+                      if (textStyle & TEXT_STRIKETHROUGH) decorations.push('line-through');
+                      if (textStyle & TEXT_UNDERLINE) decorations.push('underline');
                       style.color = strokeColor.textColor;
                       style.fontFamily = fontFamily;
                       style.fontSize = ctxScale * bbScale * fontSize + 'px';
@@ -271,7 +275,7 @@ Entity.prototype = {
                       style.left = ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth)) + 'px';
                       style.position = 'absolute';
                       style.textAlign = textAlign;
-                      style.textDecoration = textStyle & TEXT_UNDERLINE ? 'underline' : 'none';
+                      style.textDecoration = decorations.length ? decorations.join(' ') : 'none';
                       style.top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle))) + 'px';
                       style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
