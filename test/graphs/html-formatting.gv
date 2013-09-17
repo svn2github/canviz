@@ -7,6 +7,8 @@ graph {
         <td><u>&lt;u&gt;</u></td>
         <td><sub>&lt;sub&gt;</sub></td>
         <td><sup>&lt;sup&gt;</sup></td>
+        <td><s>&lt;s&gt;</s></td>
+        <td><s><u>&lt;s&gt;&lt;u&gt;</u></s></td>
       </tr>
     </table>
   >, shape=none]

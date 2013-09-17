@@ -1,52 +1,173 @@
 graph {
 dpi=72
 a [label=<
-<u>
-<font face="Courier">Courier<br align="left"/>
-<font point-size="53">a</font>
-<font point-size="59">b</font>
-<font point-size="66">c</font>
-<font point-size="73">d</font>
-<font point-size="81">e</font>
-<font point-size="90">f</font>
-<font point-size="100">g</font>
-</font><br align="left"/>
-<font face="Geneva">Geneva<br align="left"/>
-<font point-size="53">a</font>
-<font point-size="59">b</font>
-<font point-size="66">c</font>
-<font point-size="73">d</font>
-<font point-size="81">e</font>
-<font point-size="90">f</font>
-<font point-size="100">g</font>
-</font><br align="left"/>
-<font face="Helvetica">Helvetica<br align="left"/>
-<font point-size="53">a</font>
-<font point-size="59">b</font>
-<font point-size="66">c</font>
-<font point-size="73">d</font>
-<font point-size="81">e</font>
-<font point-size="90">f</font>
-<font point-size="100">g</font>
-</font><br align="left"/>
-<font face="Monaco">Monaco<br align="left"/>
-<font point-size="53">a</font>
-<font point-size="59">b</font>
-<font point-size="66">c</font>
-<font point-size="73">d</font>
-<font point-size="81">e</font>
-<font point-size="90">f</font>
-<font point-size="100">g</font>
-</font><br align="left"/>
-<font face="Times">Times<br align="left"/>
-<font point-size="53">a</font>
-<font point-size="59">b</font>
-<font point-size="66">c</font>
-<font point-size="73">d</font>
-<font point-size="81">e</font>
-<font point-size="90">f</font>
-<font point-size="100">g</font>
-</font><br align="left"/>
-</u>
->, shape=box]
+<table border="1" cellborder="0" cellpadding="8" cellspacing="0" rows="*">
+
+<tr><td align="left" balign="left"><font face="Andale Mono">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Andale Mono
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Arial">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Arial
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Arial Black">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Arial Black
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Comic Sans MS">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Comic Sans MS
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Courier">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Courier
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Courier New">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Courier New
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Geneva">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Geneva
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Georgia">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Georgia
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Helvetica">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Helvetica
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Impact">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Impact
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Monaco">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Monaco
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Times">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Times
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Times New Roman">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Times New Roman
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Trebuchet MS">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Trebuchet MS
+</font></td></tr>
+
+<tr><td align="left" balign="left"><font face="Verdana">
+<s><u>
+<font point-size="41">a<sub>a</sub><sup>a</sup></font>
+<font point-size="51">b<sub>b</sub><sup>b</sup></font>
+<font point-size="64">c<sub>c</sub><sup>c</sup></font>
+<font point-size="80">d<sub>d</sub><sup>d</sup></font>
+<font point-size="100">e<sub>e</sub><sup>e</sup></font><br/>
+</u></s>
+Verdana
+</font></td></tr>
+
+</table>
+>, shape=none]
 }
