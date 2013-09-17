@@ -191,17 +191,21 @@ Entity.prototype = {
                     // xdot uses pen color for text, but canvas uses fill color
                     ctx.fillStyle = ctx.strokeStyle;
                     ctx.fillText(str, 0, 0);
-                    if (textStyle & TEXT_UNDERLINE) {
-                      var emHeightAscent =  metrics.emHeightAscent || fontSize;
+                    if (textStyle & TEXT_STRIKETHROUGH || textStyle & TEXT_UNDERLINE) {
+                      var emHeightAscent =  metrics.emHeightAscent || fontSize; // wild approximation
                       var emHeightDescent = metrics.emHeightDescent || fontSize / 4; // wild approximation
                       var emHeight = emHeightAscent + emHeightDescent;
-                      var underlinePosition = emHeightDescent / 2; // wild approximation
+                      var linePositions = [];
+                      if (textStyle & TEXT_STRIKETHROUGH) linePositions.push(-emHeightAscent / 3.5); // wild approximation
+                      if (textStyle & TEXT_UNDERLINE) linePositions.push(emHeightDescent / 2); // wild approximation
                       ctx.lineWidth = emHeight / 18; // wild approximation
                       ctx.lineCap = 'butt';
-                      ctx.beginPath();
-                      ctx.moveTo(0, underlinePosition);
-                      ctx.lineTo(textWidth, underlinePosition);
-                      ctx.stroke();
+                      for (i = 0; i < linePositions.length; ++i) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, linePositions[i]);
+                        ctx.lineTo(textWidth, linePositions[i]);
+                        ctx.stroke();
+                      }
                     }
 
                     if (0) {
@@ -383,6 +387,7 @@ Entity.prototype = {
         } else {
           y0 -= this.canviz.height;
           y1 -= this.canviz.height;
+          // use r1 as a temporary variable to avoid creating another var
           r1 = y1;
           y1 = y0;
           y0 = r1;
