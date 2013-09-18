@@ -24,7 +24,6 @@ function getBaseline(fontFamily, fontSize, fontWeight, fontStyle) {
     span1Style.fontStyle = span2Style.fontStyle = fontStyle;
     span1Style.fontWeight = span2Style.fontWeight = fontWeight;
     span1Style.padding = span2Style.padding = 0;
-    span1Style.position = span2Style.position = 'relative';
     span1Style.verticalAlign = span2Style.verticalAlign = 'baseline';
     divStyle.visibility = span1Style.visibility = span2Style.visibility = 'hidden';
     span1.appendChild(doc.createTextNode('a'));
