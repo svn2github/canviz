@@ -3,6 +3,7 @@ var SIZE = 500;
 
 var cache = {};
 
+// Returns the distance between Y-coordinate 0 and the Y-coordinate of the text's baseline.
 function getBaseline(fontFamily, fontSize, fontWeight, fontStyle) {
   fontWeight = fontWeight || 'normal';
   fontStyle = fontStyle || 'normal';
@@ -23,13 +24,14 @@ function getBaseline(fontFamily, fontSize, fontWeight, fontStyle) {
     span2Style.fontSize = SIZE + 'px';
     span1Style.fontStyle = span2Style.fontStyle = fontStyle;
     span1Style.fontWeight = span2Style.fontWeight = fontWeight;
+    span1Style.lineHeight = span2Style.lineHeight = 1;
     span1Style.padding = span2Style.padding = 0;
     span1Style.verticalAlign = span2Style.verticalAlign = 'baseline';
     divStyle.visibility = span1Style.visibility = span2Style.visibility = 'hidden';
     span1.appendChild(doc.createTextNode('a'));
     span2.appendChild(doc.createTextNode('a'));
     body.appendChild(div);
-    baseline = cache[fontFamily][fontWeight][fontStyle] = (span2.offsetTop - span1.offsetTop) / SIZE;
+    baseline = cache[fontFamily][fontWeight][fontStyle] = (span2.offsetTop - span1.offsetTop / 2) / SIZE;
     body.removeChild(div);
   }
   return baseline * fontSize;

@@ -277,6 +277,7 @@ Entity.prototype = {
                       style.fontStyle = textStyle & TEXT_ITALIC ? 'italic' : 'normal';
                       style.fontWeight = textStyle & TEXT_BOLD ? 'bold' : 'normal';
                       style.left = ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth)) + 'px';
+                      style.lineHeight = 1;
                       style.position = 'absolute';
                       style.textAlign = textAlign;
                       style.textDecoration = decorations.length ? decorations.join(' ') : 'none';
