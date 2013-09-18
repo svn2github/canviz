@@ -280,7 +280,7 @@ Entity.prototype = {
                       style.position = 'absolute';
                       style.textAlign = textAlign;
                       style.textDecoration = decorations.length ? decorations.join(' ') : 'none';
-                      style.top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle))) + 'px';
+                      style.top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle) - yError)) + 'px';
                       style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
                       this.canviz.elements.appendChild(text);
