@@ -102,7 +102,7 @@ Canviz.prototype = {
 
     this.graphs = [];
     this.images = {};
-    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = this.rotate = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
+    this.width = this.height = this.bbEnlarge = this.rotate = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
     this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
@@ -110,7 +110,7 @@ Canviz.prototype = {
     var lines = xdot.split(/\r?\n/),
       linesLength = lines.length,
       i = 0,
-      line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash,
+      line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash, maxHeight, maxWidth
       containers = [];
     while (i < linesLength) {
       line = lines[i++].replace(/^\s+/, '');
@@ -242,8 +242,8 @@ Canviz.prototype = {
                         attrValue = attrValue.substr(0, attrValue.length - 1);
                       }
                       attrValue = attrValue.split(',');
-                      this.maxWidth = XDOT_DPI * attrValue[0];
-                      this.maxHeight = XDOT_DPI * attrValue[attrValue.length - 1];
+                      maxWidth = XDOT_DPI * attrValue[0];
+                      maxHeight = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
                     case 'xdotversion':
                       if (versionCompare(attrValue, MAX_XDOT_VERSION) > 0) {
@@ -262,8 +262,8 @@ Canviz.prototype = {
     }
     var drawingWidth = this.width + 2 * this.paddingX;
     var drawingHeight = this.height + 2 * this.paddingY;
-    this.bbScale = (this.maxWidth && this.maxHeight && (drawingWidth > this.maxWidth || drawingHeight > this.maxHeight || this.bbEnlarge))
-      ? Math.min(this.maxWidth / drawingWidth, this.maxHeight / drawingHeight)
+    this.bbScale = (maxWidth && maxHeight && (drawingWidth > maxWidth || drawingHeight > maxHeight || this.bbEnlarge))
+      ? Math.min(maxWidth / drawingWidth, maxHeight / drawingHeight)
       : 1;
     this.draw();
   },
