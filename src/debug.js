@@ -6,7 +6,7 @@ function debug(str, escape) {
   if (escape) {
     str = escapeHtml(str);
   }
-  $('debug_output').innerHTML += '&raquo;' + str + '&laquo;<br />';
+  document.getElementById('debug_output').innerHTML += '&raquo;' + str + '&laquo;<br />';
 }
 
 module.exports = debug;
