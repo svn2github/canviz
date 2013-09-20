@@ -102,7 +102,7 @@ Canviz.prototype = {
 
     this.graphs = [];
     this.images = {};
-    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
+    this.width = this.height = this.maxWidth = this.maxHeight = this.bbEnlarge = this.rotate = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
     this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
@@ -217,15 +217,24 @@ Canviz.prototype = {
                     case 'dpi':
                       this.dpi = attrValue;
                       break;
+                    case 'landscape':
+                      this.rotate = 'true' == attrValue || Number(attrValue);
+                      break;
                     case 'margin':
                       attrValue = attrValue.split(',');
                       this.marginX = XDOT_DPI * attrValue[0];
                       this.marginY = XDOT_DPI * attrValue[attrValue.length - 1];
                       break;
+                    case 'orientation':
+                      this.rotate = 'l' == attrValue.substr(0, 1).toLowerCase();
+                      break;
                     case 'pad':
                       attrValue = attrValue.split(',');
                       this.paddingX = XDOT_DPI * attrValue[0];
                       this.paddingY = XDOT_DPI * attrValue[attrValue.length - 1];
+                      break;
+                    case 'rotate':
+                      this.rotate = 90 == attrValue;
                       break;
                     case 'size':
                       if (attrValue.substr(attrValue.length - 1) == '!') {
@@ -263,18 +272,20 @@ Canviz.prototype = {
     var xdotVersion = this.graphs[0].attrs.xdotversion;
     var bugs = this.bugs = {gradAngle: !versionCompare(xdotVersion, '1.5')};
     bugs.gradY = bugs.textY = versionCompare(xdotVersion, '1.5') < 0;
+    var bbScale = this.bbScale;
+    var bbScaledDrawingWidth = bbScale * (this.width + 2 * this.paddingX);
+    var bbScaledDrawingHeight = bbScale * (this.height + 2 * this.paddingY);
     var ctx = this.ctx;
     var ctxScale = this.scale * this.dpi / XDOT_DPI;
-    var bbScaledDrawingWidth = this.bbScale * (this.width + 2 * this.paddingX);
-    var bbScaledDrawingHeight = this.bbScale * (this.height + 2 * this.paddingY);
-    var pixelWidth = Math.round(ctxScale * (2 * this.marginX + bbScaledDrawingWidth));
-    var pixelHeight = Math.round(ctxScale * (2 * this.marginY + bbScaledDrawingHeight));
+    var pixelWidth = this.pixelWidth = Math.round(ctxScale * (2 * this.marginX + bbScaledDrawingWidth));
+    var pixelHeight = this.pixelHeight = Math.round(ctxScale * (2 * this.marginY + bbScaledDrawingHeight));
+    var rotate = this.rotate;
     if (!redrawCanvasOnly) {
-      this.canvas.width = pixelWidth;
-      this.canvas.height = pixelHeight;
+      var rotatedPixelWidth = this.canvas.width = rotate ? pixelHeight : pixelWidth;
+      var rotatedPixelHeight = this.canvas.height = rotate ? pixelWidth : pixelHeight;
       if (IS_BROWSER) {
-        this.canvas.style.width = this.container.style.width = pixelWidth + 'px';
-        this.canvas.style.height = this.container.style.height = pixelHeight + 'px';
+        this.canvas.style.width = this.container.style.width = rotatedPixelWidth + 'px';
+        this.canvas.style.height = this.container.style.height = rotatedPixelHeight + 'px';
         while (this.elements.firstChild) {
           this.elements.removeChild(this.elements.firstChild);
         }
@@ -282,6 +293,10 @@ Canviz.prototype = {
     }
     ctx.save();
     ctx.lineCap = 'round';
+    if (rotate) {
+      ctx.translate(0, pixelWidth);
+      ctx.rotate(-Math.PI / 2);
+    }
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.fillRect(0, 0, pixelWidth, pixelHeight);
     ctx.fillStyle = this.bgcolor.canvasColor;
@@ -292,7 +307,7 @@ Canviz.prototype = {
       ctx.translate(0, bbScaledDrawingHeight);
       ctx.scale(1, -1);
     }
-    ctx.scale(this.bbScale, this.bbScale);
+    ctx.scale(bbScale, bbScale);
     ctx.translate(this.paddingX, this.paddingY);
     this.graphs[0].draw(ctx, ctxScale, redrawCanvasOnly);
     ctx.restore();

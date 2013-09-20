@@ -15,6 +15,7 @@
 * Implement alternate text rendering using the canvas (instead of overlay spans)
 * Improve text positioning
 * Handle the graph "margin", "pad" and "size" attributes correctly
+* Handle the graph "landscape", "orientation" and "rotate" attributes correctly
 * Handle graphs rendered with the Graphviz "-y" switch
 * Handle xdotversion up to 1.6
 * Handle gradients

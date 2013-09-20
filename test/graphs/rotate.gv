@@ -1,0 +1,5 @@
+graph {
+  rotate=90
+  1--two
+  three--four
+}

@@ -9,6 +9,9 @@ var TEXT_STRIKETHROUGH = 32;
 var TEXT_SUBSCRIPT = 16;
 var TEXT_SUPERSCRIPT = 8;
 var TEXT_UNDERLINE = 4;
+// Use DXImageTransform on IE < 9 only.
+// http://tanalin.com/en/articles/ie-version-js/
+var USE_DXIMAGETRANSFORM = IS_BROWSER && document.all && !document.addEventListener;
 
 // Constructor
 function Entity(defaultAttrHashName, name, canviz, rootGraph, parentGraph, immediateGraph) {
@@ -276,14 +279,27 @@ Entity.prototype = {
                       style.fontSize = ctxScale * bbScale * fontSize + 'px';
                       style.fontStyle = textStyle & TEXT_ITALIC ? 'italic' : 'normal';
                       style.fontWeight = textStyle & TEXT_BOLD ? 'bold' : 'normal';
-                      style.left = ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth)) + 'px';
                       style.lineHeight = 1;
                       style.position = 'absolute';
                       style.textAlign = textAlign;
                       style.textDecoration = decorations.length ? decorations.join(' ') : 'none';
-                      style.top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle) - yError)) + 'px';
-                      style.width = ctxScale * bbScale * 2 * textWidth + 'px';
                       if (strokeColor.opacity < 1) setOpacity(text, strokeColor.opacity);
+                      var left = ctxScale * (this.canviz.marginX + bbScale * (this.canviz.paddingX + x - textAlignIndex * textWidth));
+                      var top = ctxScale * (this.canviz.marginY + bbScale * (this.canviz.paddingY + (this.canviz.invertY ? this.canviz.height - baseline : baseline) - getBaseline(fontFamily, fontSize, style.fontWeight, style.fontStyle) - yError));
+                      var rotate = this.canviz.rotate;
+                      var width = ctxScale * bbScale * 2 * textWidth;
+                      if (rotate) {
+                        if (USE_DXIMAGETRANSFORM) {
+                          style.filter = 'progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+                          left += width;
+                        } else {
+                          style.MozTransform = style.MsTransform = style.OTransform = style.transform = style.WebkitTransform = 'rotate(270deg)';
+                          style.MozTransformOrigin = style.MsTransformOrigin = style.OTransformOrigin = style.transformOrigin = style.WebkitTransformOrigin = '0 0';
+                        }
+                      }
+                      style.left = (rotate ? top : left) + 'px';
+                      style.top = (rotate ? this.canviz.pixelWidth - left : top) + 'px';
+                      style.width = width + 'px';
                       this.canviz.elements.appendChild(text);
                     }
                     break;

@@ -1,0 +1,4 @@
+graph {
+  landscape=foo
+  "not rotated"
+}
