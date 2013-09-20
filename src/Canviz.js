@@ -102,16 +102,16 @@ Canviz.prototype = {
 
     this.graphs = [];
     this.images = {};
-    this.width = this.height = this.bbEnlarge = this.rotate = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
     this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
     this.dpi = 96;
     this.bgcolor = {opacity: 1};
     this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
-    var lines = xdot.split(/\r?\n/),
-      linesLength = lines.length,
-      i = 0,
-      line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash, maxHeight, maxWidth
-      containers = [];
+    var bbEnlarge = this.rotate = 0; // false
+    var containers = [];
+    var lines = xdot.split(/\r?\n/);
+    var linesLength = lines.length;
+    var line, lastChar, matches, rootGraph, isGraph, entity, entityName, attrs, attrName, attrValue, attrHash, drawAttrHash, maxHeight, maxWidth;
+    var i = this.width = this.height = this.marginX = this.marginY = this.numImages = this.numImagesFinished = 0;
     while (i < linesLength) {
       line = lines[i++].replace(/^\s+/, '');
       if ('' != line && '#' != line.substr(0, 1)) {
@@ -238,7 +238,7 @@ Canviz.prototype = {
                       break;
                     case 'size':
                       if (attrValue.substr(attrValue.length - 1) == '!') {
-                        this.bbEnlarge = 1; // true
+                        bbEnlarge = 1; // true
                         attrValue = attrValue.substr(0, attrValue.length - 1);
                       }
                       attrValue = attrValue.split(',');
@@ -262,7 +262,7 @@ Canviz.prototype = {
     }
     var drawingWidth = this.width + 2 * this.paddingX;
     var drawingHeight = this.height + 2 * this.paddingY;
-    this.bbScale = (maxWidth && maxHeight && (drawingWidth > maxWidth || drawingHeight > maxHeight || this.bbEnlarge))
+    this.bbScale = (maxWidth && maxHeight && (drawingWidth > maxWidth || drawingHeight > maxHeight || bbEnlarge))
       ? Math.min(maxWidth / drawingWidth, maxHeight / drawingHeight)
       : 1;
     this.draw();
