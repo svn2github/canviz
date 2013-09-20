@@ -426,7 +426,7 @@ Entity.prototype = {
       }
       colorStops = tokenizer.takeNumber();
       while (colorStops--) {
-        gradient.addColorStop(tokenizer.takeNumber(), tokenizer.takeString());
+        gradient.addColorStop(tokenizer.takeNumber(), this.parseColor(tokenizer.takeString()).canvasColor);
       }
       parsedColor.canvasColor = gradient;
       return parsedColor;

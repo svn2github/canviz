@@ -1,0 +1,4 @@
+graph {
+  graph [bgcolor="#7f7f7f"]
+  a [fillcolor="#ff000033:#0000ff33", label="", style=filled]
+}
