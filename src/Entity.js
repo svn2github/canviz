@@ -63,7 +63,6 @@ Entity.prototype = {
     return attrValue;
   },
   draw: function (ctx, ctxScale, redrawCanvasOnly) {
-    var i, tokens, fillColor, strokeColor;
     if (!redrawCanvasOnly) {
       this.initBB();
       if (IS_BROWSER) {
@@ -73,8 +72,11 @@ Entity.prototype = {
       }
     }
     ctx.lineWidth = 1;
-    var keys = objectKeys(this.drawAttrs),
-      keysLength = keys.length;
+    var i, tokens;
+    var fillColor = this.parseColor('lightgrey'), strokeColor = this.parseColor('black');
+    var fontFamily = 'Times', fontSize = 14;
+    var keys = objectKeys(this.drawAttrs);
+    var keysLength = keys.length;
     for (var k = 0; k < keysLength; ++k) {
       var command = this.drawAttrs[keys[k]],
         tokenizer = Tokenizer(command),
@@ -322,8 +324,8 @@ Entity.prototype = {
               }
               break;
             case 'F': // set font
-              var fontSize = tokenizer.takeNumber();
-              var fontFamily = tokenizer.takeString();
+              fontSize = tokenizer.takeNumber();
+              fontFamily = tokenizer.takeString();
               if (fontFamily == 'Times-Roman') fontFamily = 'Times';
 //              debug('set font ' + fontSize + 'pt ' + fontFamily);
               break;

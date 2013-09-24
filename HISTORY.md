@@ -13,12 +13,13 @@
 * Convert documentation files to Markdown format
 * Add a test suite
 * Implement alternate text rendering using the canvas (instead of overlay spans)
-* Improve text positioning
+* Improve text positioning, working around some xdot bugs
 * Handle the graph "margin", "pad" and "size" attributes correctly
 * Handle the graph "landscape", "orientation" and "rotate" attributes correctly
 * Handle graphs rendered with the Graphviz "-y" switch
 * Handle xdotversion up to 1.6
-* Handle gradients
+* Fix errors when rendering xdotversion 1.0
+* Handle gradients, working around some xdot bugs
 * Handle bold, italic, underline, strikethrough, subscript and superscript text styles
 * Fix bug when fill and stroke color are the same which had resulted in edge arrows appearing slightly too small and table horizontal and vertical rules not getting drawn at all
 * Create xdot2png command-line script

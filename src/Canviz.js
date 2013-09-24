@@ -104,8 +104,7 @@ Canviz.prototype = {
     this.images = {};
     this.paddingX = this.paddingY = XDOT_DPI * 0.0555;
     this.dpi = 96;
-    this.bgcolor = {opacity: 1};
-    this.bgcolor.canvasColor = this.bgcolor.textColor = '#ffffff';
+    var bgColor = 'white';
     var bbEnlarge = this.rotate = 0; // false
     var containers = [];
     var lines = xdot.split(/\r?\n/);
@@ -212,7 +211,7 @@ Canviz.prototype = {
                       this.invertY = attrValue[3] > 0;
                       break;
                     case 'bgcolor':
-                      this.bgcolor = rootGraph.parseColor(attrValue);
+                      bgColor = attrValue;
                       break;
                     case 'dpi':
                       this.dpi = attrValue;
@@ -260,8 +259,29 @@ Canviz.prototype = {
         }
       }
     }
+    function xdotRound(n) {
+      var digits = 2;
+      var mult = Math.pow(10, digits);
+      return Math.round(mult * n) / mult;
+    }
     var drawingWidth = this.width + 2 * this.paddingX;
     var drawingHeight = this.height + 2 * this.paddingY;
+    // Fix incorrect background polygon coordinates which don't include the
+    // padding, and set the stroke color to fully transparent.
+    // http://graphviz.org/mantisbt/view.php?id=2372
+    var left = xdotRound(-this.paddingX);
+    var bottom = xdotRound(-this.paddingY);
+    var right = xdotRound(this.width + this.paddingX);
+    var top = xdotRound(this.height + this.paddingY);
+    rootGraph.drawAttrs['_draw_'] = [
+      'C', bgColor.length + ' -' + bgColor,
+      (rootGraph.drawAttrs['_draw_'] || '').replace(/P 4( -?[0-9.]+){8}/, ''),
+      'c 9 -#ffffff00 P 4',
+      left, bottom,
+      left, top,
+      right, top,
+      right, bottom
+    ].join(' ');
     this.bbScale = (maxWidth && maxHeight && (drawingWidth > maxWidth || drawingHeight > maxHeight || bbEnlarge))
       ? Math.min(maxWidth / drawingWidth, maxHeight / drawingHeight)
       : 1;
@@ -299,8 +319,6 @@ Canviz.prototype = {
     }
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.fillRect(0, 0, pixelWidth, pixelHeight);
-    ctx.fillStyle = this.bgcolor.canvasColor;
-    ctx.fillRect(Math.round(ctxScale * this.marginX), Math.round(ctxScale * this.marginY), Math.round(ctxScale * bbScaledDrawingWidth), Math.round(ctxScale * bbScaledDrawingHeight));
     ctx.scale(ctxScale, ctxScale);
     ctx.translate(this.marginX, this.marginY);
     if (this.invertY) {
